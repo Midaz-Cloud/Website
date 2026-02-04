@@ -1,6 +1,6 @@
 ---
 import "../styles/globals.css";
-import Header from "@/components/layout/header";
+import Header from "@/components/layout/Header.astro";
 import Footer from "@/layouts/Footer.astro";
 import WhatsAppWidget from "@/components/widgets/WhatsAppWidget.astro";
 
@@ -59,7 +59,7 @@ const {
         </script>
     </head>
     <body class="font-sans antialiased text-foreground bg-background">
-        <Header client:load currentPath={Astro.url.pathname} />
+        <Header currentPath={Astro.url.pathname} />
         <main>
             <slot />
         </main>
