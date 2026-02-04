@@ -1,0 +1,220 @@
+---
+import { Image } from "astro:assets";
+import logoLight from "@/assets/images/logo-2.png";
+import logoDark from "@/assets/images/logo1.png";
+import { Menu, X } from "lucide-react";
+
+interface Props {
+    currentPath?: string;
+}
+
+const { currentPath = "/" } = Astro.props;
+
+const navItems = [
+    { name: "Inicio", href: "/" },
+    { name: "Productos", href: "/#productos" },
+];
+---
+
+<header
+    id="main-header"
+    class="fixed w-full z-50 transition-all duration-300 -mt-4 bg-transparent py-4"
+>
+    <div class="container-custom">
+        <div class="flex items-center justify-between">
+            <a
+                href="/"
+                class="flex items-center space-x-3 transition-transform hover:scale-105"
+            >
+                <div
+                    class="w-20 h-20 flex items-center justify-center relative"
+                >
+                    <!-- Logo claro (visible cuando NO hay scroll) -->
+                    <Image
+                        id="logo-light"
+                        src={logoLight}
+                        alt="Midaz Logo"
+                        width={120}
+                        height={120}
+                        class="object-contain transition-all duration-300 absolute"
+                    />
+                    <!-- Logo oscuro (visible cuando HAY scroll) -->
+                    <Image
+                        id="logo-dark"
+                        src={logoDark}
+                        alt="Midaz Logo"
+                        width={120}
+                        height={120}
+                        class="object-contain transition-all duration-300 absolute opacity-0"
+                    />
+                </div>
+                <div class="flex flex-col">
+                    <span
+                        id="by-disglobal"
+                        class="text-xs font-medium transition-colors duration-300 mt-12 text-white/80"
+                    >
+                        by Disglobal
+                    </span>
+                </div>
+            </a>
+
+            <nav class="hidden lg:flex items-center space-x-1">
+                {
+                    navItems.map((item) => (
+                        <a
+                            href={item.href}
+                            class:list={[
+                                "nav-link px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 transform",
+                                currentPath === item.href
+                                    ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md"
+                                    : "text-white/90 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600",
+                            ]}
+                        >
+                            {item.name}
+                        </a>
+                    ))
+                }
+                <a
+                    href="/comenzar"
+                    class="ml-8 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-all h-10 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg duration-300 hover:scale-105"
+                >
+                    Comenzar Ahora
+                </a>
+            </nav>
+
+            <button
+                id="mobile-menu-btn"
+                class="lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                aria-label="Toggle menu"
+            >
+                <Menu id="menu-icon" className="w-6 h-6" />
+                <X id="close-icon" className="w-6 h-6 hidden" />
+            </button>
+        </div>
+
+        <!-- Mobile menu -->
+        <div
+            id="mobile-menu"
+            class="lg:hidden mt-4 bg-white rounded-xl shadow-xl p-4 border border-gray-100 hidden"
+        >
+            {
+                navItems.map((item) => (
+                    <a
+                        href={item.href}
+                        class:list={[
+                            "mobile-nav-link block px-4 py-3 rounded-full text-base font-medium mb-2 transition-all",
+                            currentPath === item.href
+                                ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md"
+                                : "text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600",
+                        ]}
+                    >
+                        {item.name}
+                    </a>
+                ))
+            }
+            <a
+                href="/comenzar"
+                class="block w-full mt-4 text-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 py-3"
+            >
+                Comenzar Ahora
+            </a>
+        </div>
+    </div>
+</header>
+
+<script>
+    // Scroll effect
+    const header = document.getElementById("main-header");
+    const logoLight = document.getElementById("logo-light");
+    const logoDark = document.getElementById("logo-dark");
+    const byDisglobal = document.getElementById("by-disglobal");
+    const navLinks = document.querySelectorAll(
+        ".nav-link:not(.bg-gradient-to-r)",
+    );
+
+    function updateHeader() {
+        const isScrolled = window.scrollY > 10;
+
+        if (header) {
+            if (isScrolled) {
+                header.classList.remove("bg-transparent", "py-4");
+                header.classList.add(
+                    "bg-white/95",
+                    "backdrop-blur-md",
+                    "shadow-lg",
+                    "py-2",
+                );
+            } else {
+                header.classList.remove(
+                    "bg-white/95",
+                    "backdrop-blur-md",
+                    "shadow-lg",
+                    "py-2",
+                );
+                header.classList.add("bg-transparent", "py-4");
+            }
+        }
+
+        if (logoLight && logoDark) {
+            if (isScrolled) {
+                logoLight.classList.add("opacity-0");
+                logoDark.classList.remove("opacity-0");
+            } else {
+                logoLight.classList.remove("opacity-0");
+                logoDark.classList.add("opacity-0");
+            }
+        }
+
+        if (byDisglobal) {
+            if (isScrolled) {
+                byDisglobal.classList.remove("text-white/80");
+                byDisglobal.classList.add("text-gray-600");
+            } else {
+                byDisglobal.classList.remove("text-gray-600");
+                byDisglobal.classList.add("text-white/80");
+            }
+        }
+
+        navLinks.forEach((link) => {
+            if (isScrolled) {
+                link.classList.remove("text-white/90");
+                link.classList.add("text-gray-700");
+            } else {
+                link.classList.remove("text-gray-700");
+                link.classList.add("text-white/90");
+            }
+        });
+    }
+
+    window.addEventListener("scroll", updateHeader);
+    updateHeader(); // Initial check
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const menuIcon = document.getElementById("menu-icon");
+    const closeIcon = document.getElementById("close-icon");
+
+    mobileMenuBtn?.addEventListener("click", () => {
+        const isOpen = !mobileMenu?.classList.contains("hidden");
+
+        if (isOpen) {
+            mobileMenu?.classList.add("hidden");
+            menuIcon?.classList.remove("hidden");
+            closeIcon?.classList.add("hidden");
+        } else {
+            mobileMenu?.classList.remove("hidden");
+            menuIcon?.classList.add("hidden");
+            closeIcon?.classList.remove("hidden");
+        }
+    });
+
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll(".mobile-nav-link").forEach((link) => {
+        link.addEventListener("click", () => {
+            mobileMenu?.classList.add("hidden");
+            menuIcon?.classList.remove("hidden");
+            closeIcon?.classList.add("hidden");
+        });
+    });
+</script>

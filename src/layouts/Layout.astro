@@ -1,0 +1,69 @@
+---
+import "../styles/globals.css";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/layouts/Footer.astro";
+import WhatsAppWidget from "@/components/widgets/WhatsAppWidget.astro";
+
+const {
+    title = "Midaz - Conformidad Fiscal Simplificada y Eficiencia Operativa",
+    description = "Soluciones integrales de POS, ERP y facturación homologadas por SENIAT. Agora, Ambrosia, Atlas y Eter - tecnología avanzada para tu negocio.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="description" content={description} />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <meta
+            name="keywords"
+            content="POS Venezuela, ERP, facturación electrónica, SENIAT, Nexgo, sistema punto de venta, gestión empresarial"
+        />
+        <meta
+            property="og:title"
+            content="Midaz - Conformidad Fiscal Simplificada"
+        />
+        <meta
+            property="og:description"
+            content="Proveedor de confianza homologado por SENIAT. Soluciones POS, ERP y administrativas para tu negocio."
+        />
+        <meta property="og:image" content="/images/midaz-logo.png" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="es_VE" />
+
+        <!-- Google Fonts: Inter -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+
+        <title>{title}</title>
+
+        <!-- Google Analytics (Example Implementation) -->
+        <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=G-MEASUREMENT_ID"
+        ></script>
+        <script is:inline>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            gtag("config", "G-MEASUREMENT_ID");
+        </script>
+    </head>
+    <body class="font-sans antialiased text-foreground bg-background">
+        <Header currentPath={Astro.url.pathname} />
+        <main>
+            <slot />
+        </main>
+        <Footer />
+        <WhatsAppWidget />
+    </body>
+</html>

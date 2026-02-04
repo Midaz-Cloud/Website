@@ -1,0 +1,161 @@
+---
+import { MessageCircle, X } from "lucide-react";
+---
+
+<!-- WhatsApp Widget Container -->
+<div id="whatsapp-widget-container">
+    <!-- WhatsApp Button -->
+    <button
+        id="wa-toggle-btn"
+        class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:bg-[#128C7E] transition-all hover:scale-110"
+        aria-label="Contactar por WhatsApp"
+    >
+        <div id="icon-message" class="block">
+            <MessageCircle className="h-6 w-6" />
+        </div>
+        <div id="icon-close" class="hidden">
+            <X className="h-6 w-6" />
+        </div>
+    </button>
+
+    <!-- WhatsApp Chat Widget -->
+    <div
+        id="wa-chat-window"
+        class="hidden fixed bottom-24 right-6 z-50 bg-white rounded-xl shadow-2xl w-80 overflow-hidden border border-gray-200 fade-in-up"
+    >
+        <div class="bg-[#25D366] text-white p-4">
+            <h3 class="font-bold text-lg">Midaz - Soporte</h3>
+            <p class="text-sm opacity-90">Respuesta típica en minutos</p>
+        </div>
+
+        <form id="wa-form" class="p-4 space-y-4">
+            <div>
+                <label
+                    for="wa-name"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                    Su Nombre
+                </label>
+                <input
+                    type="text"
+                    id="wa-name"
+                    name="name"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:border-transparent"
+                    placeholder="Nombre completo"
+                />
+            </div>
+
+            <div>
+                <label
+                    for="wa-company"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                    Empresa
+                </label>
+                <input
+                    type="text"
+                    id="wa-company"
+                    name="company"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:border-transparent"
+                    placeholder="Nombre de su empresa"
+                />
+            </div>
+
+            <div>
+                <label
+                    for="wa-message"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                    Mensaje
+                </label>
+                <textarea
+                    id="wa-message"
+                    name="message"
+                    rows="3"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:border-transparent"
+                    placeholder="¿En qué podemos ayudarle?"></textarea>
+            </div>
+
+            <button
+                type="submit"
+                class="w-full bg-[#25D366] text-white py-3 px-4 rounded-lg hover:bg-[#128C7E] transition-colors font-semibold"
+            >
+                Enviar por WhatsApp
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .fade-in-up {
+        animation: fadeInUp 0.3s ease-out forwards;
+    }
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    const container = document.getElementById("whatsapp-widget-container");
+    const toggleBtn = document.getElementById("wa-toggle-btn");
+    const chatWindow = document.getElementById("wa-chat-window");
+    const iconMessage = document.getElementById("icon-message");
+    const iconClose = document.getElementById("icon-close");
+    const form = document.getElementById("wa-form") as HTMLFormElement;
+
+    // Config
+    const phoneNumber = "+584121234567";
+    let isOpen = false;
+
+    function toggleChat() {
+        isOpen = !isOpen;
+        if (isOpen) {
+            chatWindow?.classList.remove("hidden");
+            iconMessage?.classList.add("hidden");
+            iconMessage?.classList.remove("block");
+            iconClose?.classList.add("block");
+            iconClose?.classList.remove("hidden");
+        } else {
+            chatWindow?.classList.add("hidden");
+            iconMessage?.classList.add("block");
+            iconMessage?.classList.remove("hidden");
+            iconClose?.classList.add("hidden");
+            iconClose?.classList.remove("block");
+        }
+    }
+
+    toggleBtn?.addEventListener("click", toggleChat);
+
+    form?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = (document.getElementById("wa-name") as HTMLInputElement)
+            .value;
+        const company = (
+            document.getElementById("wa-company") as HTMLInputElement
+        ).value;
+        const message = (
+            document.getElementById("wa-message") as HTMLInputElement
+        ).value;
+
+        const whatsappMessage = encodeURIComponent(
+            `Hola, soy ${name} de ${company}. ${message}\n\nEstoy interesado en conocer más sobre las soluciones Midaz.`,
+        );
+        window.open(
+            `https://wa.me/${phoneNumber}?text=${whatsappMessage}`,
+            "_blank",
+        );
+
+        toggleChat(); // Close after submit
+        form.reset();
+    });
+</script>

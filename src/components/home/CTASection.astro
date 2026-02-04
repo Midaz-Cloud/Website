@@ -1,0 +1,109 @@
+---
+import { ArrowRight, Shield, Zap, Globe, Phone, Mail } from "lucide-react";
+
+const benefits = [
+    {
+        icon: Shield,
+        title: "Cumplimiento Garantizado",
+        description: "Homologación SENIAT en proceso",
+    },
+    {
+        icon: Zap,
+        title: "Implementación Express",
+        description: "Operativo en menos de 24 horas",
+    },
+    {
+        icon: Globe,
+        title: "Soporte Especializado",
+        description: "Equipo local en Venezuela",
+    },
+];
+---
+
+<section class="py-32 hero-gradient relative overflow-hidden">
+    {/* Background elements */}
+    <div class="absolute inset-0 mesh-gradient opacity-20"></div>
+    <div
+        class="absolute top-10 left-10 w-32 h-32 bg-white/5 rounded-full blur-xl float"
+    >
+    </div>
+    <div
+        class="absolute bottom-10 right-10 w-48 h-48 bg-white/5 rounded-full blur-xl float"
+        style="animation-delay: 3s"
+    >
+    </div>
+
+    <div class="container-custom relative z-10">
+        <div class="text-center mb-16 fade-in">
+            <h2 class="heading-xl text-white mb-6">
+                ¿Listo para la Transformación Digital?
+            </h2>
+            <p class="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                Únete a cientos de empresas venezolanas que ya han revolucionado
+                su gestión empresarial con Midaz
+            </p>
+        </div>
+
+        {/* Benefits grid */}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {
+                benefits.map((benefit, index) => {
+                    const IconComponent = benefit.icon;
+                    const delay = `${index * 0.1}s`;
+                    return (
+                        <div
+                            class="glass-card text-center slide-up"
+                            style={`animation-delay: ${delay}`}
+                        >
+                            <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <IconComponent className="w-8 h-8 text-white" />
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">
+                                {benefit.title}
+                            </h3>
+                            <p class="text-white/70">{benefit.description}</p>
+                        </div>
+                    );
+                })
+            }
+        </div>
+
+        {/* CTA buttons */}
+        <div class="text-center mb-12 slide-up" style="animation-delay: 0.4s">
+            <div
+                class="flex flex-col sm:flex-row gap-6 justify-center items-center"
+            >
+                <a
+                    href="/comenzar"
+                    class="btn-primary text-xl px-12 py-6 inline-flex items-center justify-center rounded-full font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-md hover:shadow-lg transition-all duration-300 gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                >
+                    <span>Comenzar Ahora</span>
+                    <ArrowRight className="w-6 h-6" />
+                </a>
+                <a
+                    href="#contacto"
+                    class="btn-secondary text-xl px-12 py-6 inline-flex items-center justify-center rounded-full font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-md hover:shadow-lg transition-all duration-300 bg-white text-gray-900 hover:bg-gray-100"
+                >
+                    <span>Hablar con Especialista</span>
+                </a>
+            </div>
+            <p class="text-white/60 mt-6 text-sm">
+                Sin compromisos • Configuración gratuita • Soporte incluido
+            </p>
+        </div>
+
+        {/* Contact info */}
+        <div
+            class="flex flex-col sm:flex-row gap-6 justify-center items-center text-white/70"
+        >
+            <div class="flex items-center gap-2">
+                <Phone className="w-4 h-4" />
+                <span>+58 424-MIDAZ-01</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                <span>info@midaz.com.ve</span>
+            </div>
+        </div>
+    </div>
+</section>
