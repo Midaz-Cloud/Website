@@ -15,11 +15,11 @@ import OnboardingScreen from "@/components/onboarding/OnboardingScreen";
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
 
-        <!-- Google Fonts: Inter -->
+        <!-- Preload Google Fonts for faster loading -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
             rel="stylesheet"
         />
 
@@ -42,9 +42,133 @@ import OnboardingScreen from "@/components/onboarding/OnboardingScreen";
                 -webkit-font-smoothing: antialiased;
                 -moz-osx-font-smoothing: grayscale;
             }
+
+            /* Loading skeleton styles */
+            .loading-skeleton {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background: white;
+            }
+
+            .skeleton-logo {
+                width: 80px;
+                height: 80px;
+                background: linear-gradient(
+                    90deg,
+                    #f0f0f0 25%,
+                    #e0e0e0 50%,
+                    #f0f0f0 75%
+                );
+                background-size: 200% 100%;
+                animation: shimmer 1.5s infinite;
+                border-radius: 12px;
+                margin-bottom: 2rem;
+            }
+
+            .skeleton-title {
+                width: 300px;
+                height: 48px;
+                background: linear-gradient(
+                    90deg,
+                    #f0f0f0 25%,
+                    #e0e0e0 50%,
+                    #f0f0f0 75%
+                );
+                background-size: 200% 100%;
+                animation: shimmer 1.5s infinite;
+                border-radius: 8px;
+                margin-bottom: 1rem;
+            }
+
+            .skeleton-text {
+                width: 250px;
+                height: 24px;
+                background: linear-gradient(
+                    90deg,
+                    #f0f0f0 25%,
+                    #e0e0e0 50%,
+                    #f0f0f0 75%
+                );
+                background-size: 200% 100%;
+                animation: shimmer 1.5s infinite;
+                border-radius: 6px;
+                margin-bottom: 2rem;
+            }
+
+            .skeleton-button {
+                width: 150px;
+                height: 56px;
+                background: linear-gradient(
+                    90deg,
+                    #d4a853 25%,
+                    #c49843 50%,
+                    #d4a853 75%
+                );
+                background-size: 200% 100%;
+                animation: shimmer 1.5s infinite;
+                border-radius: 9999px;
+            }
+
+            @keyframes shimmer {
+                0% {
+                    background-position: 200% 0;
+                }
+                100% {
+                    background-position: -200% 0;
+                }
+            }
+
+            /* Hide skeleton when React loads */
+            .onboarding-loaded .loading-skeleton {
+                display: none;
+            }
         </style>
     </head>
     <body>
-        <OnboardingScreen client:load />
+        <!-- Loading skeleton while React hydrates -->
+        <div class="loading-skeleton" id="loading-skeleton">
+            <div class="skeleton-logo"></div>
+            <div class="skeleton-title"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-button"></div>
+        </div>
+
+        <!-- Use client:idle to defer loading until browser is idle -->
+        <div id="onboarding-container">
+            <OnboardingScreen client:idle />
+        </div>
+
+        <script>
+            // Hide skeleton once React component is mounted
+            const observer = new MutationObserver((mutations) => {
+                const container = document.getElementById(
+                    "onboarding-container",
+                );
+                if (container && container.children.length > 0) {
+                    const skeleton =
+                        document.getElementById("loading-skeleton");
+                    if (skeleton) {
+                        skeleton.style.display = "none";
+                    }
+                    observer.disconnect();
+                }
+            });
+
+            const container = document.getElementById("onboarding-container");
+            if (container) {
+                observer.observe(container, { childList: true, subtree: true });
+            }
+
+            // Fallback: hide skeleton after 3 seconds max
+            setTimeout(() => {
+                const skeleton = document.getElementById("loading-skeleton");
+                if (skeleton) {
+                    skeleton.style.display = "none";
+                }
+            }, 3000);
+        </script>
     </body>
 </html>
