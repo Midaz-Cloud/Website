@@ -33,8 +33,8 @@ const plansByProduct = {
             name: "Emprendedor",
             price: "$49",
             period: "/mes",
-            description: "Para negocios que inician",
-            features: ["Facturación fiscal", "Inventario básico", "1 usuario", "Soporte email"],
+            description: "Ideal para nuevos comienzos",
+            features: ["Facturación fiscal", "Inventario básico", "1 usuario", "Asistencia técnica humana 24/7"],
             recommended: false,
         },
         {
@@ -42,8 +42,8 @@ const plansByProduct = {
             name: "Empresarial",
             price: "$99",
             period: "/mes",
-            description: "Para negocios en crecimiento",
-            features: ["Todo en Emprendedor", "Multi-almacén", "5 usuarios", "Reportes avanzados", "Soporte prioritario"],
+            description: "Potencia tu expansión",
+            features: ["Todo en Emprendedor", "Multi-almacén", "5 usuarios", "Reportes avanzados", "Asistencia técnica humana 24/7"],
             recommended: true,
         },
     ],
@@ -54,7 +54,7 @@ const plansByProduct = {
             price: "$29",
             period: "/mes",
             description: "Pago flexible",
-            features: ["Software completo", "Conexión HKA/Bixolon", "Actualizaciones", "Soporte técnico"],
+            features: ["Software completo", "Conexión HKA/Bixolon", "Actualizaciones", "Asistencia técnica humana 24/7"],
             recommended: false,
         },
         {
@@ -63,7 +63,7 @@ const plansByProduct = {
             price: "$290",
             period: "/año",
             description: "Ahorra 2 meses",
-            features: ["Todo en Mensual", "Soporte prioritario", "Ahorro de $58"],
+            features: ["Todo en Mensual", "Ahorro de $58", "Asistencia técnica humana 24/7"],
             recommended: true,
         },
     ],
@@ -83,7 +83,7 @@ const plansByProduct = {
             price: "$19",
             period: "/mes",
             description: "Control total",
-            features: ["Todo en Gratuito", "Multi-ubicación", "Multi-usuario", "Soporte dedicado"],
+            features: ["Todo en Gratuito", "Multi-ubicación", "Multi-usuario", "Asistencia técnica humana 24/7"],
             recommended: true,
         },
     ],
@@ -214,7 +214,7 @@ export default function OnboardingScreen() {
 
     const canProceed = () => {
         switch (currentStep) {
-            case 1: return formData.businessName && formData.email
+            case 1: return formData.businessName.length >= 3 && formData.email
             case 2: return formData.employeeCount !== null
             case 3: return formData.monthlyVolume !== null
             case 4: return formData.solution !== null
@@ -300,11 +300,11 @@ export default function OnboardingScreen() {
                                     className="text-4xl md:text-5xl font-bold mb-4 slide-in"
                                     style={{ color: brandNavy }}
                                 >
-                                    Bienvenido a Midaz
+                                    ¡Todo listo para impulsar tu negocio!
                                 </h1>
 
                                 <p className="text-xl text-gray-500 mb-12 slide-in stagger-1">
-                                    Configura tu negocio en minutos y comienza a vender hoy mismo.
+                                    Configura tu tienda en pocos pasos y haz tu primera venta hoy.
                                 </p>
 
                                 <button
@@ -312,12 +312,12 @@ export default function OnboardingScreen() {
                                     className="group inline-flex items-center gap-3 px-10 py-5 text-white rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl slide-in stagger-2"
                                     style={{ backgroundColor: brandGold }}
                                 >
-                                    Comenzar
+                                    ¡Empezar ahora!
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                 </button>
 
                                 <p className="mt-8 text-sm text-gray-400 slide-in stagger-3">
-                                    ⏱️ Solo 2 minutos • Sin tarjeta de crédito
+                                    ⏱️ Configuración rápida • Sin costos ocultos
                                 </p>
                             </div>
                         </div>
@@ -335,10 +335,10 @@ export default function OnboardingScreen() {
                                         <span className="text-3xl">🏪</span>
                                     </div>
                                     <h2 className="text-3xl font-bold mb-2 slide-in" style={{ color: brandNavy }}>
-                                        Tu negocio
+                                        Cuéntanos sobre tu negocio
                                     </h2>
                                     <p className="text-gray-500 slide-in stagger-1">
-                                        Cuéntanos un poco sobre ti
+                                        Ingresa los datos básicos para comenzar.
                                     </p>
                                 </div>
 
@@ -350,7 +350,11 @@ export default function OnboardingScreen() {
                                         <input
                                             type="text"
                                             value={formData.businessName}
-                                            onChange={(e) => updateFormData({ businessName: e.target.value })}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                const formatted = val.charAt(0).toUpperCase() + val.slice(1);
+                                                updateFormData({ businessName: formatted })
+                                            }}
                                             className="w-full px-5 py-4 bg-white border-2 border-gray-100 rounded-2xl text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-amber-400 focus:shadow-lg"
                                             placeholder="Mi Negocio C.A."
                                         />
@@ -363,7 +367,7 @@ export default function OnboardingScreen() {
                                         <input
                                             type="email"
                                             value={formData.email}
-                                            onChange={(e) => updateFormData({ email: e.target.value })}
+                                            onChange={(e) => updateFormData({ email: e.target.value.replace(/\s/g, '') })}
                                             className="w-full px-5 py-4 bg-white border-2 border-gray-100 rounded-2xl text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-amber-400 focus:shadow-lg"
                                             placeholder="correo@empresa.com"
                                         />
@@ -371,14 +375,39 @@ export default function OnboardingScreen() {
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            RIF <span className="text-gray-400">(opcional)</span>
+                                            Identificación Fiscal / RIF <span className="text-gray-400">(opcional)</span>
                                         </label>
                                         <input
                                             type="text"
                                             value={formData.rif}
-                                            onChange={(e) => updateFormData({ rif: e.target.value.toUpperCase() })}
+                                            onChange={(e) => {
+                                                let val = e.target.value.toUpperCase().replace(/[^JVEG0-9-]/g, '');
+
+                                                // Logic for Default "J" and masking
+                                                if (val && /^[0-9]/.test(val)) {
+                                                    val = "J-" + val;
+                                                }
+
+                                                // Simple mask implementation for X-00000000-0
+                                                // If it starts with letter and we need to handle numbers
+                                                let clean = val.replace(/[^JVEG0-9]/g, '');
+                                                if (clean.length > 0) {
+                                                    let letter = clean.charAt(0);
+                                                    let numbers = clean.slice(1);
+                                                    if (numbers.length > 0) {
+                                                        let main = numbers.slice(0, 8);
+                                                        let last = numbers.slice(8, 9);
+                                                        val = `${letter}-${main}${last ? '-' + last : ''}`;
+                                                    } else {
+                                                        val = letter;
+                                                    }
+                                                }
+
+                                                updateFormData({ rif: val })
+                                            }}
                                             className="w-full px-5 py-4 bg-white border-2 border-gray-100 rounded-2xl text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-amber-400 focus:shadow-lg"
                                             placeholder="J-12345678-9"
+                                            maxLength={13}
                                         />
                                     </div>
                                 </div>
@@ -395,12 +424,12 @@ export default function OnboardingScreen() {
                                         onClick={nextStep}
                                         disabled={!canProceed()}
                                         className={`flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold transition-all duration-300 ${canProceed()
-                                                ? "text-white hover:scale-105 hover:shadow-xl"
-                                                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                            ? "text-white hover:scale-105 hover:shadow-xl"
+                                            : "bg-gray-100 text-gray-400 cursor-not-allowed"
                                             }`}
                                         style={{ backgroundColor: canProceed() ? brandGold : undefined }}
                                     >
-                                        Continuar
+                                        Siguiente paso
                                         <ArrowRight className="w-4 h-4" />
                                     </button>
                                 </div>
@@ -420,19 +449,19 @@ export default function OnboardingScreen() {
                                         <Users className="w-8 h-8" style={{ color: brandGold }} />
                                     </div>
                                     <h2 className="text-3xl font-bold mb-2 slide-in" style={{ color: brandNavy }}>
-                                        ¿Cuántas personas trabajan contigo?
+                                        ¿Qué tan grande es tu equipo?
                                     </h2>
                                     <p className="text-gray-500 slide-in stagger-1">
-                                        Esto nos ayuda a recomendarte el plan ideal
+                                        Selecciona una opción para personalizar tu experiencia.
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4 slide-in stagger-2">
                                     {[
-                                        { value: "solo", label: "Solo yo", emoji: "🧑" },
+                                        { value: "solo", label: "Propietario único", emoji: "🧑" },
                                         { value: "small", label: "2-5 personas", emoji: "👥" },
                                         { value: "medium", label: "6-20 personas", emoji: "👨‍👩‍👧‍👦" },
-                                        { value: "large", label: "Más de 20", emoji: "🏢" },
+                                        { value: "large", label: "Empresa corporativa (20+)", emoji: "🏢" },
                                     ].map((option, index) => (
                                         <button
                                             key={option.value}
@@ -488,19 +517,19 @@ export default function OnboardingScreen() {
                                         <DollarSign className="w-8 h-8" style={{ color: brandGold }} />
                                     </div>
                                     <h2 className="text-3xl font-bold mb-2 slide-in" style={{ color: brandNavy }}>
-                                        ¿Cuánto vendes al mes?
+                                        ¿Cuál es tu volumen de ventas mensual?
                                     </h2>
                                     <p className="text-gray-500 slide-in stagger-1">
-                                        Aproximadamente, no te preocupes si no es exacto
+                                        Usa un estimado, esto nos ayuda a ajustar tus límites de facturación.
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4 slide-in stagger-2">
                                     {[
-                                        { value: "low", label: "Menos de $5,000", emoji: "💵" },
+                                        { value: "low", label: "Emprendedor (Hasta $5k)", emoji: "💵" },
                                         { value: "medium", label: "$5,000 - $20,000", emoji: "💰" },
                                         { value: "high", label: "$20,000 - $100,000", emoji: "💎" },
-                                        { value: "enterprise", label: "Más de $100,000", emoji: "🚀" },
+                                        { value: "enterprise", label: "Alto Volumen (100k+)", emoji: "🚀" },
                                     ].map((option, index) => (
                                         <button
                                             key={option.value}
@@ -556,10 +585,10 @@ export default function OnboardingScreen() {
                                         <span className="text-3xl">🎯</span>
                                     </div>
                                     <h2 className="text-3xl font-bold mb-2 slide-in" style={{ color: brandNavy }}>
-                                        Elige tu solución
+                                        Selecciona tu herramienta de trabajo
                                     </h2>
                                     <p className="text-gray-500 slide-in stagger-1">
-                                        ¿Qué necesitas para tu negocio?
+                                        ¿Cómo planeas gestionar tus ventas?
                                     </p>
                                 </div>
 
@@ -569,7 +598,7 @@ export default function OnboardingScreen() {
                                             id: "agora",
                                             icon: Smartphone,
                                             name: "Midaz Ágora",
-                                            description: "Dispositivo N82 todo-en-uno con impresora fiscal",
+                                            description: "Terminal POS N82 (Todo en uno)",
                                             tag: "Más popular",
                                             tagColor: "bg-green-100 text-green-700",
                                             ideal: "Tiendas y comercios",
@@ -578,7 +607,7 @@ export default function OnboardingScreen() {
                                             id: "web",
                                             icon: Monitor,
                                             name: "Midaz Web",
-                                            description: "Software para PC con tu impresora fiscal existente",
+                                            description: "Sistema Web (Para PC) + Impresa Fiscal",
                                             tag: "Disponible",
                                             tagColor: "bg-blue-100 text-blue-700",
                                             ideal: "Oficinas y servicios",
@@ -587,7 +616,7 @@ export default function OnboardingScreen() {
                                             id: "gestion",
                                             icon: BarChart3,
                                             name: "Gestión",
-                                            description: "Control de inventario sin facturación fiscal",
+                                            description: "Control de inventario + Panel de Gestión",
                                             tag: "Gratis",
                                             tagColor: "bg-amber-100 text-amber-700",
                                             ideal: "Emprendedores",
@@ -671,10 +700,10 @@ export default function OnboardingScreen() {
                                         <span className="text-3xl">💎</span>
                                     </div>
                                     <h2 className="text-3xl font-bold mb-2 slide-in" style={{ color: brandNavy }}>
-                                        Selecciona tu plan
+                                        Elige el motor de tu crecimiento
                                     </h2>
                                     <p className="text-gray-500 slide-in stagger-1">
-                                        Puedes cambiar de plan en cualquier momento
+                                        Sin compromisos: escala o cambia tu plan cuando lo necesites.
                                     </p>
                                 </div>
 
@@ -775,14 +804,14 @@ export default function OnboardingScreen() {
                                 </div>
 
                                 <h1 className="text-4xl font-bold mb-4 slide-in" style={{ color: brandNavy }}>
-                                    ¡Todo listo! 🎉
+                                    ¡Bienvenido a la familia Midaz!
                                 </h1>
                                 <p className="text-xl text-gray-500 mb-8 slide-in stagger-1">
-                                    Tu cuenta ha sido creada exitosamente
+                                    Tu entorno de gestión ya está activo.
                                 </p>
 
                                 <div className="bg-gray-50 rounded-3xl p-6 mb-8 text-left slide-in stagger-2">
-                                    <h3 className="text-sm font-medium text-gray-400 mb-4">Resumen</h3>
+                                    <h3 className="text-sm font-medium text-gray-400 mb-4">Detalles de tu suscripción</h3>
                                     <div className="space-y-3">
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Negocio</span>
@@ -807,7 +836,7 @@ export default function OnboardingScreen() {
                                     style={{ backgroundColor: `${brandGold}15` }}
                                 >
                                     <p style={{ color: brandNavy }}>
-                                        <strong>📧 Revisa tu correo:</strong> Te hemos enviado los pasos para comenzar.
+                                        <strong>📧 ¡Te enviamos una guía a tu correo!</strong>
                                     </p>
                                 </div>
 
