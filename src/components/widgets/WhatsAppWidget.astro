@@ -1,161 +1,197 @@
 ---
-import { MessageCircle, X } from "lucide-react";
+/* WhatsApp Widget Redesigned */
 ---
 
-<!-- WhatsApp Widget Container -->
-<div id="whatsapp-widget-container">
-    <!-- WhatsApp Button -->
-    <button
-        id="wa-toggle-btn"
-        class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:bg-[#128C7E] transition-all hover:scale-110"
-        aria-label="Contactar por WhatsApp"
-    >
-        <div id="icon-message" class="block">
-            <MessageCircle className="h-6 w-6" />
-        </div>
-        <div id="icon-close" class="hidden">
-            <X className="h-6 w-6" />
-        </div>
+<div id="whatsapp-widget-container" class="wa-widget">
+    <!-- Tooltip -->
+    <div id="wa-tooltip" class="wa-tooltip hidden">
+        <p>¿Cómo podemos ayudarte? 👋</p>
+        <div class="wa-tooltip-arrow"></div>
+    </div>
+
+    <!-- Main Toggle Button -->
+    <button id="wa-toggle-btn" class="wa-main-btn shadow-glow" aria-label="WhatsApp">
+        <span id="icon-message" class="wa-icon-show">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.38 8.38 0 0 1 3.8.9L22 4l-1.5 6.5Z"></path>
+                <path d="M8.5 9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"></path>
+                <path d="M15.5 12a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"></path>
+            </svg>
+        </span>
+        <span id="icon-close" class="wa-icon-hide">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </span>
     </button>
 
-    <!-- WhatsApp Chat Widget -->
-    <div
-        id="wa-chat-window"
-        class="hidden fixed bottom-24 right-6 z-50 bg-white rounded-xl shadow-2xl w-80 overflow-hidden border border-gray-200 fade-in-up"
-    >
-        <div class="bg-[#25D366] text-white p-4">
-            <h3 class="font-bold text-lg">Midaz - Soporte</h3>
-            <p class="text-sm opacity-90">Respuesta típica en minutos</p>
+    <!-- Chat Window -->
+    <div id="wa-chat-window" class="wa-window hidden shadow-2xl">
+        <div class="wa-header">
+            <div class="wa-header-info">
+                <div class="wa-avatar">
+                   <img src="/logo-white.svg" alt="Midaz" />
+                   <div class="wa-online-dot"></div>
+                </div>
+                <div class="wa-header-text">
+                    <h3 class="wa-title">Midaz Soporte</h3>
+                    <div class="wa-status">
+                         <span class="status-pulse"></span>
+                         <span class="status-label">En línea ahora</span>
+                    </div>
+                </div>
+            </div>
+            <button id="wa-close-btn" class="wa-header-close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
         </div>
 
-        <form id="wa-form" class="p-4 space-y-4">
-            <div>
-                <label
-                    for="wa-name"
-                    class="block text-sm font-medium text-gray-700 mb-1"
-                >
-                    Su Nombre
-                </label>
-                <input
-                    type="text"
-                    id="wa-name"
-                    name="name"
-                    required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:border-transparent"
-                    placeholder="Nombre completo"
-                />
+        <div class="wa-body">
+            <div class="wa-chat-bubble">
+                <p>Hola 👋 ¿En qué podemos ayudarte hoy? Cuéntanos sobre tu negocio.</p>
+                <span class="wa-time">Recién visto</span>
             </div>
 
-            <div>
-                <label
-                    for="wa-company"
-                    class="block text-sm font-medium text-gray-700 mb-1"
-                >
-                    Empresa
-                </label>
-                <input
-                    type="text"
-                    id="wa-company"
-                    name="company"
-                    required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:border-transparent"
-                    placeholder="Nombre de su empresa"
-                />
-            </div>
+            <form id="wa-form" class="wa-form">
+                <div class="input-group">
+                    <label for="wa-name">Su Nombre</label>
+                    <input type="text" id="wa-name" required placeholder="Ej. Juan Pérez" />
+                </div>
 
-            <div>
-                <label
-                    for="wa-message"
-                    class="block text-sm font-medium text-gray-700 mb-1"
-                >
-                    Mensaje
-                </label>
-                <textarea
-                    id="wa-message"
-                    name="message"
-                    rows="3"
-                    required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:border-transparent"
-                    placeholder="¿En qué podemos ayudarle?"></textarea>
-            </div>
+                <div class="input-group">
+                    <label for="wa-company">Empresa</label>
+                    <input type="text" id="wa-company" required placeholder="Nombre de su negocio" />
+                </div>
 
-            <button
-                type="submit"
-                class="w-full bg-[#25D366] text-white py-3 px-4 rounded-lg hover:bg-[#128C7E] transition-colors font-semibold"
-            >
-                Enviar por WhatsApp
-            </button>
-        </form>
+                <div class="input-group">
+                    <label for="wa-message">Mensaje</label>
+                    <textarea id="wa-message" rows="2" required placeholder="¿Cómo te ayudamos?"></textarea>
+                </div>
+
+                <button type="submit" class="wa-submit-btn">
+                    <span>Iniciar Chat</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 
 <style>
-    .fade-in-up {
-        animation: fadeInUp 0.3s ease-out forwards;
+    :root {
+        --wa-green: #25d366;
+        --wa-green-dark: #128c7e;
+        --midaz-blue: #07143a;
+        --midaz-accent: #004be0;
+        --bg-cream: #faf5ee;
     }
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+
+    .wa-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: 'Inter', sans-serif; }
+    
+    .hidden { display: none !important; }
+
+    .wa-main-btn {
+        width: 60px; height: 60px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--wa-green) 0%, var(--wa-green-dark) 100%);
+        color: white; border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+    .wa-main-btn:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(37, 211, 102, 0.4); }
+
+    .wa-icon-show { display: block; }
+    .wa-icon-hide { display: none; }
+
+    .wa-tooltip {
+        position: absolute; bottom: 80px; right: 0;
+        background: white; color: var(--midaz-blue);
+        padding: 10px 16px; border-radius: 12px; width: max-content;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);
+        animation: wa-bounce 2s infinite; font-size: 13px; font-weight: 500;
+    }
+    .wa-tooltip-arrow {
+        position: absolute; bottom: -6px; right: 22px; width: 12px; height: 12px;
+        background: white; transform: rotate(45deg); border-right: 1px solid rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    @keyframes wa-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+    .wa-window {
+        position: fixed; bottom: 95px; right: 20px; width: 340px;
+        background: white; border-radius: 16px; overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.1); transform-origin: bottom right;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .wa-header { background: var(--midaz-blue); padding: 20px; color: white; display: flex; justify-content: space-between; align-items: flex-start; }
+    .wa-header-info { display: flex; gap: 12px; align-items: center; }
+    .wa-avatar { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative; }
+    .wa-avatar img { height: 20px; width: auto; }
+    .wa-online-dot { position: absolute; bottom: -2px; right: -2px; width: 10px; height: 10px; background: var(--wa-green); border: 2px solid var(--midaz-blue); border-radius: 50%; }
+    .wa-title { font-size: 15px; font-weight: 700; margin: 0; }
+    .wa-status { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+    .status-pulse { width: 6px; height: 6px; background: var(--wa-green); border-radius: 50%; animation: p-green 2s infinite; }
+    .status-label { font-size: 11px; opacity: 0.6; }
+    @keyframes p-green { 0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(37, 211, 102, 0); } 100% { transform: scale(0.9); } }
+    .wa-header-close { background: none; border: none; color: white; opacity: 0.5; cursor: pointer; }
+    .wa-header-close:hover { opacity: 1; }
+
+    .wa-body { background: var(--bg-cream); padding: 20px; }
+    .wa-chat-bubble { background: white; padding: 12px 15px; border-radius: 2px 15px 15px 15px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+    .wa-chat-bubble p { margin: 0; font-size: 13px; color: var(--midaz-blue); line-height: 1.4; }
+    .wa-time { font-size: 10px; opacity: 0.4; display: block; text-align: right; margin-top: 5px; }
+
+    .wa-form { display: flex; flex-direction: column; gap: 12px; }
+    .input-group { display: flex; flex-direction: column; gap: 5px; }
+    .input-group label { font-size: 11px; font-weight: 600; opacity: 0.6; margin-left: 2px; }
+    .input-group input, .input-group textarea { border: 1px solid rgba(0,0,0,0.08); padding: 10px 12px; border-radius: 10px; font-size: 13px; }
+    .input-group input:focus, .input-group textarea:focus { outline: none; border-color: var(--midaz-accent); }
+    .wa-submit-btn { background: var(--midaz-accent); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: 0.2s; }
+    .wa-submit-btn:hover { background: var(--midaz-blue); }
+
+    @media (max-width: 480px) { .wa-window { width: calc(100vw - 40px); } }
 </style>
 
-<script>
-    const container = document.getElementById("whatsapp-widget-container");
-    const toggleBtn = document.getElementById("wa-toggle-btn");
-    const chatWindow = document.getElementById("wa-chat-window");
-    const iconMessage = document.getElementById("icon-message");
-    const iconClose = document.getElementById("icon-close");
-    const form = document.getElementById("wa-form") as HTMLFormElement;
+<script is:inline>
+    (function() {
+        const toggleBtn = document.getElementById("wa-toggle-btn");
+        const closeBtn = document.getElementById("wa-close-btn");
+        const chatWindow = document.getElementById("wa-chat-window");
+        const tooltip = document.getElementById("wa-tooltip");
+        const iconMessage = document.getElementById("icon-message");
+        const iconClose = document.getElementById("icon-close");
+        const form = document.getElementById("wa-form");
 
-    // Config
-    const phoneNumber = "+584121234567";
-    let isOpen = false;
+        let isOpen = false;
 
-    function toggleChat() {
-        isOpen = !isOpen;
-        if (isOpen) {
-            chatWindow?.classList.remove("hidden");
-            iconMessage?.classList.add("hidden");
-            iconMessage?.classList.remove("block");
-            iconClose?.classList.add("block");
-            iconClose?.classList.remove("hidden");
-        } else {
-            chatWindow?.classList.add("hidden");
-            iconMessage?.classList.add("block");
-            iconMessage?.classList.remove("hidden");
-            iconClose?.classList.add("hidden");
-            iconClose?.classList.remove("block");
+        setTimeout(() => { if (!isOpen) tooltip?.classList.remove("hidden"); }, 5000);
+
+        function toggle() {
+            isOpen = !isOpen;
+            if (isOpen) {
+                chatWindow?.classList.remove("hidden");
+                tooltip?.classList.add("hidden");
+                iconMessage.style.display = "none";
+                iconClose.style.display = "block";
+            } else {
+                chatWindow?.classList.add("hidden");
+                iconMessage.style.display = "block";
+                iconClose.style.display = "none";
+            }
         }
-    }
 
-    toggleBtn?.addEventListener("click", toggleChat);
+        toggleBtn?.addEventListener("click", toggle);
+        closeBtn?.addEventListener("click", toggle);
 
-    form?.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const name = (document.getElementById("wa-name") as HTMLInputElement)
-            .value;
-        const company = (
-            document.getElementById("wa-company") as HTMLInputElement
-        ).value;
-        const message = (
-            document.getElementById("wa-message") as HTMLInputElement
-        ).value;
-
-        const whatsappMessage = encodeURIComponent(
-            `Hola, soy ${name} de ${company}. ${message}\n\nEstoy interesado en conocer más sobre las soluciones Midaz.`,
-        );
-        window.open(
-            `https://wa.me/${phoneNumber}?text=${whatsappMessage}`,
-            "_blank",
-        );
-
-        toggleChat(); // Close after submit
-        form.reset();
-    });
+        form?.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const name = document.getElementById("wa-name").value;
+            const company = document.getElementById("wa-company").value;
+            const message = document.getElementById("wa-message").value;
+            const text = encodeURIComponent(`Hola Midaz 👋, soy ${name} de ${company}.\n\nMENSAJE:\n${message}`);
+            window.open(`https://wa.me/584121234567?text=${text}`, "_blank");
+            toggle();
+            form.reset();
+        });
+    })();
 </script>
