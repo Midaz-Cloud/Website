@@ -33,9 +33,9 @@ const plansByProduct = {
             id: "emprendedor", name: "Emprendedor", price: "$49", period: "/mes",
             description: "Para un local, una caja",
             features: [
-                "Terminal Nexgo NX6xx incluido",
+                "Terminal fiscal incluido",
                 "App Android + backoffice web",
-                "Impresora HKA integrada",
+                "Impresora fiscal integrada",
                 "Inventario hasta 500 SKU",
                 "1 cajero, 1 sede",
                 "Soporte técnico 24/7",
@@ -51,7 +51,7 @@ const plansByProduct = {
                 "Inventario ilimitado",
                 "Multi-sede con dashboard unificado",
                 "Conciliación bancaria automática",
-                "Auditoría fiscal SENIAT completa",
+                "Auditoría fiscal completa",
                 "Reportes Z y gerenciales",
                 "Soporte técnico 24/7",
             ],
@@ -64,9 +64,9 @@ const plansByProduct = {
             description: "Pago flexible, sin compromiso",
             features: [
                 "Sistema web desde cualquier PC/tablet",
-                "Conexión a impresoras HKA y Bematech",
+                "Conexión a impresoras fiscales",
                 "Inventario básico y usuarios",
-                "Auditoría SENIAT incluida",
+                "Auditoría fiscal incluida",
                 "Tasa BCV automática",
                 "Soporte técnico 24/7",
             ],
@@ -91,15 +91,15 @@ const plansByProduct = {
 
 // ─── BRAND TOKENS ────────────────────────────────────
 const C = {
-    navy:       "#07143a",
-    navyCard:   "#0d1f4a",
-    blue:       "#004be0",
-    blueGlow:   "rgba(0,75,224,0.12)",
+    navy: "#07143a",
+    navyCard: "#0d1f4a",
+    blue: "#004be0",
+    blueGlow: "rgba(0,75,224,0.12)",
     blueBorder: "rgba(0,75,224,0.2)",
-    blueLight:  "#a9ccff",
-    gold:       "#f49a40",
-    goldBg:     "rgba(244,154,64,0.12)",
-    white:      "#ffffff",
+    blueLight: "#a9ccff",
+    gold: "#f49a40",
+    goldBg: "rgba(244,154,64,0.12)",
+    white: "#ffffff",
 }
 
 // ─── GLOBAL STYLES ───────────────────────────────────
@@ -273,9 +273,9 @@ function Sub({ children }: { children: React.ReactNode }) {
 
 // ─── MAIN COMPONENT ──────────────────────────────────
 export default function OnboardingScreen() {
-    const [step, setStep]   = useState(0)
-    const [form, setForm]   = useState<FormData>(initial)
-    const [exiting, setEx]  = useState(false)
+    const [step, setStep] = useState(0)
+    const [form, setForm] = useState<FormData>(initial)
+    const [exiting, setEx] = useState(false)
 
     useEffect(() => {
         try {
@@ -285,7 +285,7 @@ export default function OnboardingScreen() {
                 setForm(p.form || initial)
                 setStep(p.step || 0)
             }
-        } catch {}
+        } catch { }
     }, [])
 
     useEffect(() => {
@@ -298,7 +298,7 @@ export default function OnboardingScreen() {
     }
     const next = () => go(step + 1)
     const prev = () => go(step - 1)
-    const set  = (u: Partial<FormData>) => setForm(f => ({ ...f, ...u }))
+    const set = (u: Partial<FormData>) => setForm(f => ({ ...f, ...u }))
 
     const canNext = () => {
         if (step === 1) return form.businessName.length >= 2 && !!form.email && !!form.phone
@@ -400,28 +400,7 @@ export default function OnboardingScreen() {
                                 </p>
 
                                 {/* Badges */}
-                                <div className="ob-enter s2" style={{
-                                    display: "flex", gap: 12, justifyContent: "center",
-                                    flexWrap: "wrap", marginBottom: 40,
-                                }}>
-                                    {[
-                                        { Icon: Shield,     text: "SENIAT certificado" },
-                                        { Icon: Clock,      text: "Activación en 24h" },
-                                        { Icon: Headphones, text: "Soporte 24/7" },
-                                    ].map(({ Icon, text }) => (
-                                        <div key={text} style={{
-                                            display: "flex", alignItems: "center", gap: 8,
-                                            background: C.navyCard,
-                                            border: `1px solid ${C.blueBorder}`,
-                                            borderRadius: 8, padding: "8px 16px",
-                                        }}>
-                                            <Icon size={14} color={C.blueLight} />
-                                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight }}>
-                                                {text}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
+
 
                                 <div className="ob-enter s3">
                                     <button
@@ -546,12 +525,12 @@ export default function OnboardingScreen() {
 
                                 <div className="ob-enter s1" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                                     {[
-                                        { v: "tienda",      label: "Tienda / Abasto",        icon: "🛒" },
+                                        { v: "tienda", label: "Tienda / Abasto", icon: "🛒" },
                                         { v: "restaurante", label: "Restaurante / Cafetería", icon: "☕" },
-                                        { v: "panaderia",   label: "Panadería / Frutería",   icon: "🥖" },
-                                        { v: "farmacia",    label: "Farmacia / Ferretería",  icon: "💊" },
-                                        { v: "multisede",   label: "Multi-sede / Franquicia",icon: "🏬" },
-                                        { v: "otro",        label: "Otro tipo de negocio",   icon: "📦" },
+                                        { v: "panaderia", label: "Panadería / Frutería", icon: "🥖" },
+                                        { v: "farmacia", label: "Farmacia / Ferretería", icon: "💊" },
+                                        { v: "multisede", label: "Multi-sede / Franquicia", icon: "🏬" },
+                                        { v: "otro", label: "Otro tipo de negocio", icon: "📦" },
                                     ].map(opt => (
                                         <button
                                             key={opt.v}
@@ -595,10 +574,10 @@ export default function OnboardingScreen() {
 
                                 <div className="ob-enter s1" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                                     {[
-                                        { v: "solo",   label: "Solo yo (dueño/cajero único)", sub: "1 usuario · 1 caja" },
-                                        { v: "small",  label: "2 a 5 personas",               sub: "Equipo pequeño · hasta 2 sedes" },
-                                        { v: "medium", label: "6 a 20 personas",              sub: "Equipo mediano · multi-sede" },
-                                        { v: "large",  label: "Más de 20 personas",           sub: "Empresa con múltiples sucursales" },
+                                        { v: "solo", label: "Solo yo (dueño/cajero único)", sub: "1 usuario · 1 caja" },
+                                        { v: "small", label: "2 a 5 personas", sub: "Equipo pequeño · hasta 2 sedes" },
+                                        { v: "medium", label: "6 a 20 personas", sub: "Equipo mediano · multi-sede" },
+                                        { v: "large", label: "Más de 20 personas", sub: "Empresa con múltiples sucursales" },
                                     ].map(opt => (
                                         <button
                                             key={opt.v}
@@ -640,10 +619,10 @@ export default function OnboardingScreen() {
 
                                 <div className="ob-enter s1" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                                     {[
-                                        { v: "low",        label: "Hasta $5,000",        sub: "Negocio en crecimiento o nuevo" },
-                                        { v: "medium",     label: "$5,000 — $20,000",    sub: "Comercio establecido" },
-                                        { v: "high",       label: "$20,000 — $100,000",  sub: "Negocio consolidado" },
-                                        { v: "enterprise", label: "Más de $100,000",     sub: "Alto volumen o multi-sede" },
+                                        { v: "low", label: "Hasta $5,000", sub: "Negocio en crecimiento o nuevo" },
+                                        { v: "medium", label: "$5,000 — $20,000", sub: "Comercio establecido" },
+                                        { v: "high", label: "$20,000 — $100,000", sub: "Negocio consolidado" },
+                                        { v: "enterprise", label: "Más de $100,000", sub: "Alto volumen o multi-sede" },
                                     ].map(opt => (
                                         <button
                                             key={opt.v}
@@ -690,13 +669,13 @@ export default function OnboardingScreen() {
                                         onClick={() => { set({ solution: "agora", plan: null }); setTimeout(next, 380) }}
                                         style={{ padding: 28 }}
                                     >
-                                        <div style={{ display: "inline-block", background: C.goldBg, border: "1px solid rgba(244,154,64,0.3)", borderRadius: 20, padding: "3px 12px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.gold, marginBottom: 16 }}>Hardware Nexgo</div>
+                                        <div style={{ display: "inline-block", background: C.goldBg, border: "1px solid rgba(244,154,64,0.3)", borderRadius: 20, padding: "3px 12px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.gold, marginBottom: 16 }}>Hardware incluido</div>
                                         <div style={{ width: 48, height: 48, borderRadius: 10, background: "rgba(0,75,224,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
                                             <Smartphone size={24} color={C.blueLight} />
                                         </div>
                                         <h3 style={{ fontFamily: "'Funnel Display', sans-serif", fontWeight: 700, fontSize: 20, color: C.white, marginBottom: 8 }}>Midaz Agora</h3>
                                         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight, lineHeight: 1.5, marginBottom: 20 }}>
-                                            Terminal Nexgo NX6xx + App Android + Backoffice web. Opera offline. Impresora HKA integrada.
+                                            Terminal fiscal + App Android + Backoffice web. Opera offline. Impresora fiscal integrada.
                                         </p>
                                         <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
                                             {["Todo-en-uno con hardware incluido", "Multi-sede con dashboard unificado", "Factura y cobra sin internet"].map(f => (
@@ -725,10 +704,10 @@ export default function OnboardingScreen() {
                                         </div>
                                         <h3 style={{ fontFamily: "'Funnel Display', sans-serif", fontWeight: 700, fontSize: 20, color: C.white, marginBottom: 8 }}>Midaz Web</h3>
                                         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight, lineHeight: 1.5, marginBottom: 20 }}>
-                                            Sistema web desde el navegador. Conecta impresoras HKA o Bematech. Sin instalar nada.
+                                            Sistema web desde el navegador. Conecta impresoras fiscales. Sin instalar nada.
                                         </p>
                                         <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-                                            {["Ya tienes computadoras o tablets", "HKA o Bematech propias", "Multi-usuario con 94 permisos"].map(f => (
+                                            {["Ya tienes computadoras o tablets", "Impresora fiscal propia", "Multi-usuario con 94 permisos"].map(f => (
                                                 <li key={f} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
                                                     <CheckMark />
                                                     <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight, lineHeight: 1.4 }}>{f}</span>
@@ -894,10 +873,10 @@ export default function OnboardingScreen() {
                                 <div className="ob-enter s1" style={{ background: C.navyCard, border: `1px solid ${C.blueBorder}`, borderRadius: 12, padding: "20px 24px", textAlign: "left", marginBottom: 20 }}>
                                     <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.blueLight, fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.08em", marginBottom: 14 }}>Resumen de tu solicitud</p>
                                     {[
-                                        { label: "Negocio",  value: form.businessName || "—" },
+                                        { label: "Negocio", value: form.businessName || "—" },
                                         { label: "Contacto", value: form.email || "—" },
-                                        { label: "Sistema",  value: form.solution === "agora" ? "Midaz Agora" : "Midaz Web" },
-                                        { label: "Plan",     value: form.plan ? form.plan.charAt(0).toUpperCase() + form.plan.slice(1) : "—" },
+                                        { label: "Sistema", value: form.solution === "agora" ? "Midaz Agora" : "Midaz Web" },
+                                        { label: "Plan", value: form.plan ? form.plan.charAt(0).toUpperCase() + form.plan.slice(1) : "—" },
                                     ].map((r, i, arr) => (
                                         <div key={r.label} style={{ display: "flex", justifyContent: "space-between", paddingBottom: 10, marginBottom: 10, borderBottom: i < arr.length - 1 ? "1px solid rgba(0,75,224,0.1)" : "none" }}>
                                             <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.blueLight }}>{r.label}</span>

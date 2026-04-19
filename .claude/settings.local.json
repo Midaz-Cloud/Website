@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npx shadcn@latest add @magicui/animated-grid-pattern --overwrite)",
+      "Bash(npx shadcn@latest add @magicui/blur-fade @magicui/shiny-button @magicui/text-animate @magicui/magic-card --overwrite)",
+      "Bash(npx shadcn@latest add @magicui/number-ticker @magicui/animated-shiny-text --overwrite)",
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\(Object.keys\\(p.dependencies\\).filter\\(k => k.includes\\('motion'\\) || k.includes\\('framer'\\)\\)\\)\")",
+      "WebFetch(domain:magicui.design)",
+      "Bash(npx shadcn@latest add @magicui/animated-beam @magicui/particles @magicui/line-shadow-text @magicui/highlighter @magicui/bento-grid @magicui/pointer --overwrite)",
+      "Bash(node -p \"require\\('./package.json'\\).dependencies?.tailwindcss || require\\('./package.json'\\).devDependencies?.tailwindcss\")",
+      "Bash(node -p \"require\\('./package.json'\\).dependencies?.['rough-notation'] || 'NOT INSTALLED'\")"
     ]
   }
 }
