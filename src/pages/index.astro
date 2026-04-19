@@ -1,24 +1,1128 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import HeroSection from "@/components/home/HeroSection.astro";
-import ProductsOverview from "@/components/home/ProductsOverview.astro";
-import ProductAgora from "@/components/home/ProductAgora.astro";
-import ProductAmbrosia from "@/components/home/ProductAmbrosia.astro";
-import ProductAtlas from "@/components/home/ProductAtlas.astro";
-import ProductEter from "@/components/home/ProductEter.astro";
-import VsSection from "@/components/home/VsSection.astro";
-import CTASection from "@/components/home/CTASection.astro";
-import ContactSection from "@/components/home/ContactSection.astro";
+
+const timelineSteps = [
+    { n: 1, title: "Abre turno",           desc: "PIN del cajero. Impresora verificada. Listo en segundos." },
+    { n: 2, title: "Agrega productos",     desc: "Por nombre, SKU o código de barras. Stock en tiempo real." },
+    { n: 3, title: "Selecciona el pago",   desc: "Efectivo, transferencia, punto, dólares, Zelle, Binance." },
+    { n: 4, title: "IGTF automático",      desc: "Si paga en divisas, el 3% se aplica sin calcular nada." },
+    { n: 5, title: "Factura impresa",      desc: "Comprobante legal directo de la impresora HKA. SENIAT-válido." },
+    { n: 6, title: "Backoffice actualizado", desc: "La venta aparece al instante en el panel del dueño." },
+    { n: 7, title: "Cierre de turno",      desc: "Reporte Z con un toque. Cuadre enviado al backoffice." },
+];
+
+const comparisonRows = [
+    { label: "IGTF",            before: "El cajero calcula a mano o con calculadora. Error frecuente.",                           after: "Se aplica el 3% automáticamente según el método de pago. Siempre correcto." },
+    { label: "Internet caído",  before: "El POS no funciona. El negocio para. Se pierde la venta.",                               after: "Opera igual. La factura se imprime. Se sincroniza sola cuando vuelve la red." },
+    { label: "Inventario",      before: "Hoja de cálculo actualizada al final del día, si hay tiempo.",                           after: "Cada venta descuenta el stock al instante en todas las sedes." },
+    { label: "Visión multi-sede", before: "El dueño llama a cada sucursal para saber cómo va el día.",                           after: "Dashboard en tiempo real con todas las sedes y cajas activas." },
+    { label: "Cierre de caja",  before: "Conteo manual, cruce con papel. Puede tomar horas.",                                     after: "Reporte Z automático. Cuadre calculado y enviado al backoffice." },
+    { label: "Conciliación",    before: "Al final del mes, horas cruzando estado de cuenta con facturas a mano.",                 after: "Automática. Cruza lotes bancarios contra facturas. Diferencias destacadas." },
+];
 ---
 
-<Layout title="Midaz - La Nueva Era de los Sistemas POS">
-    <HeroSection />
-    <ProductsOverview />
-    <ProductAgora />
-    <ProductAmbrosia />
-    <ProductAtlas />
-    <ProductEter />
-    <VsSection />
-    <CTASection />
-    <ContactSection />
+<Layout title="Midaz — Tu cerebro operativo y fiscal">
+
+<!-- ─── SECCIÓN 1: HERO ──────────────────────────── -->
+<section class="hero-section">
+    <div class="hero-pattern" aria-hidden="true"></div>
+    <div class="hero-content">
+        <p class="hero-eyebrow">Facturación fiscal · POS · Backoffice · Venezuela</p>
+        <h1 class="hero-h1">
+            Tu cerebro<br>operativo y <em class="accent-gold">fiscal.</em>
+        </h1>
+        <p class="hero-sub">
+            Factura, cobra, controla tu inventario y cierra el día —
+            todo en un solo lugar, aunque no haya internet.
+            Cumplimiento SENIAT nativo. Sin errores. Sin multas.
+        </p>
+        <div class="hero-buttons">
+            <a href="/comenzar" class="btn-blue-solid">Solicitar acceso anticipado →</a>
+            <a href="#como-funciona" class="btn-outline">Ver cómo funciona ↓</a>
+        </div>
+    </div>
+    <div class="video-placeholder">
+        <span class="vp-text">[ Video scroll animation — agregar frames en /public/frames/ ]</span>
+    </div>
+</section>
+
+<!-- ─── SECCIÓN 2: CREDENCIALES ─────────────────── -->
+<section class="cred-band">
+    <div class="cred-inner">
+        <div class="cred-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span>SENIAT Certificado</span>
+        </div>
+        <span class="cred-sep" aria-hidden="true">·</span>
+        <div class="cred-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="6 9 6 2 18 2 18 9"/>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            <span>Impresoras HKA</span>
+        </div>
+        <span class="cred-sep" aria-hidden="true">·</span>
+        <div class="cred-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="6 9 6 2 18 2 18 9"/>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            <span>Impresoras Bematech</span>
+        </div>
+    </div>
+</section>
+
+<!-- ─── SECCIÓN 3: EL PROBLEMA ──────────────────── -->
+<section id="producto" class="problem-section">
+    <div class="sc">
+        <div class="section-header reveal">
+            <h2 class="sh2 dark">
+                Vender en Venezuela<br><s class="accent-strike">debería ser simple.</s>
+            </h2>
+            <p class="ssub dark">
+                El sistema fiscal venezolano castiga los errores.<br>
+                Midaz los elimina desde el origen.
+            </p>
+        </div>
+        <div class="problem-grid">
+            <div class="problem-card reveal">
+                <svg class="p-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#004be0" stroke-width="1.5" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <polyline points="9 15 11 17 15 13"/>
+                </svg>
+                <h3 class="card-title">SENIAT no perdona</h3>
+                <p class="card-text">IGTF, IVA por alícuota, impresora fiscal, tasa BCV que cambia todos los días. Un error es una multa. Midaz calcula todo automáticamente y nunca se equivoca.</p>
+            </div>
+            <div class="problem-card reveal" style="transition-delay:100ms">
+                <svg class="p-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#004be0" stroke-width="1.5" aria-hidden="true">
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                    <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/>
+                    <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/>
+                    <path d="M10.71 5.05A16 16 0 0 1 22.56 9"/>
+                    <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                    <line x1="12" y1="20" x2="12.01" y2="20"/>
+                </svg>
+                <h3 class="card-title">Sin internet, sin ventas — hasta ahora</h3>
+                <p class="card-text">Midaz funciona completamente offline. Las facturas se imprimen igual. Cuando vuelve la red, el sistema sincroniza todo solo. Sin que el cajero haga nada.</p>
+            </div>
+            <div class="problem-card reveal" style="transition-delay:200ms">
+                <svg class="p-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#004be0" stroke-width="1.5" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <h3 class="card-title">¿Qué pasa en tu negocio ahora mismo?</h3>
+                <p class="card-text">Sin un backoffice real, el dueño llama a cada sucursal para saber cómo va el día. Midaz da visión en tiempo real de todas las sedes desde una sola pantalla.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── SECCIÓN 4: SCROLL VIDEO ──────────────────── -->
+<div id="como-funciona">
+    <div class="video-intro reveal">
+        <span class="eyebrow-gold">Así funciona Midaz</span>
+        <h2 class="video-intro-h2">Del primer toque<br>al cierre <em class="accent-gold">del día.</em></h2>
+    </div>
+
+    <section id="video-scroll-section" style="position:relative;height:600vh;background:#0a0a0a;">
+        <div style="position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+            <canvas id="midaz-reel"
+                style="position:absolute;top:50%;left:50%;
+                       transform:translate(-50%,-50%);
+                       max-width:100%;max-height:100vh;
+                       will-change:contents;display:none;">
+            </canvas>
+            <div id="scroll-caption"
+                style="position:absolute;left:5%;top:50%;transform:translateY(-50%);
+                       max-width:280px;z-index:10;pointer-events:none;">
+                <p id="caption-text"
+                    style="font-family:'Inter',sans-serif;font-size:18px;
+                           color:#ffffff;line-height:1.6;
+                           opacity:0;transition:opacity 0.4s ease;">
+                </p>
+            </div>
+            <!-- Placeholder mientras no hay frames -->
+            <div id="video-fallback"
+                style="border:1px solid rgba(0,75,224,0.4);border-radius:12px;
+                       aspect-ratio:16/9;width:min(900px,90vw);
+                       display:flex;align-items:center;justify-content:center;">
+                <span style="font-family:'Inter',sans-serif;font-size:14px;color:#a9ccff;">
+                    [ Sección de video — agregar frames WebP en /public/frames/ ]
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loader overlay (oculto por defecto, se muestra al cargar frames) -->
+    <div id="frames-loader"
+        style="position:fixed;inset:0;background:#0a0a0a;z-index:1000;
+               display:none;flex-direction:column;align-items:center;
+               justify-content:center;gap:20px;">
+        <svg width="48" height="48" viewBox="0 0 36 36" fill="none">
+            <path d="M18 2L34 11V25L18 34L2 25V11L18 2Z" fill="#f49a40" opacity="0.3"/>
+            <path d="M18 7L30 14V22L18 29L6 22V14L18 7Z" fill="#f49a40"/>
+        </svg>
+        <div style="width:200px;height:2px;background:#07143a;border-radius:2px;overflow:hidden;">
+            <div id="loader-bar" style="height:100%;width:0%;background:#004be0;transition:width 0.1s linear;border-radius:2px;"></div>
+        </div>
+        <span id="loader-text" style="font-family:'Inter',sans-serif;color:#a9ccff;font-size:14px;">
+            Cargando... 0%
+        </span>
+    </div>
+</div>
+
+<!-- ─── SECCIÓN 5: DOS SISTEMAS ─────────────────── -->
+<section id="para-quien" class="systems-section">
+    <div class="sc">
+        <div class="section-header reveal">
+            <span class="eyebrow-gold">Dos sistemas. Una sola plataforma.</span>
+            <h2 class="sh2 light">Un <em class="accent-gold">ecosistema,</em><br>no una app suelta.</h2>
+        </div>
+    </div>
+    <div class="systems-panels">
+        <!-- Agora -->
+        <div class="panel-agora reveal">
+            <span class="badge badge-gold">Hardware Nexgo</span>
+            <svg width="48" height="48" viewBox="0 0 36 36" fill="none" aria-hidden="true" style="display:block;margin-bottom:20px">
+                <path d="M18 2L34 11V25L18 34L2 25V11L18 2Z" fill="#f49a40" opacity="0.3"/>
+                <path d="M18 7L30 14V22L18 29L6 22V14L18 7Z" fill="#f49a40"/>
+            </svg>
+            <h3 class="panel-title" style="color:#fff">Midaz Agora</h3>
+            <p class="panel-sub" style="color:#a9ccff">POS en el Nexgo + Backoffice web</p>
+            <p class="panel-desc" style="color:rgba(255,255,255,0.75)">
+                Un ecosistema completo. El cajero opera desde el terminal Nexgo con la impresora HKA. El dueño ve todo en tiempo real desde el panel web. Factura, cobra, controla el inventario y cierra el día — aunque no haya internet.
+            </p>
+            <div class="features-grid">
+                {["App Android en terminal Nexgo","Backoffice web incluido","Impresora HKA integrada","Monitor POS en tiempo real","Opera 100% offline","Inventario multi-sede","IGTF automático","Conciliación bancaria","Reporte Z con un toque","Auditoría fiscal completa"].map(f => (
+                    <div class="feature-row">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004be0" stroke-width="2.5" aria-hidden="true" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span style="color:rgba(255,255,255,0.8)">{f}</span>
+                    </div>
+                ))}
+            </div>
+            <a href="/comenzar" class="panel-cta cta-solid">Conocer Agora →</a>
+        </div>
+        <!-- Web -->
+        <div class="panel-web reveal" style="transition-delay:100ms">
+            <span class="badge badge-blue">Cualquier navegador</span>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#004be0" stroke-width="1.5" aria-hidden="true" style="display:block;margin-bottom:20px">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            <h3 class="panel-title" style="color:#07143a">Midaz Web</h3>
+            <p class="panel-sub" style="color:#004be0">Sistema web + impresora fiscal</p>
+            <p class="panel-desc" style="color:rgba(7,20,58,0.75)">
+                Para negocios con sus propias computadoras o tablets. Se conecta directamente a impresoras HKA o Bematech desde el navegador. Factura, cobra y controla el inventario sin instalar nada.
+            </p>
+            <div class="features-grid">
+                {["Funciona en cualquier PC/tablet","Impresoras HKA y Bematech","Sin hardware adicional","Inventario integrado","Multi-usuario y multi-sede","Auditoría SENIAT","94 permisos granulares","Tasa BCV automática","Notas de crédito fiscales","Venta por kilo/gramo (próximo)"].map(f => (
+                    <div class="feature-row">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004be0" stroke-width="2.5" aria-hidden="true" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span style="color:rgba(7,20,58,0.8)">{f}</span>
+                    </div>
+                ))}
+            </div>
+            <a href="/comenzar" class="panel-cta cta-outline">Conocer Midaz Web →</a>
+        </div>
+    </div>
+</section>
+
+<!-- ─── SECCIÓN 6: FLUJO DE VENTA ───────────────── -->
+<section class="flow-section">
+    <div class="sc">
+        <div class="section-header reveal">
+            <h2 class="sh2 dark">De la venta al cierre,<br>sin <em class="accent-gold">fricciones.</em></h2>
+            <p class="ssub dark">7 pasos que se completan en menos de 2 minutos.</p>
+        </div>
+        <div class="timeline-wrap">
+            <div class="timeline-line" aria-hidden="true"></div>
+            <div class="timeline-nodes">
+                {timelineSteps.map((step, i) => (
+                    <div class="t-node reveal" style={`transition-delay:${i * 100}ms`}>
+                        <div class="t-circle">
+                            <span class="t-num">{step.n}</span>
+                        </div>
+                        <div class="t-content">
+                            <h4 class="t-title">{step.title}</h4>
+                            <p class="t-desc">{step.desc}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── SECCIÓN 7: PARA QUIÉN ────────────────────── -->
+<section class="sectors-section">
+    <div class="sc">
+        <div class="section-header reveal">
+            <span class="eyebrow-gold">Sectores</span>
+            <h2 class="sh2 light">Hecho para gente<br>que <em class="accent-gold">trabaja.</em></h2>
+        </div>
+        <div class="sectors-grid">
+            <div class="sector-card reveal">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#004be0" stroke-width="1.5" aria-hidden="true">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                <h3 class="sector-title">Tiendas y abastos</h3>
+                <p class="sector-text">Control de inventario, múltiples cajeros, multi-sede. Factura fiscal en cada venta con IGTF automático.</p>
+            </div>
+            <div class="sector-card reveal" style="transition-delay:100ms">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#f49a40" stroke-width="1.5" aria-hidden="true">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                    <line x1="9" y1="9" x2="9.01" y2="9"/>
+                    <line x1="15" y1="9" x2="15.01" y2="9"/>
+                </svg>
+                <h3 class="sector-title">Panaderías y fruterías</h3>
+                <p class="sector-text">Venta por kilos y gramos. Factura exactamente lo que pesa. Próximamente disponible en Midaz Web.</p>
+            </div>
+            <div class="sector-card reveal" style="transition-delay:200ms">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#004be0" stroke-width="1.5" aria-hidden="true">
+                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                    <line x1="6" y1="1" x2="6" y2="4"/>
+                    <line x1="10" y1="1" x2="10" y2="4"/>
+                    <line x1="14" y1="1" x2="14" y2="4"/>
+                </svg>
+                <h3 class="sector-title">Restaurantes y cafeterías</h3>
+                <p class="sector-text">Comandas, combos y recetas que descuentan cada ingrediente del inventario al vender.</p>
+            </div>
+            <div class="sector-card reveal" style="transition-delay:100ms">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#f49a40" stroke-width="1.5" aria-hidden="true">
+                    <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/>
+                </svg>
+                <h3 class="sector-title">Farmacias y ferreterías</h3>
+                <p class="sector-text">Productos en múltiples unidades: unidades, gramos, metros. Todo con comprobante fiscal legal.</p>
+            </div>
+            <div class="sector-card reveal" style="transition-delay:200ms">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#004be0" stroke-width="1.5" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7"/>
+                    <rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                <h3 class="sector-title">Negocios multi-sede</h3>
+                <p class="sector-text">Un solo backoffice para todas las sucursales. Visión consolidada y monitor POS en tiempo real.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── SECCIÓN 8: ANTES vs DESPUÉS ─────────────── -->
+<section class="comparison-section">
+    <div class="sc">
+        <div class="section-header reveal">
+            <h2 class="sh2 dark">Lo que cambia cuando<br>usas <em class="accent-blue">Midaz.</em></h2>
+        </div>
+        <div class="comp-table reveal">
+            <!-- Header -->
+            <div class="comp-header-row">
+                <div class="comp-label-cell"></div>
+                <div class="comp-head-bad">Sin Midaz</div>
+                <div class="comp-head-good">Con Midaz</div>
+            </div>
+            <!-- Filas -->
+            {comparisonRows.map((row, i) => (
+                <div class={`comp-row ${i % 2 === 0 ? 'row-even' : 'row-odd'}`}>
+                    <div class="comp-label-cell">{row.label}</div>
+                    <div class="comp-bad-cell">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="2.5" aria-hidden="true" style="flex-shrink:0;margin-top:2px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        <span>{row.before}</span>
+                    </div>
+                    <div class="comp-good-cell">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#004be0" stroke-width="2.5" aria-hidden="true" style="flex-shrink:0;margin-top:2px"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>{row.after}</span>
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+</section>
+
+<!-- ─── SECCIÓN 9: CTA FINAL ─────────────────────── -->
+<section id="contacto" class="cta-section">
+    <div class="cta-watermark" aria-hidden="true">
+        <svg viewBox="0 0 300 300" fill="none">
+            <path d="M150 15L285 90V210L150 285L15 210V90L150 15Z" fill="white" opacity="0.06"/>
+            <path d="M150 60L240 112V188L150 240L60 188V112L150 60Z" fill="white" opacity="0.06"/>
+        </svg>
+    </div>
+    <div class="cta-content">
+        <h2 class="cta-h2 reveal">Midaz está <em class="accent-gold">listo</em><br>para tu negocio.</h2>
+        <p class="cta-sub reveal" style="transition-delay:100ms">
+            Un sistema construido específicamente para el comercio venezolano.
+            Sin configuraciones complejas. Soporte incluido desde el primer día.
+        </p>
+        <a href="/comenzar" class="cta-btn reveal" style="transition-delay:200ms">Solicitar acceso anticipado →</a>
+        <p class="cta-note reveal" style="transition-delay:300ms">El equipo te contacta en menos de 24 horas.</p>
+    </div>
+</section>
+
 </Layout>
+
+<style>
+/* ─── ACCENT WORDS ──────────────────────────────── */
+.accent-gold {
+    color: #f49a40;
+    font-style: italic;
+    font-weight: inherit;
+}
+.accent-blue {
+    color: #004be0;
+    font-style: italic;
+    font-weight: inherit;
+}
+.accent-strike {
+    color: rgba(7,20,58,0.35);
+    text-decoration: line-through;
+    text-decoration-color: #f49a40;
+    text-decoration-thickness: 3px;
+    font-style: normal;
+}
+
+/* ─── LAYOUT UTILS ──────────────────────────────── */
+.sc {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+.section-header {
+    text-align: center;
+    margin-bottom: 64px;
+}
+.sh2 {
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+.sh2.dark  { color: #07143a; }
+.sh2.light { color: #ffffff; }
+.ssub {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 520px;
+    margin: 0 auto;
+}
+.ssub.dark { color: rgba(7,20,58,0.55); }
+.eyebrow-gold {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #f49a40;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+/* ─── REVEAL ────────────────────────────────────── */
+.reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ─── BUTTONS ───────────────────────────────────── */
+.btn-blue-solid {
+    display: inline-block;
+    background: #004be0;
+    color: #ffffff;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+}
+.btn-blue-solid:hover { background: #0040c0; transform: translateY(-2px); }
+.btn-outline {
+    display: inline-block;
+    border: 1px solid #a9ccff;
+    color: #a9ccff;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.btn-outline:hover { background: rgba(169,204,255,0.1); }
+
+/* ─── HERO ──────────────────────────────────────── */
+.hero-section {
+    position: relative;
+    min-height: 100vh;
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    overflow: hidden;
+}
+.hero-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5L55 20V40L30 55L5 40V20L30 5Z' fill='%23004be0' fill-opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+}
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+.hero-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #f49a40;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    animation: heroIn 0.7s ease both;
+    animation-delay: 0ms;
+}
+.hero-h1 {
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 1.05;
+    color: #ffffff;
+    margin-bottom: 28px;
+    animation: heroIn 0.7s ease both;
+    animation-delay: 120ms;
+}
+.hero-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    color: #a9ccff;
+    max-width: 560px;
+    line-height: 1.6;
+    margin: 0 auto 40px;
+    animation: heroIn 0.7s ease both;
+    animation-delay: 240ms;
+}
+.hero-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: heroIn 0.7s ease both;
+    animation-delay: 360ms;
+}
+.video-placeholder {
+    position: relative;
+    z-index: 2;
+    margin-top: 64px;
+    border: 1px solid rgba(0,75,224,0.4);
+    border-radius: 12px;
+    aspect-ratio: 16/9;
+    max-width: 900px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.vp-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #a9ccff;
+}
+@keyframes heroIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── CREDENTIALS BAND ──────────────────────────── */
+.cred-band {
+    background: #07143a;
+    padding: 24px;
+}
+.cred-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+.cred-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #a9ccff;
+}
+.cred-sep {
+    font-size: 20px;
+    color: #004be0;
+    font-weight: bold;
+}
+
+/* ─── PROBLEM SECTION ───────────────────────────── */
+.problem-section {
+    background: #ffffff;
+    padding: 120px 24px;
+}
+.problem-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.problem-card {
+    background: #f8f9ff;
+    border: 1px solid rgba(0,75,224,0.15);
+    border-radius: 12px;
+    padding: 32px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.problem-card:hover {
+    border-color: rgba(0,75,224,0.6);
+    box-shadow: 0 8px 32px rgba(0,75,224,0.08);
+}
+.p-icon { margin-bottom: 20px; }
+.card-title {
+    font-size: 22px;
+    color: #07143a;
+    margin-bottom: 12px;
+}
+.card-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: rgba(7,20,58,0.7);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ─── VIDEO INTRO ───────────────────────────────── */
+.video-intro {
+    background: #0a0a0a;
+    text-align: center;
+    padding: 80px 24px 40px;
+}
+.video-intro-h2 {
+    font-size: clamp(36px, 5vw, 64px);
+    color: #ffffff;
+    line-height: 1.1;
+}
+
+/* ─── SYSTEMS SECTION ───────────────────────────── */
+.systems-section {
+    background: #07143a;
+    padding: 120px 0;
+}
+.systems-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.panel-agora {
+    background: #0d1f4a;
+    padding: 64px 48px;
+}
+.panel-web {
+    background: #ffffff;
+    padding: 64px 48px;
+}
+.badge {
+    display: inline-block;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    border-radius: 20px;
+    padding: 4px 14px;
+    margin-bottom: 24px;
+}
+.badge-gold { background: rgba(244,154,64,0.15); color: #f49a40; }
+.badge-blue { background: rgba(0,75,224,0.1);    color: #004be0; }
+.panel-title {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+.panel-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+.panel-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 28px;
+}
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 32px;
+}
+.feature-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+}
+.panel-cta {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.cta-solid {
+    background: #004be0;
+    color: #ffffff;
+}
+.cta-solid:hover { background: #0040c0; }
+.cta-outline {
+    border: 1px solid #004be0;
+    color: #004be0;
+    background: transparent;
+}
+.cta-outline:hover { background: #004be0; color: #ffffff; }
+
+/* ─── FLOW SECTION ──────────────────────────────── */
+.flow-section {
+    background: #ffffff;
+    padding: 120px 24px;
+}
+.timeline-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+}
+.timeline-line {
+    position: absolute;
+    top: 24px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(0,75,224,0.2);
+}
+.timeline-nodes {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 16px;
+    position: relative;
+}
+.t-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.t-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #f8f9ff;
+    border: 1px solid rgba(0,75,224,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+    transition: all 0.3s;
+}
+.t-node.visible .t-circle {
+    border-color: #004be0;
+    background: rgba(0,75,224,0.08);
+}
+.t-num {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #004be0;
+}
+.t-title {
+    font-size: 14px;
+    color: #07143a;
+    margin-bottom: 6px;
+}
+.t-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: rgba(7,20,58,0.6);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ─── SECTORS ───────────────────────────────────── */
+.sectors-section {
+    background: #0a0a0a;
+    padding: 120px 24px;
+}
+.sectors-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.sector-card {
+    background: #07143a;
+    border: 1px solid rgba(0,75,224,0.25);
+    border-radius: 12px;
+    padding: 28px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.sector-card:hover {
+    border-color: rgba(0,75,224,0.8);
+    box-shadow: 0 0 24px rgba(0,75,224,0.12);
+}
+.sector-title {
+    font-size: 18px;
+    color: #ffffff;
+    margin: 16px 0 8px;
+}
+.sector-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #a9ccff;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ─── COMPARISON ────────────────────────────────── */
+.comparison-section {
+    background: #fff1e1;
+    padding: 120px 24px;
+}
+.comp-table {
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+.comp-header-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 1fr;
+}
+.comp-label-cell {
+    padding: 16px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(7,20,58,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    background: #fff1e1;
+}
+.comp-head-bad {
+    background: #f8e8e8;
+    color: #c0392b;
+    padding: 16px 24px;
+    font-size: 18px;
+    font-family: 'Funnel Display', sans-serif;
+    font-weight: 700;
+}
+.comp-head-good {
+    background: #004be0;
+    color: #ffffff;
+    padding: 16px 24px;
+    font-size: 18px;
+    font-family: 'Funnel Display', sans-serif;
+    font-weight: 700;
+}
+.comp-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 1fr;
+}
+.row-even .comp-label-cell,
+.row-even .comp-bad-cell,
+.row-even .comp-good-cell { background: #ffffff; }
+.row-odd  .comp-label-cell,
+.row-odd  .comp-bad-cell,
+.row-odd  .comp-good-cell { background: #f9f9f9; }
+.comp-bad-cell, .comp-good-cell {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 20px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+}
+.comp-bad-cell  { color: rgba(192,57,43,0.85); }
+.comp-good-cell { color: rgba(7,20,58,0.85); }
+
+/* ─── FINAL CTA ─────────────────────────────────── */
+.cta-section {
+    background: #004be0;
+    padding: 140px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.cta-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%) rotate(15deg);
+    width: 600px;
+    height: 600px;
+    pointer-events: none;
+}
+.cta-watermark svg { width: 100%; height: 100%; }
+.cta-content {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.cta-h2 {
+    font-size: clamp(40px, 6vw, 80px);
+    color: #ffffff;
+    line-height: 1.05;
+    margin-bottom: 24px;
+}
+.cta-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto 40px;
+}
+.cta-btn {
+    display: inline-block;
+    background: #07143a;
+    color: #ffffff;
+    padding: 18px 48px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 20px;
+}
+.cta-btn:hover {
+    background: #0d1f4a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.cta-note {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    margin: 0;
+}
+
+/* ─── RESPONSIVE ────────────────────────────────── */
+@media (max-width: 1024px) {
+    .problem-grid   { grid-template-columns: 1fr; }
+    .systems-panels { grid-template-columns: 1fr; }
+    .sectors-grid   { grid-template-columns: repeat(2,1fr); }
+    .comp-header-row { grid-template-columns: 120px 1fr 1fr; }
+    .comp-row        { grid-template-columns: 120px 1fr 1fr; }
+    .comp-label-cell { padding: 12px 16px; font-size: 11px; }
+    .timeline-nodes {
+        grid-template-columns: 1fr;
+        padding-left: 60px;
+    }
+    .timeline-line {
+        top: 0; bottom: 0; left: 24px; right: auto;
+        width: 1px; height: auto;
+    }
+    .t-node {
+        flex-direction: row;
+        text-align: left;
+        gap: 20px;
+    }
+    .t-circle { margin-bottom: 0; }
+}
+@media (max-width: 640px) {
+    .hero-section       { padding: 100px 16px 60px; }
+    .problem-section    { padding: 72px 16px; }
+    .flow-section       { padding: 72px 16px; }
+    .sectors-section    { padding: 72px 16px; }
+    .comparison-section { padding: 72px 16px; }
+    .cta-section        { padding: 80px 16px; }
+    .systems-section    { padding: 72px 0; }
+    .panel-agora, .panel-web { padding: 40px 24px; }
+    .features-grid      { grid-template-columns: 1fr; }
+    .sectors-grid       { grid-template-columns: 1fr; }
+    .comp-header-row    { grid-template-columns: 1fr; }
+    .comp-row           { grid-template-columns: 1fr; }
+    #video-scroll-section { height: 400vh !important; }
+}
+</style>
+
+<script>
+// ─── REVEAL OBSERVER ─────────────────────────────
+const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObs.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// ─── SMOOTH SCROLL ───────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+        const href = (link as HTMLAnchorElement).getAttribute('href') || '';
+        const target = document.querySelector(href);
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+});
+
+// ─── SCROLL VIDEO ────────────────────────────────
+const TOTAL_FRAMES = 240;
+const VIDEO_WIDTH  = 1920;
+const VIDEO_HEIGHT = 1080;
+const FRAMES_DIR   = '/frames/';
+
+const CAPTIONS: [number, number, string][] = [
+    [0.00, 0.20, "El cajero abre Midaz con su PIN. La app verifica la impresora y está lista en segundos."],
+    [0.20, 0.40, "Agrega los productos por nombre o código de barras. Precio, IVA y stock se actualizan en tiempo real."],
+    [0.40, 0.60, "El cliente paga en bolívares, dólares o divisas. El IGTF del 3% se calcula automáticamente."],
+    [0.60, 0.80, "La impresora fiscal emite el comprobante legal al instante. Válido ante SENIAT."],
+    [0.80, 1.00, "Todo queda registrado. El dueño ve la venta en tiempo real desde el backoffice."],
+];
+
+const canvas   = document.getElementById('midaz-reel') as HTMLCanvasElement | null;
+const fallback = document.getElementById('video-fallback') as HTMLElement | null;
+const section  = document.getElementById('video-scroll-section') as HTMLElement | null;
+const captionEl = document.getElementById('caption-text') as HTMLElement | null;
+
+if (canvas) {
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width  = VIDEO_WIDTH  * dpr;
+    canvas.height = VIDEO_HEIGHT * dpr;
+    ctx?.scale(dpr, dpr);
+
+    const aspect = VIDEO_WIDTH / VIDEO_HEIGHT;
+    if (window.innerWidth / window.innerHeight > aspect) {
+        canvas.style.height = '100vh';
+        canvas.style.width  = (window.innerHeight * aspect) + 'px';
+    } else {
+        canvas.style.width  = '100vw';
+        canvas.style.height = (window.innerWidth / aspect) + 'px';
+    }
+
+    const frames: (HTMLImageElement | undefined)[] = new Array(TOTAL_FRAMES);
+    let framesLoaded = 0;
+    let anyLoaded    = false;
+
+    const loaderBar  = document.getElementById('loader-bar') as HTMLElement | null;
+    const loaderText = document.getElementById('loader-text') as HTMLElement | null;
+    const loader     = document.getElementById('frames-loader') as HTMLElement | null;
+
+    const loadFrame = (index: number) => new Promise<void>(resolve => {
+        const n   = String(index + 1).padStart(4, '0');
+        const img = new Image();
+        img.onload = () => {
+            frames[index] = img;
+            framesLoaded++;
+            anyLoaded = true;
+            const pct = Math.round(framesLoaded / TOTAL_FRAMES * 100);
+            if (loaderBar)  loaderBar.style.width = pct + '%';
+            if (loaderText) loaderText.textContent = `Cargando... ${pct}%`;
+            resolve();
+        };
+        img.onerror = () => resolve();
+        img.src = `${FRAMES_DIR}frame_${String(n).padStart(4, '0')}.webp`;
+    });
+
+    async function preloadFrames() {
+        if (loader) loader.style.display = 'flex';
+        const first = Array.from({ length: Math.min(30, TOTAL_FRAMES) }, (_, i) => loadFrame(i));
+        await Promise.all(first);
+
+        if (anyLoaded) {
+            if (fallback) fallback.style.display = 'none';
+            if (canvas)   canvas.style.display   = 'block';
+            if (loader) {
+                (loader as HTMLElement).style.transition = 'opacity 0.5s';
+                (loader as HTMLElement).style.opacity    = '0';
+                setTimeout(() => { if (loader) (loader as HTMLElement).style.display = 'none'; }, 500);
+            }
+            const img0 = frames[0];
+            if (img0 && ctx) ctx.drawImage(img0, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+        } else {
+            if (loader) (loader as HTMLElement).style.display = 'none';
+        }
+
+        const rest = Array.from({ length: TOTAL_FRAMES - 30 }, (_, i) => loadFrame(i + 30));
+        await Promise.all(rest);
+    }
+
+    if (window.location.protocol !== 'file:') {
+        preloadFrames();
+    }
+
+    let currentFrame   = -1;
+    let rafPending     = false;
+    let currentCaption = -1;
+
+    window.addEventListener('scroll', () => {
+        if (!section || !anyLoaded) return;
+        const rect       = section.getBoundingClientRect();
+        const maxScroll  = section.offsetHeight - window.innerHeight;
+        const scrolled   = Math.max(0, -rect.top);
+        const progress   = Math.min(1, scrolled / maxScroll);
+        const frameIndex = Math.min(Math.floor(progress * (TOTAL_FRAMES - 1)), TOTAL_FRAMES - 1);
+
+        if (frameIndex !== currentFrame && !rafPending && frames[frameIndex]) {
+            rafPending = true;
+            requestAnimationFrame(() => {
+                const img = frames[frameIndex];
+                if (img && ctx) ctx.drawImage(img, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+                currentFrame = frameIndex;
+                rafPending   = false;
+            });
+        }
+
+        for (let i = 0; i < CAPTIONS.length; i++) {
+            const [start, end, text] = CAPTIONS[i];
+            if (progress >= start && progress < end && currentCaption !== i) {
+                if (captionEl) {
+                    captionEl.style.opacity = '0';
+                    setTimeout(() => {
+                        if (captionEl) { captionEl.textContent = text; captionEl.style.opacity = '1'; }
+                    }, 200);
+                }
+                currentCaption = i;
+                break;
+            }
+        }
+    }, { passive: true });
+}
+</script>

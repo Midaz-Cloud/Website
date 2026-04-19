@@ -7,6 +7,15 @@ html {
 
 @layer base {
   :root {
+    /* Midaz brand tokens */
+    --navy:        #07143a;
+    --blue:        #004be0;
+    --blue-light:  #a9ccff;
+    --gold-dark:   #d87e25;
+    --gold:        #f49a40;
+    --gold-bright: #ffb05a;
+    --gold-soft:   #ffc892;
+    --cream:       #fff1e1;
     --background: 0 0% 100%;
     --foreground: 224 71.4% 4.1%;
 
@@ -78,6 +87,10 @@ html {
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
     overflow-x: hidden;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Funnel Display", sans-serif;
+    font-weight: 700;
   }
 }
 

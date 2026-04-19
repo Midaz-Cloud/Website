@@ -1,298 +1,155 @@
 ---
-import { Image } from "astro:assets";
-import logoImage from "@/assets/images/logo-2.png";
-import {
-    Facebook,
-    Instagram,
-    Twitter,
-    MapPin,
-    Phone,
-    Mail,
-    ArrowRight,
-} from "lucide-react";
-
 const currentYear = new Date().getFullYear();
 ---
 
-<footer
-    class="bg-gradient-to-b from-gray-900 to-black text-white relative overflow-hidden"
->
-    {/* Background decoration */}
-    <div
-        class="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-purple-900/20"
-    >
-    </div>
-    <div
-        class="absolute top-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"
-    >
-    </div>
-    <div
-        class="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl"
-    >
-    </div>
+<footer class="footer">
+    <div class="footer-inner">
+        <!-- Grid superior -->
+        <div class="footer-grid">
+            <!-- Columna brand -->
+            <div class="footer-brand">
+                <a href="/" class="footer-logo">
+                    <img src="/logo-white.svg" alt="Midaz" class="footer-logo-img" />
+                </a>
+                <p class="footer-tagline">Tu cerebro operativo y fiscal.</p>
+            </div>
 
-    <div class="container-custom relative z-10">
-        {/* Main footer content */}
-        <div class="pt-20 pb-12">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-16">
-                {/* Company Info - Enhanced */}
-                <div class="lg:col-span-2">
-                    <div class="flex items-center mb-8">
-                        <Image
-                            src={logoImage}
-                            alt="Midaz Logo"
-                            width={100}
-                            height={100}
-                            class="object-contain"
-                        />
-                        <div></div>
-                    </div>
+            <!-- Producto -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">Producto</h4>
+                <ul class="footer-links">
+                    <li><a href="/#producto">Midaz Agora</a></li>
+                    <li><a href="/#producto">Midaz Web</a></li>
+                    <li><a href="#">Precios</a></li>
+                    <li><a href="#">Roadmap</a></li>
+                </ul>
+            </div>
 
-                    <p
-                        class="text-gray-300 mb-8 text-lg leading-relaxed max-w-md"
-                    >
-                        La plataforma que revoluciona la gestión empresarial con
-                        tecnología de vanguardia y cumplimiento fiscal
-                        garantizado.
-                    </p>
+            <!-- Empresa -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">Empresa</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Nosotros</a></li>
+                    <li><a href="#">Misión</a></li>
+                    <li><a href="/#contacto">Contacto</a></li>
+                </ul>
+            </div>
 
-                    {/* Trust badges */}
-                    <div class="space-y-4 mb-8">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-2 h-2 bg-green-400 rounded-full animate-pulse"
-                            >
-                            </div>
-                            <span class="text-green-400 font-semibold"
-                                >Homologación SENIAT en proceso</span
-                            >
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
-                            <span class="text-blue-400 font-semibold"
-                                >Respaldado por Disglobal</span
-                            >
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 bg-purple-400 rounded-full">
-                            </div>
-                            <span class="text-purple-400 font-semibold"
-                                >Tecnología Cloud-Native</span
-                            >
-                        </div>
-                    </div>
+            <!-- Soporte -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">Soporte</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Documentación</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Estado del sistema</a></li>
+                </ul>
+            </div>
 
-                    {/* Social Media - Enhanced */}
-                    <div>
-                        <h4 class="text-white font-semibold mb-4">Síguenos</h4>
-                        <div class="flex space-x-4">
-                            <a
-                                href="https://instagram.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 group"
-                                aria-label="Instagram"
-                            >
-                                <Instagram
-                                    className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors"
-                                />
-                            </a>
-                            <a
-                                href="https://facebook.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 group"
-                                aria-label="Facebook"
-                            >
-                                <Facebook
-                                    className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors"
-                                />
-                            </a>
-                            <a
-                                href="https://twitter.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 group"
-                                aria-label="Twitter"
-                            >
-                                <Twitter
-                                    className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors"
-                                />
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Products - Enhanced */}
-                <div>
-                    <h3 class="text-xl font-bold mb-6 text-white">Productos</h3>
-                    <ul class="space-y-4">
-                        <li>
-                            <a
-                                href="/#agora"
-                                class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group"
-                            >
-                                <span
-                                    class="w-2 h-2 bg-green-400 rounded-full mr-3 group-hover:scale-125 transition-transform"
-                                ></span>
-                                <div>
-                                    <div class="font-medium">AGORA</div>
-                                    <div class="text-sm text-gray-400">
-                                        POS General - Disponible
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="/#ambrosia"
-                                class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group"
-                            >
-                                <span
-                                    class="w-2 h-2 bg-orange-400 rounded-full mr-3 group-hover:scale-125 transition-transform"
-                                ></span>
-                                <div>
-                                    <div class="font-medium">AMBROSIA</div>
-                                    <div class="text-sm text-gray-400">
-                                        Restaurantes - Próximamente
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="/#atlas"
-                                class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group"
-                            >
-                                <span
-                                    class="w-2 h-2 bg-blue-400 rounded-full mr-3 group-hover:scale-125 transition-transform"
-                                ></span>
-                                <div>
-                                    <div class="font-medium">ATLAS</div>
-                                    <div class="text-sm text-gray-400">
-                                        Kioscos - Próximamente
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="/#eter"
-                                class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group"
-                            >
-                                <span
-                                    class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"
-                                ></span>
-                                <div>
-                                    <div class="font-medium">ETER</div>
-                                    <div class="text-sm text-gray-400">
-                                        Especializadas - Próximamente
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                {/* Contact Info - Enhanced */}
-                <div>
-                    <h3 class="text-xl font-bold mb-6 text-white">Contacto</h3>
-                    <ul class="space-y-6">
-                        <li class="flex items-start group">
-                            <div
-                                class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-colors"
-                            >
-                                <MapPin className="h-5 w-5 text-blue-400" />
-                            </div>
-                            <div>
-                                <div class="font-medium text-white">
-                                    Oficina Principal
-                                </div>
-                                <span class="text-gray-300"
-                                    >Caracas, Venezuela</span
-                                >
-                            </div>
-                        </li>
-                        <li class="flex items-start group">
-                            <div
-                                class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-colors"
-                            >
-                                <Phone className="h-5 w-5 text-green-400" />
-                            </div>
-                            <div>
-                                <div class="font-medium text-white">
-                                    Teléfono
-                                </div>
-                                <span class="text-gray-300"
-                                    >+58 424-MIDAZ-01</span
-                                >
-                            </div>
-                        </li>
-                        <li class="flex items-start group">
-                            <div
-                                class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-colors"
-                            >
-                                <Mail className="h-5 w-5 text-purple-400" />
-                            </div>
-                            <div>
-                                <div class="font-medium text-white">Email</div>
-                                <span class="text-gray-300"
-                                    >info@midaz.com.ve</span
-                                >
-                            </div>
-                        </li>
-                    </ul>
-
-                    {/* CTA Button */}
-                    <div class="mt-8">
-                        <a
-                            href="#contacto"
-                            class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg group"
-                        >
-                            <span>Contáctanos</span>
-                            <ArrowRight
-                                className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                            />
-                        </a>
-                    </div>
-                </div>
+            <!-- Legal -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="/terminos">Términos de uso</a></li>
+                    <li><a href="/privacidad">Privacidad</a></li>
+                </ul>
             </div>
         </div>
 
-        {/* Bottom section - Enhanced */}
-        <div class="border-t border-gray-800 py-8">
-            <div
-                class="flex flex-col lg:flex-row justify-between items-center gap-6"
-            >
-                <div class="text-center lg:text-left">
-                    <p class="text-gray-400 text-sm">
-                        &copy; {currentYear} Midaz by Disglobal. Todos los derechos
-                        reservados.
-                    </p>
-                </div>
+        <!-- Línea divisoria -->
+        <div class="footer-divider"></div>
 
-                {/* Quick links */}
-                <div class="flex flex-wrap gap-6 text-sm">
-                    <a
-                        href="/privacidad"
-                        class="text-gray-400 hover:text-white transition-colors"
-                    >
-                        Privacidad
-                    </a>
-                    <a
-                        href="/terminos"
-                        class="text-gray-400 hover:text-white transition-colors"
-                    >
-                        Términos
-                    </a>
-                    <a
-                        href="/soporte"
-                        class="text-gray-400 hover:text-white transition-colors"
-                    >
-                        Soporte
-                    </a>
-                </div>
-            </div>
+        <!-- Bottom bar -->
+        <div class="footer-bottom">
+            <p>&copy; {currentYear} Midaz. Todos los derechos reservados.</p>
+            <p>Hecho en Venezuela 🇻🇪</p>
         </div>
     </div>
 </footer>
+
+<style>
+    .footer {
+        background: #07143a;
+        padding: 80px 0 0;
+    }
+    .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+    .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+        gap: 48px;
+        margin-bottom: 64px;
+    }
+    .footer-logo {
+        display: inline-flex;
+        text-decoration: none;
+        margin-bottom: 16px;
+    }
+    .footer-logo-img {
+        height: 28px;
+        width: auto;
+    }
+    .footer-tagline {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        color: #a9ccff;
+        margin: 0;
+    }
+    .footer-col-title {
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #a9ccff;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 16px;
+    }
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .footer-links a {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        color: rgba(169, 204, 255, 0.7);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .footer-links a:hover { color: #ffffff; }
+    .footer-divider {
+        height: 1px;
+        background: rgba(0, 75, 224, 0.2);
+    }
+    .footer-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 0;
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        color: rgba(169, 204, 255, 0.5);
+    }
+    .footer-bottom p { margin: 0; }
+
+    @media (max-width: 1024px) {
+        .footer-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+        .footer-brand { grid-column: 1 / -1; }
+    }
+    @media (max-width: 640px) {
+        .footer-grid { grid-template-columns: 1fr; }
+        .footer-bottom {
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+        }
+    }
+</style>
