@@ -1,6 +1,5 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import HeroBg from "../components/react/HeroBg";
 import HeroHeading from "../components/react/HeroHeading";
 import ParticlesBg from "../components/react/ParticlesBg";
 import ProblemCards from "../components/react/ProblemCards";
@@ -8,43 +7,80 @@ import ManifestoHighlighted from "../components/react/ManifestoHighlighted";
 import BentoSection from "../components/react/BentoSection";
 import StatsSection from "../components/react/StatsSection";
 import FlowSection from "../components/react/FlowSection";
-import ShinyCtaBtn from "../components/react/ShinyCtaBtn";
+import SectorAccordion from "../components/home/SectorAccordion.astro";
+import ScatterCTA from "../components/home/ScatterCTA.astro";
 
-const timelineSteps = [
+const sectors = [
     {
-        n: 1,
-        title: "Abre turno",
-        desc: "PIN del cajero. Impresora verificada. Listo en segundos.",
+        slug: "tiendas",
+        title: "Tiendas y abastos",
+        image: "/section7/PD07746_-_food_and_bev.avif",
+        metric: "Multi-cajero y multi-sede",
+        caption: "Control de inventario en tiempo real con IGTF automático.",
+        href: "/comenzar",
     },
     {
-        n: 2,
-        title: "Agrega productos",
-        desc: "Por nombre, SKU o código de barras. Stock en tiempo real.",
+        slug: "panaderias",
+        title: "Panaderías y fruterías",
+        image: "/section7/PD07746_-_retail.avif",
+        metric: "Venta por peso exacto",
+        caption:
+            "Factura kilos y gramos con comprobante fiscal en cada operación.",
+        href: "/comenzar",
     },
     {
-        n: 3,
-        title: "Selecciona el pago",
-        desc: "Efectivo, transferencia, punto, dólares, Zelle, Binance.",
+        slug: "restaurantes",
+        title: "Restaurantes y cafeterías",
+        image: "/section7/PD07746_-_beauty.avif",
+        metric: "Comandas y recetas",
+        caption:
+            "Cada venta descuenta automáticamente los ingredientes del stock.",
+        href: "/comenzar",
+    },
+
+    {
+        slug: "multisede",
+        title: "Negocios multi-sede",
+        image: "/section7/PD07746_-_services.avif",
+        metric: "Un backoffice, todas las sucursales",
+        caption:
+            "Visión consolidada y monitor POS en tiempo real desde cualquier lugar.",
+        href: "/comenzar",
+    },
+];
+
+const trailImages = [
+    {
+        src: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=400&q=75",
+        alt: "Tienda",
     },
     {
-        n: 4,
-        title: "IGTF automático",
-        desc: "Si paga en divisas, el 3% se aplica sin calcular nada.",
+        src: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&q=75",
+        alt: "Panadería",
     },
     {
-        n: 5,
-        title: "Factura impresa",
-        desc: "Comprobante legal directo de la impresora fiscal. 100% válido.",
+        src: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=75",
+        alt: "Restaurante",
     },
     {
-        n: 6,
-        title: "Backoffice actualizado",
-        desc: "La venta aparece al instante en el panel del dueño.",
+        src: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&q=75",
+        alt: "Farmacia",
     },
     {
-        n: 7,
-        title: "Cierre de turno",
-        desc: "Reporte Z con un toque. Cuadre enviado al backoffice.",
+        src: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=75",
+        alt: "Oficina",
+    },
+    {
+        src: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&q=75",
+        alt: "POS",
+    },
+    {
+        src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=75",
+        alt: "Web",
+    },
+    {
+        src: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&q=75",
+        alt: "Sede",
     },
 ];
 
@@ -578,139 +614,11 @@ const comparisonRows = [
     </section>
 
     <!-- ─── SECCIÓN 7: PARA QUIÉN ────────────────────── -->
-    <section class="sectors-section">
-        <div class="sc">
-            <div class="section-header reveal">
-                <span class="eyebrow-gold">Sectores</span>
-                <h2 class="sh2 light">
-                    Hecho para gente<br />que <em class="accent-gold"
-                        >trabaja.</em
-                    >
-                </h2>
-            </div>
-            <div class="sectors-grid">
-                <div class="sector-card reveal">
-                    <div class="sector-icon-wrap sector-icon-blue">
-                        <svg
-                            width="26"
-                            height="26"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="#004be0"
-                            stroke-width="1.5"
-                            aria-hidden="true"
-                        >
-                            <path
-                                d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"
-                            ></path>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <path d="M16 10a4 4 0 0 1-8 0"></path>
-                        </svg>
-                    </div>
-                    <h3 class="sector-title">Tiendas y abastos</h3>
-                    <p class="sector-text">
-                        Control de inventario, múltiples cajeros, multi-sede.
-                        Factura fiscal en cada venta con IGTF automático.
-                    </p>
-                </div>
-                <div class="sector-card reveal" style="transition-delay:100ms">
-                    <div class="sector-icon-wrap sector-icon-gold">
-                        <svg
-                            width="26"
-                            height="26"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="#f49a40"
-                            stroke-width="1.5"
-                            aria-hidden="true"
-                        >
-                            <path
-                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
-                            ></path>
-                            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-                            <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                            <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                        </svg>
-                    </div>
-                    <h3 class="sector-title">Panaderías y fruterías</h3>
-                    <p class="sector-text">
-                        Venta por kilos y gramos. Factura exactamente lo que
-                        pesa. Próximamente disponible en Midaz Web.
-                    </p>
-                </div>
-                <div class="sector-card reveal" style="transition-delay:200ms">
-                    <div class="sector-icon-wrap sector-icon-blue">
-                        <svg
-                            width="26"
-                            height="26"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="#004be0"
-                            stroke-width="1.5"
-                            aria-hidden="true"
-                        >
-                            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"
-                            ></path>
-                            <line x1="6" y1="1" x2="6" y2="4"></line>
-                            <line x1="10" y1="1" x2="10" y2="4"></line>
-                            <line x1="14" y1="1" x2="14" y2="4"></line>
-                        </svg>
-                    </div>
-                    <h3 class="sector-title">Restaurantes y cafeterías</h3>
-                    <p class="sector-text">
-                        Comandas, combos y recetas que descuentan cada
-                        ingrediente del inventario al vender.
-                    </p>
-                </div>
-                <div class="sector-card reveal" style="transition-delay:100ms">
-                    <div class="sector-icon-wrap sector-icon-gold">
-                        <svg
-                            width="26"
-                            height="26"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="#f49a40"
-                            stroke-width="1.5"
-                            aria-hidden="true"
-                        >
-                            <path
-                                d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"
-                            ></path>
-                        </svg>
-                    </div>
-                    <h3 class="sector-title">Farmacias y ferreterías</h3>
-                    <p class="sector-text">
-                        Productos en múltiples unidades: unidades, gramos,
-                        metros. Todo con comprobante fiscal legal.
-                    </p>
-                </div>
-                <div class="sector-card reveal" style="transition-delay:200ms">
-                    <div class="sector-icon-wrap sector-icon-blue">
-                        <svg
-                            width="26"
-                            height="26"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="#004be0"
-                            stroke-width="1.5"
-                            aria-hidden="true"
-                        >
-                            <rect x="3" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="14" width="7" height="7"></rect>
-                            <rect x="3" y="14" width="7" height="7"></rect>
-                        </svg>
-                    </div>
-                    <h3 class="sector-title">Negocios multi-sede</h3>
-                    <p class="sector-text">
-                        Un solo backoffice para todas las sucursales. Visión
-                        consolidada y monitor POS en tiempo real.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <SectorAccordion
+        eyebrow="Sectores"
+        heading="Hecho para gente<br/>que <em style='font-style:italic;color:#f49a40'>trabaja.</em>"
+        sectors={sectors}
+    />
 
     <!-- ─── SECCIÓN 8: ANTES vs DESPUÉS ─────────────── -->
     <section class="comparison-section">
@@ -792,44 +700,14 @@ const comparisonRows = [
     </section>
 
     <!-- ─── SECCIÓN 9: CTA FINAL ─────────────────────── -->
-    <section id="contacto" class="cta-section">
-        <ParticlesBg
-            client:visible
-            color="#7ba8ff"
-            quantity={60}
-            staticity={30}
-            size={0.6}
-        />
-        <div class="cta-watermark" aria-hidden="true">
-            <svg viewBox="0 0 186.22 180.96" fill="none">
-                <path
-                    fill="white"
-                    opacity="0.06"
-                    d="M138.74,80.71l-31.86,31.86v40.35l-8.73,8.73v-54.49l28.53-28.53v-45.06L93.1,0l-33.57,33.57v45.06l28.53,28.53v54.48l-8.72-8.72v-40.35l-31.86-31.86H0v47.48l31.86,31.86h40.34l10.32,10.32,10.59,10.59,5.03-5.04,5.55-5.55,10.32-10.32h40.34l31.86-31.86v-47.48h-47.48ZM98.15,19.3l18.44,18.45v36.69l-18.44,18.44V19.3ZM36.03,149.96l-25.94-25.94v-26.09s52.03,52.04,52.03,52.04h-26.08ZM69.25,142.83l-52.04-52.04h26.09s25.94,25.95,25.94,25.95v26.08ZM69.62,74.45v-36.69l18.44-18.45v73.59l-18.44-18.44ZM116.97,116.75l25.94-25.94h26.09s-52.04,52.03-52.04,52.03v-26.08ZM176.13,124.02l-25.94,25.94h-26.08l52.04-52.04v26.09Z"
-                ></path>
-            </svg>
-        </div>
-        <div class="cta-content">
-            <h2 class="cta-h2 reveal">
-                Midaz está <em class="accent-gold">listo</em><br />para tu
-                negocio.
-            </h2>
-            <p class="cta-sub reveal" style="transition-delay:100ms">
-                Un sistema construido específicamente para el comercio
-                venezolano. Sin configuraciones complejas. Soporte incluido
-                desde el primer día.
-            </p>
-            <div
-                class="reveal"
-                style="transition-delay:200ms;margin-bottom:20px"
-            >
-                <ShinyCtaBtn client:visible />
-            </div>
-            <p class="cta-note reveal" style="transition-delay:300ms">
-                El equipo te contacta en menos de 24 horas.
-            </p>
-        </div>
-    </section>
+    <ScatterCTA
+        heading="Midaz está <em>listo</em><br/>para tu negocio."
+        primaryCta={{ label: "Comenzar ahora", href: "/comenzar" }}
+        secondaryCta={{ label: "Ver cómo funciona", href: "#como-funciona" }}
+        images={trailImages}
+        spawnDistance={80}
+        imageDuration={1500}
+    />
 </Layout>
 
 <style>

@@ -1,0 +1,348 @@
+---
+export interface Sector {
+  slug: string;
+  title: string;
+  image: string;
+  video?: string;
+  metric: string;
+  caption: string;
+  href: string;
+}
+
+export interface Props {
+  eyebrow?: string;
+  heading: string;
+  sectors: Sector[];
+}
+
+const { eyebrow = "DISEÑADO PARA TODOS LOS SECTORES", heading, sectors } = Astro.props;
+---
+
+<section class="accordion-section">
+  <header class="accordion-header">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h2 class="heading" set:html={heading} />
+  </header>
+
+  <div class="row" role="list">
+    {sectors.map((s, i) => (
+      <article
+        class="card"
+        role="listitem"
+        tabindex="0"
+        data-slug={s.slug}
+        style={`--i:${i}`}
+      >
+        <img
+          class="poster"
+          src={s.image}
+          alt={s.title}
+          loading="lazy"
+          decoding="async"
+        />
+
+        {s.video && (
+          <video
+            class="video"
+            src={s.video}
+            muted
+            loop
+            playsinline
+            preload="none"
+            aria-hidden="true"
+          />
+        )}
+
+        <div class="overlay-base">
+          <h3 class="card-title">{s.title}</h3>
+        </div>
+
+        <div class="overlay-active">
+          <div class="metric-block">
+            <p class="metric">{s.metric}</p>
+            <p class="caption">{s.caption}</p>
+          </div>
+          <a class="cta" href={s.href}>
+            Obtén más información
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .accordion-section {
+    background: #0a0a0a;
+    color: #f5f5f0;
+    padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 3rem);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .accordion-header {
+    max-width: 1400px;
+    margin: 0 auto clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .eyebrow {
+    display: block;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    color: #f49a40;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin: 0 0 20px;
+  }
+
+  .heading {
+    font-family: "Funnel Display", sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.1;
+    margin: 0 0 20px;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  /* ---------- ROW + CARDS ---------- */
+
+  .row {
+    display: flex;
+    gap: 4px;
+    height: clamp(420px, 60vh, 620px);
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .card {
+    position: relative;
+    flex: 1 1 0;
+    overflow: hidden;
+    cursor: pointer;
+    background: #1a1a1a;
+    transition: flex-grow 700ms cubic-bezier(0.65, 0, 0.35, 1);
+    outline: none;
+  }
+
+  .row:hover .card,
+  .row:focus-within .card {
+    flex-grow: 0.4;
+  }
+
+  .row .card:hover,
+  .row .card:focus-visible,
+  .row .card.is-active {
+    flex-grow: 4;
+  }
+
+  /* ---------- MEDIA ---------- */
+
+  .poster,
+  .video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.55) saturate(0.85);
+    transition: filter 700ms ease, opacity 500ms ease;
+  }
+
+  .video {
+    opacity: 0;
+    z-index: 1;
+  }
+
+  .card:hover .poster,
+  .card:focus-visible .poster,
+  .card.is-active .poster {
+    filter: brightness(0.8) saturate(1);
+  }
+
+  .card:hover .video,
+  .card:focus-visible .video,
+  .card.is-active .video {
+    opacity: 1;
+    filter: brightness(0.85) saturate(1);
+  }
+
+  /* ---------- OVERLAY BASE ---------- */
+
+  .overlay-base {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 1.5rem;
+    pointer-events: none;
+  }
+
+  .card-title {
+    font-family: "Funnel Display", sans-serif;
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    font-weight: 700;
+    color: #f5f5f0;
+    margin: 0;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    mix-blend-mode: screen;
+    opacity: 0.85;
+    /* Posición inicial: centrado */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition:
+      top 150ms ease-out,
+      left 150ms ease-out,
+      transform 150ms ease-out,
+      opacity 300ms ease;
+    will-change: transform, top, left;
+  }
+
+
+  /* ---------- OVERLAY ACTIVE ---------- */
+
+  .overlay-active {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 350ms ease 100ms;
+  }
+
+  .card:hover .overlay-active,
+  .card:focus-visible .overlay-active,
+  .card.is-active .overlay-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .metric-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transform: translateY(20px);
+    transition: transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 150ms;
+  }
+
+  .card:hover .metric-block,
+  .card:focus-visible .metric-block,
+  .card.is-active .metric-block {
+    transform: translateY(0);
+  }
+
+  .metric {
+    font-family: "Funnel Display", sans-serif;
+    font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.05;
+    color: #f5f5f0;
+    letter-spacing: -0.01em;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(245, 245, 240, 0.4);
+  }
+
+  .caption {
+    font-family: "Inter", sans-serif;
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: rgba(245, 245, 240, 0.85);
+    letter-spacing: 0.01em;
+  }
+
+  .cta {
+    align-self: flex-end;
+    color: #f5f5f0;
+    text-decoration: none;
+    font-size: 0.875rem;
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+    transition: gap 250ms ease;
+  }
+
+  .cta:hover { gap: 0.85rem; }
+
+  /* ---------- RESPONSIVE ---------- */
+
+  @media (max-width: 768px) {
+    .row {
+      flex-direction: column;
+      height: auto;
+    }
+    .card {
+      height: 320px;
+      flex: 0 0 auto !important;
+    }
+    .overlay-base { opacity: 0; }
+    .overlay-active { opacity: 1; pointer-events: auto; }
+    .metric-block { transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card, .poster, .video, .overlay-active, .metric-block {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initAccordion() {
+    const cards = document.querySelectorAll<HTMLElement>('.accordion-section .card');
+
+    cards.forEach((card) => {
+      const video = card.querySelector<HTMLVideoElement>('.video');
+      const title = card.querySelector<HTMLElement>('.card-title');
+
+      const activate = () => video?.play().catch(() => {});
+      const deactivate = () => {
+        video?.pause();
+        if (video) video.currentTime = 0;
+      };
+
+      card.addEventListener('mouseenter', activate);
+      card.addEventListener('mouseleave', () => {
+        deactivate();
+        if (title) {
+          title.style.left = '50%';
+          title.style.top = '50%';
+          title.style.transform = 'translate(-50%, -50%)';
+        }
+      });
+      card.addEventListener('focus', activate);
+      card.addEventListener('blur', deactivate);
+
+      card.addEventListener('mousemove', (e) => {
+        if (!title) return;
+        const rect = card.getBoundingClientRect();
+        const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+        const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+        title.style.left = `${Math.max(10, Math.min(90, xPct))}%`;
+        title.style.top = `${Math.max(10, Math.min(90, yPct))}%`;
+        title.style.transform = 'translate(-50%, -50%)';
+      });
+
+
+
+      card.addEventListener('touchstart', () => {
+        cards.forEach((c) => c.classList.remove('is-active'));
+        card.classList.add('is-active');
+        activate();
+      }, { passive: true });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initAccordion);
+  if (document.readyState !== 'loading') initAccordion();
+  else document.addEventListener('DOMContentLoaded', initAccordion);
+</script>
