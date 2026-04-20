@@ -79,12 +79,17 @@ module.exports = {
           "0%": { transform: "translateY(20px)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
         },
+        "line-shadow": {
+          "0%": { backgroundPosition: "0 0" },
+          "100%": { backgroundPosition: "100% -100%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         fadeIn: "fadeIn 0.5s ease-out",
         slideUp: "slideUp 0.6s ease-out",
+        "line-shadow": "line-shadow 15s linear infinite",
       },
     },
   },

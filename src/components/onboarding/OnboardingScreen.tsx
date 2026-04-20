@@ -1,856 +1,908 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowRight, ArrowLeft, Check, ChevronRight, Users, DollarSign, Smartphone, Monitor, BarChart3 } from "lucide-react"
+import { ArrowRight, ArrowLeft, Check, Smartphone, Monitor, HelpCircle, Shield, Clock, Headphones } from "lucide-react"
 
-// Types
+// ─── ASSETS ─────────────────────────────────────────
+// @ts-ignore
+import logoWhite from "../../assets/images/midaz_Mesa de trabajo 1.svg?url"
+
+// ─── TYPES ──────────────────────────────────────────
 interface FormData {
     businessName: string
     rif: string
     email: string
     phone: string
+    sector: string | null
     employeeCount: string | null
     monthlyVolume: string | null
-    solution: "agora" | "web" | "gestion" | null
+    solution: "agora" | "web" | "asesor" | null
     plan: string | null
 }
 
-const initialFormData: FormData = {
-    businessName: "",
-    rif: "",
-    email: "",
-    phone: "",
-    employeeCount: null,
-    monthlyVolume: null,
-    solution: null,
-    plan: null,
+const initial: FormData = {
+    businessName: "", rif: "", email: "", phone: "",
+    sector: null, employeeCount: null, monthlyVolume: null,
+    solution: null, plan: null,
 }
 
+// ─── PLAN DATA ───────────────────────────────────────
 const plansByProduct = {
     agora: [
         {
-            id: "emprendedor",
-            name: "Emprendedor",
-            price: "$49",
-            period: "/mes",
-            description: "Ideal para nuevos comienzos",
-            features: ["Facturación fiscal", "Inventario básico", "1 usuario", "Asistencia técnica humana 24/7"],
+            id: "emprendedor", name: "Emprendedor", price: "$49", period: "/mes",
+            description: "Para un local, una caja",
+            features: [
+                "Terminal fiscal incluido",
+                "App Android + backoffice web",
+                "Impresora fiscal integrada",
+                "Inventario hasta 500 SKU",
+                "1 cajero, 1 sede",
+                "Soporte técnico 24/7",
+            ],
             recommended: false,
         },
         {
-            id: "empresarial",
-            name: "Empresarial",
-            price: "$99",
-            period: "/mes",
-            description: "Potencia tu expansión",
-            features: ["Todo en Emprendedor", "Multi-almacén", "5 usuarios", "Reportes avanzados", "Asistencia técnica humana 24/7"],
+            id: "empresarial", name: "Empresarial", price: "$99", period: "/mes",
+            description: "Multi-caja, multi-sede",
+            features: [
+                "Todo en Emprendedor",
+                "Hasta 5 cajeros",
+                "Inventario ilimitado",
+                "Multi-sede con dashboard unificado",
+                "Conciliación bancaria automática",
+                "Auditoría fiscal completa",
+                "Reportes Z y gerenciales",
+                "Soporte técnico 24/7",
+            ],
             recommended: true,
         },
     ],
     web: [
         {
-            id: "mensual",
-            name: "Mensual",
-            price: "$29",
-            period: "/mes",
-            description: "Pago flexible",
-            features: ["Software completo", "Conexión HKA/Bixolon", "Actualizaciones", "Asistencia técnica humana 24/7"],
+            id: "mensual", name: "Mensual", price: "$29", period: "/mes",
+            description: "Pago flexible, sin compromiso",
+            features: [
+                "Sistema web desde cualquier PC/tablet",
+                "Conexión a impresoras fiscales",
+                "Inventario básico y usuarios",
+                "Auditoría fiscal incluida",
+                "Tasa BCV automática",
+                "Soporte técnico 24/7",
+            ],
             recommended: false,
         },
         {
-            id: "anual",
-            name: "Anual",
-            price: "$290",
-            period: "/año",
-            description: "Ahorra 2 meses",
-            features: ["Todo en Mensual", "Ahorro de $58", "Asistencia técnica humana 24/7"],
-            recommended: true,
-        },
-    ],
-    gestion: [
-        {
-            id: "gratuito",
-            name: "Gratuito",
-            price: "$0",
-            period: "",
-            description: "Para empezar",
-            features: ["Control de inventario", "1 ubicación", "Reportes básicos"],
-            recommended: false,
-        },
-        {
-            id: "pro",
-            name: "Pro",
-            price: "$19",
-            period: "/mes",
-            description: "Control total",
-            features: ["Todo en Gratuito", "Multi-ubicación", "Multi-usuario", "Asistencia técnica humana 24/7"],
+            id: "anual", name: "Anual", price: "$290", period: "/año",
+            description: "Ahorra el equivalente a 2 meses",
+            features: [
+                "Todo en Mensual",
+                "Multi-usuario y multi-sede",
+                "94 permisos granulares por usuario",
+                "Notas de crédito fiscales",
+                "Reportes avanzados exportables",
+                "Ahorro de $58 vs. mensual",
+                "Soporte técnico 24/7",
+            ],
             recommended: true,
         },
     ],
 }
 
-// Animation styles
-const styles = `
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+// ─── BRAND TOKENS ────────────────────────────────────
+const C = {
+    navy: "#07143a",
+    navyCard: "#0d1f4a",
+    blue: "#004be0",
+    blueGlow: "rgba(0,75,224,0.12)",
+    blueBorder: "rgba(0,75,224,0.2)",
+    blueLight: "#a9ccff",
+    gold: "#f49a40",
+    goldBg: "rgba(244,154,64,0.12)",
+    white: "#ffffff",
+}
+
+// ─── GLOBAL STYLES ───────────────────────────────────
+const globalStyles = `
+    @keyframes obIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
     }
-    
-    @keyframes fadeOutUp {
-        from {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        to {
-            opacity: 0;
-            transform: translateY(-30px);
-        }
+    @keyframes obOut {
+        from { opacity: 1; transform: translateY(0); }
+        to   { opacity: 0; transform: translateY(-16px); }
     }
-    
-    @keyframes scaleIn {
-        from {
-            opacity: 0;
-            transform: scale(0.9);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-    
-    @keyframes slideInRight {
-        from {
-            opacity: 0;
-            transform: translateX(50px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
     @keyframes pulse-ring {
-        0% {
-            transform: scale(0.8);
-            opacity: 0.8;
-        }
-        50% {
-            transform: scale(1.2);
-            opacity: 0.4;
-        }
-        100% {
-            transform: scale(0.8);
-            opacity: 0.8;
-        }
+        0%   { transform: scale(0.85); opacity: 0.6; }
+        50%  { transform: scale(1.15); opacity: 0.3; }
+        100% { transform: scale(0.85); opacity: 0.6; }
     }
-    
-    .step-enter {
-        animation: fadeInUp 0.5s ease-out forwards;
+    .ob-enter { animation: obIn  0.4s ease-out both; }
+    .ob-exit  { animation: obOut 0.22s ease-in  both; }
+    .s1 { animation-delay: 0.07s; }
+    .s2 { animation-delay: 0.14s; }
+    .s3 { animation-delay: 0.21s; }
+
+    .ob-card {
+        position: relative;
+        background: ${C.navyCard};
+        border: 1px solid ${C.blueBorder};
+        border-radius: 12px;
+        cursor: pointer;
+        transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+        text-align: left;
+        width: 100%;
     }
-    
-    .step-exit {
-        animation: fadeOutUp 0.3s ease-in forwards;
+    .ob-card:hover {
+        border-color: rgba(0,75,224,0.55);
+        box-shadow: 0 0 24px ${C.blueGlow};
+        transform: translateY(-2px);
     }
-    
-    .card-enter {
-        animation: scaleIn 0.4s ease-out forwards;
+    .ob-card.selected {
+        border-color: ${C.blue};
+        background: rgba(0,75,224,0.08);
+        box-shadow: 0 0 32px ${C.blueGlow};
     }
-    
-    .slide-in {
-        animation: slideInRight 0.5s ease-out forwards;
+    .ob-input {
+        width: 100%;
+        background: ${C.navyCard};
+        border: 1px solid ${C.blueBorder};
+        border-radius: 8px;
+        padding: 14px 18px;
+        color: ${C.white};
+        font-family: 'Inter', sans-serif;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
     }
-    
-    .stagger-1 { animation-delay: 0.1s; opacity: 0; }
-    .stagger-2 { animation-delay: 0.2s; opacity: 0; }
-    .stagger-3 { animation-delay: 0.3s; opacity: 0; }
-    .stagger-4 { animation-delay: 0.4s; opacity: 0; }
+    .ob-input::placeholder { color: rgba(169,204,255,0.35); }
+    .ob-input:focus {
+        border-color: ${C.blue};
+        box-shadow: 0 0 0 3px rgba(0,75,224,0.15);
+    }
+    .ob-label {
+        display: block;
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        color: ${C.blueLight};
+        margin-bottom: 8px;
+        letter-spacing: 0.02em;
+    }
 `
 
+// ─── MODULE-LEVEL COMPONENTS (no recrea en cada render) ──
+// IMPORTANTE: definido FUERA del componente principal para que React
+// no destruya/recree los inputs al escribir.
+
+function Wrap({ children, exiting }: { children: React.ReactNode; exiting: boolean }) {
+    return (
+        <div
+            className={exiting ? "ob-exit" : "ob-enter"}
+            style={{
+                minHeight: "calc(100vh - 72px)",
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center",
+                padding: "48px 24px",
+            }}
+        >
+            {children}
+        </div>
+    )
+}
+
+function CheckMark() {
+    return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f49a40" strokeWidth="2.5">
+            <polyline points="20 6 9 17 4 12" />
+        </svg>
+    )
+}
+
+function BackBtn({ onClick }: { onClick: () => void }) {
+    return (
+        <button
+            onClick={onClick}
+            style={{
+                display: "flex", alignItems: "center", gap: 6,
+                background: "none", border: "none", cursor: "pointer",
+                color: C.blueLight, fontFamily: "'Inter', sans-serif", fontSize: 14, padding: "8px 0",
+                transition: "color 0.2s",
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = C.white)}
+            onMouseLeave={e => (e.currentTarget.style.color = C.blueLight)}
+        >
+            <ArrowLeft size={16} /> Atrás
+        </button>
+    )
+}
+
+function NextBtn({ onClick, disabled, children }: {
+    onClick: () => void; disabled?: boolean; children: React.ReactNode
+}) {
+    return (
+        <button
+            onClick={onClick}
+            disabled={disabled}
+            style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                background: disabled ? "rgba(0,75,224,0.2)" : C.blue,
+                color: disabled ? "rgba(169,204,255,0.5)" : C.white,
+                border: "none", borderRadius: 8,
+                cursor: disabled ? "not-allowed" : "pointer",
+                fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: 15,
+                padding: "13px 28px", transition: "background 0.2s, transform 0.2s",
+            }}
+            onMouseEnter={e => { if (!disabled) e.currentTarget.style.background = "#0040c0" }}
+            onMouseLeave={e => { if (!disabled) e.currentTarget.style.background = disabled ? "rgba(0,75,224,0.2)" : C.blue }}
+        >
+            {children}
+        </button>
+    )
+}
+
+function EyebrowStep({ n }: { n: number }) {
+    return (
+        <span style={{
+            fontFamily: "'Inter', sans-serif", fontSize: 12,
+            color: C.gold, letterSpacing: "0.15em", textTransform: "uppercase" as const,
+            display: "block", marginBottom: 12,
+        }}>
+            {n < 6 ? `Paso ${n} de 5` : "Último paso"}
+        </span>
+    )
+}
+
+function Heading({ children }: { children: React.ReactNode }) {
+    return (
+        <h2 style={{
+            fontFamily: "'Funnel Display', sans-serif", fontWeight: 700,
+            fontSize: "clamp(26px, 4vw, 36px)", color: C.white,
+            lineHeight: 1.15, marginBottom: 10,
+        }}>{children}</h2>
+    )
+}
+
+function Sub({ children }: { children: React.ReactNode }) {
+    return (
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.blueLight, lineHeight: 1.6 }}>
+            {children}
+        </p>
+    )
+}
+
+// ─── MAIN COMPONENT ──────────────────────────────────
 export default function OnboardingScreen() {
-    const [currentStep, setCurrentStep] = useState(0)
-    const [formData, setFormData] = useState<FormData>(initialFormData)
-    const [isTransitioning, setIsTransitioning] = useState(false)
-    const [transitionDirection, setTransitionDirection] = useState<'next' | 'prev'>('next')
+    const [step, setStep] = useState(0)
+    const [form, setForm] = useState<FormData>(initial)
+    const [exiting, setEx] = useState(false)
 
     useEffect(() => {
-        const saved = localStorage.getItem("midaz-onboarding-v4")
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved)
-                setFormData(parsed.formData || initialFormData)
-                setCurrentStep(parsed.currentStep || 0)
-            } catch (e) {
-                console.error("Error loading onboarding state", e)
+        try {
+            const saved = localStorage.getItem("midaz-ob-v6")
+            if (saved) {
+                const p = JSON.parse(saved)
+                setForm(p.form || initial)
+                setStep(p.step || 0)
             }
-        }
+        } catch { }
     }, [])
 
     useEffect(() => {
-        localStorage.setItem("midaz-onboarding-v4", JSON.stringify({ formData, currentStep }))
-    }, [formData, currentStep])
+        localStorage.setItem("midaz-ob-v6", JSON.stringify({ form, step }))
+    }, [form, step])
 
-    const goToStep = (step: number, direction: 'next' | 'prev' = 'next') => {
-        setTransitionDirection(direction)
-        setIsTransitioning(true)
+    const go = (n: number) => {
+        setEx(true)
+        setTimeout(() => { setStep(n); setEx(false) }, 220)
+    }
+    const next = () => go(step + 1)
+    const prev = () => go(step - 1)
+    const set = (u: Partial<FormData>) => setForm(f => ({ ...f, ...u }))
 
-        setTimeout(() => {
-            setCurrentStep(step)
-            setIsTransitioning(false)
-        }, 300)
+    const canNext = () => {
+        if (step === 1) return form.businessName.length >= 2 && !!form.email && !!form.phone
+        if (step === 2) return !!form.sector
+        if (step === 3) return !!form.employeeCount
+        if (step === 4) return !!form.monthlyVolume
+        if (step === 5) return !!form.solution
+        if (step === 6) return form.solution !== "asesor" ? !!form.plan : true
+        return true
     }
 
-    const nextStep = () => goToStep(currentStep + 1, 'next')
-    const prevStep = () => goToStep(currentStep - 1, 'prev')
-
-    const updateFormData = (updates: Partial<FormData>) => {
-        setFormData(prev => ({ ...prev, ...updates }))
-    }
-
-    const canProceed = () => {
-        switch (currentStep) {
-            case 1: return formData.businessName.length >= 3 && formData.email
-            case 2: return formData.employeeCount !== null
-            case 3: return formData.monthlyVolume !== null
-            case 4: return formData.solution !== null
-            case 5: return formData.plan !== null
-            default: return true
-        }
-    }
-
-    const finishOnboarding = () => {
-        localStorage.removeItem("midaz-onboarding-v4")
+    const finish = () => {
+        localStorage.removeItem("midaz-ob-v6")
         window.location.href = "/"
     }
 
-    // Midaz brand colors
-    const brandNavy = "#0a0a1a"
-    const brandGold = "#d4a853"
-
-    const totalSteps = 6
+    const showProgress = step > 0 && step < 7
 
     return (
         <>
-            <style>{styles}</style>
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 overflow-hidden">
-                {/* Animated background */}
-                <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-amber-200/30 to-orange-200/20 rounded-full blur-3xl" />
-                    <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-200/30 to-purple-200/20 rounded-full blur-3xl" />
-                </div>
+            <style>{globalStyles}</style>
+            <div style={{ minHeight: "100vh", background: C.navy, position: "relative" }}>
 
-                {/* Header */}
-                <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100/50">
-                    <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-                        <a href="/" className="flex items-center gap-2">
-                            <img src="/images/midaz-logo.png" alt="Midaz" className="h-8 w-auto" />
+                {/* Pattern */}
+                <div style={{
+                    position: "fixed", inset: 0, pointerEvents: "none",
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5L55 20V40L30 55L5 40V20L30 5Z' fill='%23004be0' fill-opacity='0.03'/%3E%3C/svg%3E")`,
+                    backgroundSize: "60px 60px",
+                }} />
+
+                {/* ── HEADER ─────────────────────────────── */}
+                <header style={{
+                    position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+                    background: "rgba(7,20,58,0.92)", backdropFilter: "blur(12px)",
+                    borderBottom: "1px solid rgba(0,75,224,0.15)",
+                }}>
+                    <div style={{
+                        maxWidth: 1100, margin: "0 auto", padding: "0 24px",
+                        height: 64, display: "flex", alignItems: "center", justifyContent: "space-between",
+                    }}>
+                        <a href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+                            <img src={logoWhite} alt="Midaz" style={{ height: 32, width: "auto" }} />
                         </a>
 
-                        {currentStep > 0 && currentStep < totalSteps && (
-                            <div className="flex items-center gap-2">
-                                {[1, 2, 3, 4, 5].map((step) => (
-                                    <div
-                                        key={step}
-                                        className={`h-2 rounded-full transition-all duration-500 ${step <= currentStep ? "w-8" : "w-2"
-                                            }`}
-                                        style={{
-                                            backgroundColor: step <= currentStep ? brandGold : '#e5e7eb'
-                                        }}
-                                    />
-                                ))}
+                        {showProgress && (
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                {Array.from({ length: 6 }, (_, i) => {
+                                    const done = (i + 1) < step
+                                    const curr = (i + 1) === step
+                                    return (
+                                        <div key={i} style={{
+                                            height: 6, borderRadius: 3,
+                                            width: done || curr ? 24 : 6,
+                                            background: done || curr ? C.gold : "rgba(169,204,255,0.2)",
+                                            transition: "all 0.4s ease",
+                                        }} />
+                                    )
+                                })}
                             </div>
                         )}
 
-                        <a href="/" className="text-sm text-gray-400 hover:text-gray-600 transition-colors">
-                            Salir
-                        </a>
+                        <a href="/" style={{
+                            fontFamily: "'Inter', sans-serif", fontSize: 14,
+                            color: "rgba(169,204,255,0.5)", textDecoration: "none", transition: "color 0.2s",
+                        }}
+                            onMouseEnter={e => (e.currentTarget.style.color = C.blueLight)}
+                            onMouseLeave={e => (e.currentTarget.style.color = "rgba(169,204,255,0.5)")}
+                        >Salir</a>
                     </div>
                 </header>
 
-                {/* Main content with transitions */}
-                <main className={`pt-24 min-h-screen ${isTransitioning ? 'step-exit' : 'step-enter'}`}>
+                <main style={{ paddingTop: 64 }}>
 
-                    {/* Step 0: Welcome */}
-                    {currentStep === 0 && (
-                        <div className="min-h-[calc(100vh-96px)] flex flex-col items-center justify-center px-6">
-                            <div className="text-center max-w-lg">
-                                <div className="mb-8 card-enter">
-                                    <div
-                                        className="w-24 h-24 mx-auto rounded-3xl flex items-center justify-center shadow-2xl relative"
-                                        style={{ background: `linear-gradient(135deg, ${brandGold}, #b8963f)` }}
-                                    >
-                                        <span className="text-4xl">✨</span>
-                                        <div
-                                            className="absolute inset-0 rounded-3xl"
-                                            style={{
-                                                background: `linear-gradient(135deg, ${brandGold}, #b8963f)`,
-                                                animation: 'pulse-ring 2s ease-in-out infinite',
-                                                opacity: 0.3
-                                            }}
-                                        />
-                                    </div>
+                    {/* ── STEP 0: BIENVENIDA ─────────────── */}
+                    {step === 0 && (
+                        <Wrap exiting={exiting}>
+                            <div style={{ textAlign: "center", maxWidth: 600 }}>
+                                <div className="ob-enter" style={{ marginBottom: 32 }}>
+                                    <a href="/" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                                        <img src={logoWhite} alt="Midaz" style={{ height: 56, width: "auto" }} />
+                                    </a>
                                 </div>
 
-                                <h1
-                                    className="text-4xl md:text-5xl font-bold mb-4 slide-in"
-                                    style={{ color: brandNavy }}
-                                >
-                                    ¡Todo listo para impulsar tu negocio!
+                                <h1 className="ob-enter s1" style={{
+                                    fontFamily: "'Funnel Display', sans-serif", fontWeight: 700,
+                                    fontSize: "clamp(32px, 5vw, 52px)", color: C.white,
+                                    lineHeight: 1.1, marginBottom: 16,
+                                }}>
+                                    Sin errores fiscales.<br />
+                                    <span style={{ color: C.gold }}>Así es Midaz.</span>
                                 </h1>
 
-                                <p className="text-xl text-gray-500 mb-12 slide-in stagger-1">
-                                    Configura tu tienda en pocos pasos y haz tu primera venta hoy.
+                                <p className="ob-enter s2" style={{
+                                    fontFamily: "'Inter', sans-serif", fontSize: 18,
+                                    color: C.blueLight, lineHeight: 1.6,
+                                    marginBottom: 40, maxWidth: 480, margin: "0 auto 40px",
+                                }}>
+                                    Solicita acceso anticipado. Cuéntanos sobre tu negocio y el equipo de Midaz te contacta en menos de 24 horas.
                                 </p>
 
-                                <button
-                                    onClick={nextStep}
-                                    className="group inline-flex items-center gap-3 px-10 py-5 text-white rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl slide-in stagger-2"
-                                    style={{ backgroundColor: brandGold }}
-                                >
-                                    ¡Empezar ahora!
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </button>
+                                {/* Badges */}
 
-                                <p className="mt-8 text-sm text-gray-400 slide-in stagger-3">
-                                    ⏱️ Configuración rápida • Sin costos ocultos
-                                </p>
-                            </div>
-                        </div>
-                    )}
 
-                    {/* Step 1: Business Info */}
-                    {currentStep === 1 && (
-                        <div className="min-h-[calc(100vh-96px)] flex items-center justify-center px-6 py-12">
-                            <div className="w-full max-w-md">
-                                <div className="text-center mb-10">
-                                    <div
-                                        className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-6 card-enter"
-                                        style={{ backgroundColor: `${brandGold}20` }}
+                                <div className="ob-enter s3">
+                                    <button
+                                        onClick={next}
+                                        style={{
+                                            display: "inline-flex", alignItems: "center", gap: 10,
+                                            background: C.blue, color: C.white,
+                                            border: "none", borderRadius: 8, cursor: "pointer",
+                                            fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: 16,
+                                            padding: "16px 36px", transition: "background 0.2s, transform 0.2s",
+                                        }}
+                                        onMouseEnter={e => { e.currentTarget.style.background = "#0040c0"; e.currentTarget.style.transform = "translateY(-2px)" }}
+                                        onMouseLeave={e => { e.currentTarget.style.background = C.blue; e.currentTarget.style.transform = "translateY(0)" }}
                                     >
-                                        <span className="text-3xl">🏪</span>
-                                    </div>
-                                    <h2 className="text-3xl font-bold mb-2 slide-in" style={{ color: brandNavy }}>
-                                        Cuéntanos sobre tu negocio
-                                    </h2>
-                                    <p className="text-gray-500 slide-in stagger-1">
-                                        Ingresa los datos básicos para comenzar.
+                                        Solicitar acceso anticipado
+                                        <ArrowRight size={18} />
+                                    </button>
+                                    <p style={{
+                                        fontFamily: "'Inter', sans-serif", fontSize: 13,
+                                        color: "rgba(169,204,255,0.45)", marginTop: 16,
+                                    }}>
+                                        5 pasos · Sin compromiso · Sin costos ocultos
                                     </p>
                                 </div>
+                            </div>
+                        </Wrap>
+                    )}
 
-                                <div className="space-y-5 slide-in stagger-2">
+                    {/* ── STEP 1: DATOS DEL NEGOCIO ──────── */}
+                    {step === 1 && (
+                        <Wrap exiting={exiting}>
+                            <div style={{ width: "100%", maxWidth: 480 }}>
+                                <div className="ob-enter" style={{ marginBottom: 32 }}>
+                                    <EyebrowStep n={1} />
+                                    <Heading>Datos de tu negocio</Heading>
+                                    <Sub>Con esta información, el equipo de Midaz preparará el acceso ajustado a tu operación.</Sub>
+                                </div>
+
+                                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Nombre del negocio *
-                                        </label>
+                                        <label className="ob-label">Nombre del negocio *</label>
                                         <input
+                                            className="ob-input"
                                             type="text"
-                                            value={formData.businessName}
-                                            onChange={(e) => {
-                                                const val = e.target.value;
-                                                const formatted = val.charAt(0).toUpperCase() + val.slice(1);
-                                                updateFormData({ businessName: formatted })
-                                            }}
-                                            className="w-full px-5 py-4 bg-white border-2 border-gray-100 rounded-2xl text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-amber-400 focus:shadow-lg"
                                             placeholder="Mi Negocio C.A."
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Correo electrónico *
-                                        </label>
-                                        <input
-                                            type="email"
-                                            value={formData.email}
-                                            onChange={(e) => updateFormData({ email: e.target.value.replace(/\s/g, '') })}
-                                            className="w-full px-5 py-4 bg-white border-2 border-gray-100 rounded-2xl text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-amber-400 focus:shadow-lg"
-                                            placeholder="correo@empresa.com"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Identificación Fiscal / RIF <span className="text-gray-400">(opcional)</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={formData.rif}
-                                            onChange={(e) => {
-                                                let val = e.target.value.toUpperCase().replace(/[^JVEG0-9-]/g, '');
-
-                                                // Logic for Default "J" and masking
-                                                if (val && /^[0-9]/.test(val)) {
-                                                    val = "J-" + val;
-                                                }
-
-                                                // Simple mask implementation for X-00000000-0
-                                                // If it starts with letter and we need to handle numbers
-                                                let clean = val.replace(/[^JVEG0-9]/g, '');
-                                                if (clean.length > 0) {
-                                                    let letter = clean.charAt(0);
-                                                    let numbers = clean.slice(1);
-                                                    if (numbers.length > 0) {
-                                                        let main = numbers.slice(0, 8);
-                                                        let last = numbers.slice(8, 9);
-                                                        val = `${letter}-${main}${last ? '-' + last : ''}`;
-                                                    } else {
-                                                        val = letter;
-                                                    }
-                                                }
-
-                                                updateFormData({ rif: val })
+                                            value={form.businessName}
+                                            onChange={e => {
+                                                const v = e.target.value
+                                                set({ businessName: v.charAt(0).toUpperCase() + v.slice(1) })
                                             }}
-                                            className="w-full px-5 py-4 bg-white border-2 border-gray-100 rounded-2xl text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-amber-400 focus:shadow-lg"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="ob-label">Correo electrónico *</label>
+                                        <input
+                                            className="ob-input"
+                                            type="email"
+                                            placeholder="correo@empresa.com"
+                                            value={form.email}
+                                            onChange={e => set({ email: e.target.value.replace(/\s/g, "") })}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="ob-label">WhatsApp / Teléfono *</label>
+                                        <input
+                                            className="ob-input"
+                                            type="tel"
+                                            placeholder="+58 412 000 0000"
+                                            value={form.phone}
+                                            onChange={e => set({ phone: e.target.value })}
+                                        />
+                                        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "rgba(169,204,255,0.45)", marginTop: 6 }}>
+                                            El equipo te contactará por aquí para coordinar el acceso.
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <label className="ob-label">RIF <span style={{ color: "rgba(169,204,255,0.35)" }}>(opcional)</span></label>
+                                        <input
+                                            className="ob-input"
+                                            type="text"
                                             placeholder="J-12345678-9"
                                             maxLength={13}
+                                            value={form.rif}
+                                            onChange={e => {
+                                                let v = e.target.value.toUpperCase().replace(/[^JVEG0-9-]/g, "")
+                                                const clean = v.replace(/[^JVEG0-9]/g, "")
+                                                if (clean.length > 0) {
+                                                    const letter = clean[0]
+                                                    const nums = clean.slice(1)
+                                                    const main = nums.slice(0, 8)
+                                                    const last = nums.slice(8, 9)
+                                                    v = `${letter}${main ? "-" + main : ""}${last ? "-" + last : ""}`
+                                                }
+                                                set({ rif: v })
+                                            }}
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between mt-10 slide-in stagger-3">
-                                    <button
-                                        onClick={prevStep}
-                                        className="flex items-center gap-2 text-gray-400 hover:text-gray-600 transition-colors"
-                                    >
-                                        <ArrowLeft className="w-4 h-4" />
-                                        Atrás
-                                    </button>
-                                    <button
-                                        onClick={nextStep}
-                                        disabled={!canProceed()}
-                                        className={`flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold transition-all duration-300 ${canProceed()
-                                            ? "text-white hover:scale-105 hover:shadow-xl"
-                                            : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                            }`}
-                                        style={{ backgroundColor: canProceed() ? brandGold : undefined }}
-                                    >
-                                        Siguiente paso
-                                        <ArrowRight className="w-4 h-4" />
-                                    </button>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 36 }}>
+                                    <BackBtn onClick={prev} />
+                                    <NextBtn onClick={next} disabled={!canNext()}>
+                                        Siguiente <ArrowRight size={16} />
+                                    </NextBtn>
                                 </div>
                             </div>
-                        </div>
+                        </Wrap>
                     )}
 
-                    {/* Step 2: Team Size */}
-                    {currentStep === 2 && (
-                        <div className="min-h-[calc(100vh-96px)] flex items-center justify-center px-6 py-12">
-                            <div className="w-full max-w-lg">
-                                <div className="text-center mb-10">
-                                    <div
-                                        className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-6 card-enter"
-                                        style={{ backgroundColor: `${brandGold}20` }}
-                                    >
-                                        <Users className="w-8 h-8" style={{ color: brandGold }} />
-                                    </div>
-                                    <h2 className="text-3xl font-bold mb-2 slide-in" style={{ color: brandNavy }}>
-                                        ¿Qué tan grande es tu equipo?
-                                    </h2>
-                                    <p className="text-gray-500 slide-in stagger-1">
-                                        Selecciona una opción para personalizar tu experiencia.
-                                    </p>
+                    {/* ── STEP 2: SECTOR ─────────────────── */}
+                    {step === 2 && (
+                        <Wrap exiting={exiting}>
+                            <div style={{ width: "100%", maxWidth: 600 }}>
+                                <div className="ob-enter" style={{ marginBottom: 32 }}>
+                                    <EyebrowStep n={2} />
+                                    <Heading>¿En qué sector opera tu negocio?</Heading>
+                                    <Sub>Cada sector tiene requerimientos fiscales distintos. Esto nos permite prepararte la solución correcta.</Sub>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 slide-in stagger-2">
+                                <div className="ob-enter s1" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                                     {[
-                                        { value: "solo", label: "Propietario único", emoji: "🧑" },
-                                        { value: "small", label: "2-5 personas", emoji: "👥" },
-                                        { value: "medium", label: "6-20 personas", emoji: "👨‍👩‍👧‍👦" },
-                                        { value: "large", label: "Empresa corporativa (20+)", emoji: "🏢" },
-                                    ].map((option, index) => (
+                                        { v: "tienda", label: "Tienda / Abasto", icon: "🛒" },
+                                        { v: "restaurante", label: "Restaurante / Cafetería", icon: "☕" },
+                                        { v: "panaderia", label: "Panadería / Frutería", icon: "🥖" },
+                                        { v: "farmacia", label: "Farmacia / Ferretería", icon: "💊" },
+                                        { v: "multisede", label: "Multi-sede / Franquicia", icon: "🏬" },
+                                        { v: "otro", label: "Otro tipo de negocio", icon: "📦" },
+                                    ].map(opt => (
                                         <button
-                                            key={option.value}
-                                            onClick={() => {
-                                                updateFormData({ employeeCount: option.value })
-                                                setTimeout(nextStep, 400)
-                                            }}
-                                            className={`group relative p-6 rounded-2xl border-2 text-left transition-all duration-300 hover:scale-105 hover:shadow-xl ${formData.employeeCount === option.value
-                                                    ? "bg-amber-50 shadow-lg"
-                                                    : "bg-white border-gray-100 hover:border-amber-200"
-                                                }`}
-                                            style={{
-                                                borderColor: formData.employeeCount === option.value ? brandGold : undefined,
-                                                animationDelay: `${index * 0.1}s`
-                                            }}
+                                            key={opt.v}
+                                            className={`ob-card ${form.sector === opt.v ? "selected" : ""}`}
+                                            onClick={() => { set({ sector: opt.v }); setTimeout(next, 360) }}
+                                            style={{ padding: "20px 24px" }}
                                         >
-                                            <span className="text-3xl mb-3 block">{option.emoji}</span>
-                                            <span className="font-semibold text-gray-900">{option.label}</span>
-                                            {formData.employeeCount === option.value && (
-                                                <div
-                                                    className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center"
-                                                    style={{ backgroundColor: brandGold }}
-                                                >
-                                                    <Check className="w-4 h-4 text-white" />
+                                            <span style={{ fontSize: 28, display: "block", marginBottom: 10 }}>{opt.icon}</span>
+                                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 600, color: C.white }}>
+                                                {opt.label}
+                                            </span>
+                                            {form.sector === opt.v && (
+                                                <div style={{
+                                                    position: "absolute", top: 10, right: 10,
+                                                    width: 22, height: 22, borderRadius: "50%", background: C.blue,
+                                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                                }}>
+                                                    <Check size={13} color={C.white} strokeWidth={3} />
                                                 </div>
                                             )}
                                         </button>
                                     ))}
                                 </div>
 
-                                <div className="flex items-center justify-start mt-10 slide-in stagger-3">
-                                    <button
-                                        onClick={prevStep}
-                                        className="flex items-center gap-2 text-gray-400 hover:text-gray-600 transition-colors"
-                                    >
-                                        <ArrowLeft className="w-4 h-4" />
-                                        Atrás
-                                    </button>
+                                <div className="ob-enter s2" style={{ marginTop: 28 }}>
+                                    <BackBtn onClick={prev} />
                                 </div>
                             </div>
-                        </div>
+                        </Wrap>
                     )}
 
-                    {/* Step 3: Monthly Volume */}
-                    {currentStep === 3 && (
-                        <div className="min-h-[calc(100vh-96px)] flex items-center justify-center px-6 py-12">
-                            <div className="w-full max-w-lg">
-                                <div className="text-center mb-10">
-                                    <div
-                                        className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-6 card-enter"
-                                        style={{ backgroundColor: `${brandGold}20` }}
-                                    >
-                                        <DollarSign className="w-8 h-8" style={{ color: brandGold }} />
-                                    </div>
-                                    <h2 className="text-3xl font-bold mb-2 slide-in" style={{ color: brandNavy }}>
-                                        ¿Cuál es tu volumen de ventas mensual?
-                                    </h2>
-                                    <p className="text-gray-500 slide-in stagger-1">
-                                        Usa un estimado, esto nos ayuda a ajustar tus límites de facturación.
-                                    </p>
+                    {/* ── STEP 3: EQUIPO ─────────────────── */}
+                    {step === 3 && (
+                        <Wrap exiting={exiting}>
+                            <div style={{ width: "100%", maxWidth: 540 }}>
+                                <div className="ob-enter" style={{ marginBottom: 32 }}>
+                                    <EyebrowStep n={3} />
+                                    <Heading>¿Cuántas personas usan el sistema?</Heading>
+                                    <Sub>Esto determina cuántos usuarios y cajas necesitas activar.</Sub>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 slide-in stagger-2">
+                                <div className="ob-enter s1" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                                     {[
-                                        { value: "low", label: "Emprendedor (Hasta $5k)", emoji: "💵" },
-                                        { value: "medium", label: "$5,000 - $20,000", emoji: "💰" },
-                                        { value: "high", label: "$20,000 - $100,000", emoji: "💎" },
-                                        { value: "enterprise", label: "Alto Volumen (100k+)", emoji: "🚀" },
-                                    ].map((option, index) => (
+                                        { v: "solo", label: "Solo yo (dueño/cajero único)", sub: "1 usuario · 1 caja" },
+                                        { v: "small", label: "2 a 5 personas", sub: "Equipo pequeño · hasta 2 sedes" },
+                                        { v: "medium", label: "6 a 20 personas", sub: "Equipo mediano · multi-sede" },
+                                        { v: "large", label: "Más de 20 personas", sub: "Empresa con múltiples sucursales" },
+                                    ].map(opt => (
                                         <button
-                                            key={option.value}
-                                            onClick={() => {
-                                                updateFormData({ monthlyVolume: option.value })
-                                                setTimeout(nextStep, 400)
-                                            }}
-                                            className={`group relative p-6 rounded-2xl border-2 text-left transition-all duration-300 hover:scale-105 hover:shadow-xl ${formData.monthlyVolume === option.value
-                                                    ? "bg-amber-50 shadow-lg"
-                                                    : "bg-white border-gray-100 hover:border-amber-200"
-                                                }`}
-                                            style={{
-                                                borderColor: formData.monthlyVolume === option.value ? brandGold : undefined,
-                                                animationDelay: `${index * 0.1}s`
-                                            }}
+                                            key={opt.v}
+                                            className={`ob-card ${form.employeeCount === opt.v ? "selected" : ""}`}
+                                            onClick={() => { set({ employeeCount: opt.v }); setTimeout(next, 360) }}
+                                            style={{ padding: "18px 24px" }}
                                         >
-                                            <span className="text-3xl mb-3 block">{option.emoji}</span>
-                                            <span className="font-semibold text-gray-900 text-sm">{option.label}</span>
-                                            {formData.monthlyVolume === option.value && (
-                                                <div
-                                                    className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center"
-                                                    style={{ backgroundColor: brandGold }}
-                                                >
-                                                    <Check className="w-4 h-4 text-white" />
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                <div>
+                                                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 4 }}>{opt.label}</p>
+                                                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight }}>{opt.sub}</p>
                                                 </div>
-                                            )}
-                                        </button>
-                                    ))}
-                                </div>
-
-                                <div className="flex items-center justify-start mt-10 slide-in stagger-3">
-                                    <button
-                                        onClick={prevStep}
-                                        className="flex items-center gap-2 text-gray-400 hover:text-gray-600 transition-colors"
-                                    >
-                                        <ArrowLeft className="w-4 h-4" />
-                                        Atrás
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Step 4: Choose Solution */}
-                    {currentStep === 4 && (
-                        <div className="min-h-[calc(100vh-96px)] flex items-center justify-center px-6 py-12">
-                            <div className="w-full max-w-4xl">
-                                <div className="text-center mb-12">
-                                    <div
-                                        className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-6 card-enter"
-                                        style={{ backgroundColor: `${brandGold}20` }}
-                                    >
-                                        <span className="text-3xl">🎯</span>
-                                    </div>
-                                    <h2 className="text-3xl font-bold mb-2 slide-in" style={{ color: brandNavy }}>
-                                        Selecciona tu herramienta de trabajo
-                                    </h2>
-                                    <p className="text-gray-500 slide-in stagger-1">
-                                        ¿Cómo planeas gestionar tus ventas?
-                                    </p>
-                                </div>
-
-                                <div className="grid md:grid-cols-3 gap-6 slide-in stagger-2">
-                                    {[
-                                        {
-                                            id: "agora",
-                                            icon: Smartphone,
-                                            name: "Midaz Ágora",
-                                            description: "Terminal POS N82 (Todo en uno)",
-                                            tag: "Más popular",
-                                            tagColor: "bg-green-100 text-green-700",
-                                            ideal: "Tiendas y comercios",
-                                        },
-                                        {
-                                            id: "web",
-                                            icon: Monitor,
-                                            name: "Midaz Web",
-                                            description: "Sistema Web (Para PC) + Impresa Fiscal",
-                                            tag: "Disponible",
-                                            tagColor: "bg-blue-100 text-blue-700",
-                                            ideal: "Oficinas y servicios",
-                                        },
-                                        {
-                                            id: "gestion",
-                                            icon: BarChart3,
-                                            name: "Gestión",
-                                            description: "Control de inventario + Panel de Gestión",
-                                            tag: "Gratis",
-                                            tagColor: "bg-amber-100 text-amber-700",
-                                            ideal: "Emprendedores",
-                                        },
-                                    ].map((solution, index) => {
-                                        const Icon = solution.icon
-                                        return (
-                                            <button
-                                                key={solution.id}
-                                                onClick={() => {
-                                                    updateFormData({ solution: solution.id as any, plan: null })
-                                                    setTimeout(nextStep, 400)
-                                                }}
-                                                className={`group relative p-8 rounded-3xl border-2 text-left transition-all duration-300 hover:scale-105 hover:shadow-2xl ${formData.solution === solution.id
-                                                        ? "bg-amber-50 shadow-xl"
-                                                        : "bg-white border-gray-100 hover:border-amber-200"
-                                                    }`}
-                                                style={{
-                                                    borderColor: formData.solution === solution.id ? brandGold : undefined,
-                                                    animationDelay: `${index * 0.15}s`
-                                                }}
-                                            >
-                                                <div className="absolute top-4 right-4">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${solution.tagColor}`}>
-                                                        {solution.tag}
-                                                    </span>
-                                                </div>
-
-                                                <div
-                                                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6"
-                                                    style={{ backgroundColor: brandNavy }}
-                                                >
-                                                    <Icon className="w-7 h-7 text-white" />
-                                                </div>
-
-                                                <h3 className="text-xl font-bold mb-2" style={{ color: brandNavy }}>
-                                                    {solution.name}
-                                                </h3>
-                                                <p className="text-gray-500 text-sm mb-4">
-                                                    {solution.description}
-                                                </p>
-                                                <p className="text-xs text-gray-400">
-                                                    Ideal para: {solution.ideal}
-                                                </p>
-
-                                                {formData.solution === solution.id && (
-                                                    <div
-                                                        className="absolute bottom-4 right-4 w-8 h-8 rounded-full flex items-center justify-center"
-                                                        style={{ backgroundColor: brandGold }}
-                                                    >
-                                                        <Check className="w-5 h-5 text-white" />
+                                                {form.employeeCount === opt.v && (
+                                                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: C.blue, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                        <Check size={14} color={C.white} strokeWidth={3} />
                                                     </div>
                                                 )}
-                                            </button>
-                                        )
-                                    })}
+                                            </div>
+                                        </button>
+                                    ))}
                                 </div>
 
-                                <div className="flex items-center justify-start mt-10 slide-in stagger-3">
-                                    <button
-                                        onClick={prevStep}
-                                        className="flex items-center gap-2 text-gray-400 hover:text-gray-600 transition-colors"
-                                    >
-                                        <ArrowLeft className="w-4 h-4" />
-                                        Atrás
-                                    </button>
+                                <div className="ob-enter s2" style={{ marginTop: 28 }}>
+                                    <BackBtn onClick={prev} />
                                 </div>
                             </div>
-                        </div>
+                        </Wrap>
                     )}
 
-                    {/* Step 5: Choose Plan */}
-                    {currentStep === 5 && formData.solution && (
-                        <div className="min-h-[calc(100vh-96px)] flex items-center justify-center px-6 py-12">
-                            <div className="w-full max-w-3xl">
-                                <div className="text-center mb-12">
-                                    <div
-                                        className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-6 card-enter"
-                                        style={{ backgroundColor: `${brandGold}20` }}
-                                    >
-                                        <span className="text-3xl">💎</span>
-                                    </div>
-                                    <h2 className="text-3xl font-bold mb-2 slide-in" style={{ color: brandNavy }}>
-                                        Elige el motor de tu crecimiento
-                                    </h2>
-                                    <p className="text-gray-500 slide-in stagger-1">
-                                        Sin compromisos: escala o cambia tu plan cuando lo necesites.
-                                    </p>
+                    {/* ── STEP 4: VOLUMEN ────────────────── */}
+                    {step === 4 && (
+                        <Wrap exiting={exiting}>
+                            <div style={{ width: "100%", maxWidth: 540 }}>
+                                <div className="ob-enter" style={{ marginBottom: 32 }}>
+                                    <EyebrowStep n={4} />
+                                    <Heading>¿Cuánto factura tu negocio al mes?</Heading>
+                                    <Sub>Usa un estimado en dólares. Nos ayuda a ajustar el plan correcto para tu operación.</Sub>
                                 </div>
 
-                                <div className="grid md:grid-cols-2 gap-6 slide-in stagger-2">
-                                    {plansByProduct[formData.solution].map((plan, index) => (
+                                <div className="ob-enter s1" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                    {[
+                                        { v: "low", label: "Hasta $5,000", sub: "Negocio en crecimiento o nuevo" },
+                                        { v: "medium", label: "$5,000 — $20,000", sub: "Comercio establecido" },
+                                        { v: "high", label: "$20,000 — $100,000", sub: "Negocio consolidado" },
+                                        { v: "enterprise", label: "Más de $100,000", sub: "Alto volumen o multi-sede" },
+                                    ].map(opt => (
+                                        <button
+                                            key={opt.v}
+                                            className={`ob-card ${form.monthlyVolume === opt.v ? "selected" : ""}`}
+                                            onClick={() => { set({ monthlyVolume: opt.v }); setTimeout(next, 360) }}
+                                            style={{ padding: "18px 24px" }}
+                                        >
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                <div>
+                                                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 4 }}>{opt.label}</p>
+                                                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight }}>{opt.sub}</p>
+                                                </div>
+                                                {form.monthlyVolume === opt.v && (
+                                                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: C.blue, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                        <Check size={14} color={C.white} strokeWidth={3} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <div className="ob-enter s2" style={{ marginTop: 28 }}>
+                                    <BackBtn onClick={prev} />
+                                </div>
+                            </div>
+                        </Wrap>
+                    )}
+
+                    {/* ── STEP 5: SOLUCIÓN ───────────────── */}
+                    {step === 5 && (
+                        <Wrap exiting={exiting}>
+                            <div style={{ width: "100%", maxWidth: 900 }}>
+                                <div className="ob-enter" style={{ marginBottom: 32, textAlign: "center" }}>
+                                    <EyebrowStep n={5} />
+                                    <Heading>¿Cuál es tu setup actual?</Heading>
+                                    <Sub>Elige el sistema que mejor se adapta a tu operación.</Sub>
+                                </div>
+
+                                <div className="ob-enter s1" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+                                    {/* Agora */}
+                                    <button
+                                        className={`ob-card ${form.solution === "agora" ? "selected" : ""}`}
+                                        onClick={() => { set({ solution: "agora", plan: null }); setTimeout(next, 380) }}
+                                        style={{ padding: 28 }}
+                                    >
+                                        <div style={{ display: "inline-block", background: C.goldBg, border: "1px solid rgba(244,154,64,0.3)", borderRadius: 20, padding: "3px 12px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.gold, marginBottom: 16 }}>Hardware incluido</div>
+                                        <div style={{ width: 48, height: 48, borderRadius: 10, background: "rgba(0,75,224,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+                                            <Smartphone size={24} color={C.blueLight} />
+                                        </div>
+                                        <h3 style={{ fontFamily: "'Funnel Display', sans-serif", fontWeight: 700, fontSize: 20, color: C.white, marginBottom: 8 }}>Midaz Agora</h3>
+                                        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight, lineHeight: 1.5, marginBottom: 20 }}>
+                                            Terminal fiscal + App Android + Backoffice web. Opera offline. Impresora fiscal integrada.
+                                        </p>
+                                        <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                                            {["Todo-en-uno con hardware incluido", "Multi-sede con dashboard unificado", "Factura y cobra sin internet"].map(f => (
+                                                <li key={f} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                                                    <CheckMark />
+                                                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight, lineHeight: 1.4 }}>{f}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        {form.solution === "agora" && (
+                                            <div style={{ position: "absolute", top: 12, right: 12, width: 24, height: 24, borderRadius: "50%", background: C.blue, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                <Check size={14} color={C.white} strokeWidth={3} />
+                                            </div>
+                                        )}
+                                    </button>
+
+                                    {/* Web */}
+                                    <button
+                                        className={`ob-card ${form.solution === "web" ? "selected" : ""}`}
+                                        onClick={() => { set({ solution: "web", plan: null }); setTimeout(next, 380) }}
+                                        style={{ padding: 28 }}
+                                    >
+                                        <div style={{ display: "inline-block", background: "rgba(0,75,224,0.12)", border: "1px solid rgba(0,75,224,0.3)", borderRadius: 20, padding: "3px 12px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.blueLight, marginBottom: 16 }}>PC / Tablet</div>
+                                        <div style={{ width: 48, height: 48, borderRadius: 10, background: "rgba(0,75,224,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+                                            <Monitor size={24} color={C.blueLight} />
+                                        </div>
+                                        <h3 style={{ fontFamily: "'Funnel Display', sans-serif", fontWeight: 700, fontSize: 20, color: C.white, marginBottom: 8 }}>Midaz Web</h3>
+                                        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight, lineHeight: 1.5, marginBottom: 20 }}>
+                                            Sistema web desde el navegador. Conecta impresoras fiscales. Sin instalar nada.
+                                        </p>
+                                        <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                                            {["Ya tienes computadoras o tablets", "Impresora fiscal propia", "Multi-usuario con 94 permisos"].map(f => (
+                                                <li key={f} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                                                    <CheckMark />
+                                                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight, lineHeight: 1.4 }}>{f}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        {form.solution === "web" && (
+                                            <div style={{ position: "absolute", top: 12, right: 12, width: 24, height: 24, borderRadius: "50%", background: C.blue, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                <Check size={14} color={C.white} strokeWidth={3} />
+                                            </div>
+                                        )}
+                                    </button>
+
+                                    {/* Asesor */}
+                                    <button
+                                        className={`ob-card ${form.solution === "asesor" ? "selected" : ""}`}
+                                        onClick={() => { set({ solution: "asesor", plan: null }); setTimeout(next, 380) }}
+                                        style={{ padding: 28 }}
+                                    >
+                                        <div style={{ display: "inline-block", background: C.goldBg, border: "1px solid rgba(244,154,64,0.3)", borderRadius: 20, padding: "3px 12px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.gold, marginBottom: 16 }}>Sin costo</div>
+                                        <div style={{ width: 48, height: 48, borderRadius: 10, background: "rgba(0,75,224,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+                                            <HelpCircle size={24} color={C.blueLight} />
+                                        </div>
+                                        <h3 style={{ fontFamily: "'Funnel Display', sans-serif", fontWeight: 700, fontSize: 20, color: C.white, marginBottom: 8 }}>No sé cuál elegir</h3>
+                                        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight, lineHeight: 1.5, marginBottom: 20 }}>
+                                            Cuéntanos tu caso y el equipo de Midaz te recomienda la solución correcta sin compromiso.
+                                        </p>
+                                        <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                                            {["Asesoría personalizada gratis", "Demo presencial o virtual", "Respuesta en menos de 24h"].map(f => (
+                                                <li key={f} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                                                    <CheckMark />
+                                                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight, lineHeight: 1.4 }}>{f}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        {form.solution === "asesor" && (
+                                            <div style={{ position: "absolute", top: 12, right: 12, width: 24, height: 24, borderRadius: "50%", background: C.blue, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                <Check size={14} color={C.white} strokeWidth={3} />
+                                            </div>
+                                        )}
+                                    </button>
+                                </div>
+
+                                <div className="ob-enter s2" style={{ marginTop: 28 }}>
+                                    <BackBtn onClick={prev} />
+                                </div>
+                            </div>
+                        </Wrap>
+                    )}
+
+                    {/* ── STEP 6: PLAN ───────────────────── */}
+                    {step === 6 && form.solution && form.solution !== "asesor" && (
+                        <Wrap exiting={exiting}>
+                            <div style={{ width: "100%", maxWidth: 720 }}>
+                                <div className="ob-enter" style={{ marginBottom: 32, textAlign: "center" }}>
+                                    <EyebrowStep n={6} />
+                                    <Heading>Elige el motor de tu crecimiento</Heading>
+                                    <Sub>Sin compromisos — cambia o cancela cuando quieras.</Sub>
+                                </div>
+
+                                <div className="ob-enter s1" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                    {plansByProduct[form.solution as "agora" | "web"].map(plan => (
                                         <button
                                             key={plan.id}
-                                            onClick={() => {
-                                                updateFormData({ plan: plan.id })
-                                                setTimeout(nextStep, 400)
-                                            }}
-                                            className={`group relative p-8 rounded-3xl border-2 text-left transition-all duration-300 hover:scale-105 hover:shadow-2xl ${formData.plan === plan.id
-                                                    ? "bg-amber-50 shadow-xl"
-                                                    : "bg-white border-gray-100 hover:border-amber-200"
-                                                }`}
-                                            style={{
-                                                borderColor: formData.plan === plan.id ? brandGold : undefined,
-                                                animationDelay: `${index * 0.15}s`
-                                            }}
+                                            className={`ob-card ${form.plan === plan.id ? "selected" : ""}`}
+                                            onClick={() => { set({ plan: plan.id }); setTimeout(next, 380) }}
+                                            style={{ padding: "28px 28px 24px" }}
                                         >
                                             {plan.recommended && (
-                                                <div
-                                                    className="absolute -top-3 left-6 px-4 py-1 rounded-full text-white text-xs font-semibold"
-                                                    style={{ backgroundColor: brandGold }}
-                                                >
+                                                <div style={{ position: "absolute", top: -12, left: 24, background: C.gold, color: C.white, fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, borderRadius: 20, padding: "4px 14px" }}>
                                                     Recomendado
                                                 </div>
                                             )}
-
-                                            <div className="flex justify-between items-start mb-6">
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                                                 <div>
-                                                    <h3 className="text-2xl font-bold" style={{ color: brandNavy }}>
-                                                        {plan.name}
-                                                    </h3>
-                                                    <p className="text-gray-500 text-sm">{plan.description}</p>
+                                                    <h3 style={{ fontFamily: "'Funnel Display', sans-serif", fontWeight: 700, fontSize: 22, color: C.white, marginBottom: 4 }}>{plan.name}</h3>
+                                                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight }}>{plan.description}</p>
                                                 </div>
-                                                <div className="text-right">
-                                                    <div className="text-3xl font-bold" style={{ color: brandNavy }}>
-                                                        {plan.price}
-                                                    </div>
-                                                    <div className="text-gray-400 text-sm">{plan.period}</div>
+                                                <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 16 }}>
+                                                    <div style={{ fontFamily: "'Funnel Display', sans-serif", fontWeight: 700, fontSize: 28, color: C.white }}>{plan.price}</div>
+                                                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight }}>{plan.period}</div>
                                                 </div>
                                             </div>
-
-                                            <ul className="space-y-3">
-                                                {plan.features.map((feature, i) => (
-                                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-600">
-                                                        <Check className="w-4 h-4 flex-shrink-0" style={{ color: brandGold }} />
-                                                        {feature}
+                                            <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+                                                {plan.features.map(f => (
+                                                    <li key={f} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                                                        <CheckMark />
+                                                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blueLight, lineHeight: 1.4 }}>{f}</span>
                                                     </li>
                                                 ))}
                                             </ul>
-
-                                            {formData.plan === plan.id && (
-                                                <div
-                                                    className="absolute bottom-4 right-4 w-8 h-8 rounded-full flex items-center justify-center"
-                                                    style={{ backgroundColor: brandGold }}
-                                                >
-                                                    <Check className="w-5 h-5 text-white" />
+                                            {form.plan === plan.id && (
+                                                <div style={{ position: "absolute", bottom: 16, right: 16, width: 26, height: 26, borderRadius: "50%", background: C.blue, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                    <Check size={15} color={C.white} strokeWidth={3} />
                                                 </div>
                                             )}
                                         </button>
                                     ))}
                                 </div>
 
-                                <div className="flex items-center justify-start mt-10 slide-in stagger-3">
-                                    <button
-                                        onClick={prevStep}
-                                        className="flex items-center gap-2 text-gray-400 hover:text-gray-600 transition-colors"
-                                    >
-                                        <ArrowLeft className="w-4 h-4" />
-                                        Atrás
-                                    </button>
+                                <div className="ob-enter s2" style={{ marginTop: 28 }}>
+                                    <BackBtn onClick={prev} />
                                 </div>
                             </div>
-                        </div>
+                        </Wrap>
                     )}
 
-                    {/* Step 6: Success */}
-                    {currentStep === 6 && (
-                        <div className="min-h-[calc(100vh-96px)] flex items-center justify-center px-6 py-12">
-                            <div className="max-w-lg text-center">
-                                <div className="mb-8 card-enter">
-                                    <div
-                                        className="w-24 h-24 mx-auto rounded-full flex items-center justify-center shadow-2xl relative"
-                                        style={{ backgroundColor: brandGold }}
-                                    >
-                                        <Check className="w-12 h-12 text-white" />
-                                        <div
-                                            className="absolute inset-0 rounded-full"
-                                            style={{
-                                                backgroundColor: brandGold,
-                                                animation: 'pulse-ring 2s ease-in-out infinite',
-                                                opacity: 0.3
-                                            }}
-                                        />
+                    {/* ── STEP 6: ASESOR ─────────────────── */}
+                    {step === 6 && form.solution === "asesor" && (
+                        <Wrap exiting={exiting}>
+                            <div style={{ width: "100%", maxWidth: 520, textAlign: "center" }}>
+                                <div className="ob-enter">
+                                    <div style={{ width: 80, height: 80, borderRadius: "50%", margin: "0 auto 24px", background: C.navyCard, border: `2px solid ${C.gold}`, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+                                        <Headphones size={36} color={C.gold} />
+                                        <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: `2px solid ${C.gold}`, animation: "pulse-ring 2.5s ease-in-out infinite", opacity: 0.35 }} />
                                     </div>
-                                </div>
-
-                                <h1 className="text-4xl font-bold mb-4 slide-in" style={{ color: brandNavy }}>
-                                    ¡Bienvenido a la familia Midaz!
-                                </h1>
-                                <p className="text-xl text-gray-500 mb-8 slide-in stagger-1">
-                                    Tu entorno de gestión ya está activo.
-                                </p>
-
-                                <div className="bg-gray-50 rounded-3xl p-6 mb-8 text-left slide-in stagger-2">
-                                    <h3 className="text-sm font-medium text-gray-400 mb-4">Detalles de tu suscripción</h3>
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-600">Negocio</span>
-                                            <span className="font-semibold" style={{ color: brandNavy }}>{formData.businessName}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-600">Solución</span>
-                                            <span className="font-semibold" style={{ color: brandNavy }}>
-                                                {formData.solution === "agora" ? "Midaz Ágora" :
-                                                    formData.solution === "web" ? "Midaz Web" : "Gestión"}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-600">Plan</span>
-                                            <span className="font-semibold capitalize" style={{ color: brandNavy }}>{formData.plan}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    className="rounded-2xl p-6 mb-8 text-left slide-in stagger-3"
-                                    style={{ backgroundColor: `${brandGold}15` }}
-                                >
-                                    <p style={{ color: brandNavy }}>
-                                        <strong>📧 ¡Te enviamos una guía a tu correo!</strong>
+                                    <h2 style={{ fontFamily: "'Funnel Display', sans-serif", fontWeight: 700, fontSize: "clamp(26px, 4vw, 40px)", color: C.white, lineHeight: 1.1, marginBottom: 12 }}>
+                                        ¡Solicitud recibida!
+                                    </h2>
+                                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.blueLight, lineHeight: 1.6, marginBottom: 28 }}>
+                                        Un asesor de Midaz te contactará al <strong style={{ color: C.white }}>{form.phone || "número que indicaste"}</strong> para recomendarte la solución correcta.
                                     </p>
                                 </div>
 
-                                <button
-                                    onClick={finishOnboarding}
-                                    className="group inline-flex items-center gap-3 px-10 py-5 text-white rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl slide-in stagger-4"
-                                    style={{ backgroundColor: brandGold }}
-                                >
-                                    Ir al inicio
-                                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </button>
+                                <div className="ob-enter s1" style={{ background: C.navyCard, border: `1px solid ${C.blueBorder}`, borderRadius: 12, padding: 24, textAlign: "left", marginBottom: 24 }}>
+                                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.blueLight, fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.08em", marginBottom: 16 }}>Qué pasa ahora</p>
+                                    {["El equipo revisa tu solicitud (menos de 2h hábiles)", "Un asesor te escribe por WhatsApp para agendar", "Demo presencial o virtual según tu preferencia", "Activación del sistema en 24h una vez decidido"].map((s, i) => (
+                                        <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: i < 3 ? 14 : 0 }}>
+                                            <div style={{ width: 24, height: 24, borderRadius: "50%", flexShrink: 0, background: C.blue, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 700, color: C.white }}>{i + 1}</div>
+                                            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.blueLight, lineHeight: 1.5 }}>{s}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="ob-enter s2">
+                                    <button onClick={finish} style={{ display: "inline-flex", alignItems: "center", gap: 10, background: C.blue, color: C.white, border: "none", borderRadius: 8, cursor: "pointer", fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: 15, padding: "14px 32px", transition: "background 0.2s, transform 0.2s" }}
+                                        onMouseEnter={e => { e.currentTarget.style.background = "#0040c0"; e.currentTarget.style.transform = "translateY(-2px)" }}
+                                        onMouseLeave={e => { e.currentTarget.style.background = C.blue; e.currentTarget.style.transform = "translateY(0)" }}>
+                                        Volver al inicio <ArrowRight size={16} />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        </Wrap>
                     )}
+
+                    {/* ── STEP 7: ÉXITO ──────────────────── */}
+                    {step === 7 && (
+                        <Wrap exiting={exiting}>
+                            <div style={{ width: "100%", maxWidth: 560, textAlign: "center" }}>
+                                <div className="ob-enter">
+                                    <div style={{ width: 80, height: 80, borderRadius: "50%", margin: "0 auto 24px", background: C.blue, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+                                        <Check size={40} color={C.white} strokeWidth={2.5} />
+                                        <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: C.blue, animation: "pulse-ring 2.5s ease-in-out infinite", opacity: 0.35 }} />
+                                    </div>
+                                    <h2 style={{ fontFamily: "'Funnel Display', sans-serif", fontWeight: 700, fontSize: "clamp(28px, 4vw, 44px)", color: C.white, lineHeight: 1.1, marginBottom: 12 }}>
+                                        ¡Acceso anticipado solicitado!
+                                    </h2>
+                                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.blueLight, lineHeight: 1.6, marginBottom: 28 }}>
+                                        El equipo de Midaz te contactará al <strong style={{ color: C.white }}>{form.phone || "número indicado"}</strong> para confirmar los detalles y coordinar la activación.
+                                    </p>
+                                </div>
+
+                                <div className="ob-enter s1" style={{ background: C.navyCard, border: `1px solid ${C.blueBorder}`, borderRadius: 12, padding: "20px 24px", textAlign: "left", marginBottom: 20 }}>
+                                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.blueLight, fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.08em", marginBottom: 14 }}>Resumen de tu solicitud</p>
+                                    {[
+                                        { label: "Negocio", value: form.businessName || "—" },
+                                        { label: "Contacto", value: form.email || "—" },
+                                        { label: "Sistema", value: form.solution === "agora" ? "Midaz Agora" : "Midaz Web" },
+                                        { label: "Plan", value: form.plan ? form.plan.charAt(0).toUpperCase() + form.plan.slice(1) : "—" },
+                                    ].map((r, i, arr) => (
+                                        <div key={r.label} style={{ display: "flex", justifyContent: "space-between", paddingBottom: 10, marginBottom: 10, borderBottom: i < arr.length - 1 ? "1px solid rgba(0,75,224,0.1)" : "none" }}>
+                                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.blueLight }}>{r.label}</span>
+                                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 600, color: C.white }}>{r.value}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="ob-enter s2" style={{ background: "rgba(244,154,64,0.08)", border: "1px solid rgba(244,154,64,0.25)", borderRadius: 12, padding: "16px 20px", textAlign: "left", marginBottom: 28 }}>
+                                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.gold, fontWeight: 600, marginBottom: 4 }}>¿Qué sigue?</p>
+                                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.blueLight, lineHeight: 1.5 }}>
+                                        Recibirás confirmación por correo y nuestro equipo te escribirá por WhatsApp en menos de 24 horas para coordinar la activación de tu sistema Midaz.
+                                    </p>
+                                </div>
+
+                                <div className="ob-enter s3">
+                                    <button onClick={finish} style={{ display: "inline-flex", alignItems: "center", gap: 10, background: C.blue, color: C.white, border: "none", borderRadius: 8, cursor: "pointer", fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: 15, padding: "14px 32px", transition: "background 0.2s, transform 0.2s" }}
+                                        onMouseEnter={e => { e.currentTarget.style.background = "#0040c0"; e.currentTarget.style.transform = "translateY(-2px)" }}
+                                        onMouseLeave={e => { e.currentTarget.style.background = C.blue; e.currentTarget.style.transform = "translateY(0)" }}>
+                                        Volver al inicio <ArrowRight size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        </Wrap>
+                    )}
+
                 </main>
             </div>
         </>

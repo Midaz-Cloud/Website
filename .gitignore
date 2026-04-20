@@ -25,3 +25,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+cambiovisual.md
+CLAUDE.md
+dist
+claude 
+.qwen
+.claude
+.agents
+
