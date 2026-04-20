@@ -9,7 +9,10 @@
       "WebFetch(domain:magicui.design)",
       "Bash(npx shadcn@latest add @magicui/animated-beam @magicui/particles @magicui/line-shadow-text @magicui/highlighter @magicui/bento-grid @magicui/pointer --overwrite)",
       "Bash(node -p \"require\\('./package.json'\\).dependencies?.tailwindcss || require\\('./package.json'\\).devDependencies?.tailwindcss\")",
-      "Bash(node -p \"require\\('./package.json'\\).dependencies?.['rough-notation'] || 'NOT INSTALLED'\")"
+      "Bash(node -p \"require\\('./package.json'\\).dependencies?.['rough-notation'] || 'NOT INSTALLED'\")",
+      "WebFetch(domain:squareup.com)",
+      "WebFetch(domain:www.pexels.com)",
+      "WebFetch(domain:www.youtube.com)"
     ]
   }
 }

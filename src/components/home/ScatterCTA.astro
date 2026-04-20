@@ -1,0 +1,324 @@
+---
+import ParticlesBg from "@/components/react/ParticlesBg";
+
+export interface TrailImage {
+  src: string;
+  alt?: string;
+  sticker?: boolean;
+}
+
+export interface Props {
+  heading: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta: { label: string; href: string };
+  images: TrailImage[];
+  spawnDistance?: number;
+  imageDuration?: number;
+}
+
+const {
+  heading,
+  primaryCta,
+  secondaryCta,
+  images,
+  spawnDistance = 80,
+  imageDuration = 1500,
+} = Astro.props;
+---
+
+<section
+  id="contacto"
+  class="trail-section"
+  data-spawn-distance={spawnDistance}
+  data-image-duration={imageDuration}
+>
+  <ParticlesBg
+    client:visible
+    color="#7ba8ff"
+    quantity={60}
+    staticity={30}
+    size={0.6}
+  />
+
+  <div class="trail-pool" hidden>
+    {
+      images.map((img) => (
+        <div
+          class="trail-template"
+          data-sticker={img.sticker ? "true" : "false"}
+        >
+          <img
+            src={img.src}
+            alt={img.alt ?? ""}
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="trail-canvas" aria-hidden="true"></div>
+
+  <div class="trail-content">
+    <h2 class="trail-heading" set:html={heading} />
+    <div class="trail-actions">
+      <a class="btn btn-primary" href={primaryCta.href}>{primaryCta.label}</a>
+      <a class="btn btn-secondary" href={secondaryCta.href}
+        >{secondaryCta.label}</a
+      >
+    </div>
+    <p class="trail-note">El equipo te contacta en menos de 24 horas.</p>
+  </div>
+</section>
+
+<style>
+  .trail-section {
+    position: relative;
+    background: #07143a;
+    color: #f5f5f0;
+    padding: clamp(8rem, 16vw, 14rem) 1rem;
+    font-family: "Inter", system-ui, sans-serif;
+    overflow: hidden;
+    cursor: default;
+    isolation: isolate;
+  }
+
+  .trail-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ── Trail items (creados por JS) ── */
+
+  .trail-canvas :global(.trail-item) {
+    position: absolute;
+    width: var(--size, 140px);
+    height: var(--size, 140px);
+    margin-top: calc(var(--size, 140px) / -2);
+    margin-left: calc(var(--size, 140px) / -2);
+    animation: trail-in-out var(--duration, 1500ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: transform, opacity;
+  }
+
+  .trail-canvas :global(.trail-item img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    display: block;
+  }
+
+  .trail-canvas :global(.trail-item.is-sticker img) {
+    object-fit: contain;
+    border-radius: 0;
+    box-shadow: none;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+  }
+
+  @keyframes trail-in-out {
+    0% {
+      opacity: 0;
+      transform: rotate(var(--rot, 0deg)) scale(0.4);
+    }
+    15% {
+      opacity: 1;
+      transform: rotate(var(--rot, 0deg)) scale(1);
+    }
+    70% {
+      opacity: 1;
+      transform: rotate(var(--rot, 0deg)) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: rotate(var(--rot, 0deg)) scale(0.85);
+    }
+  }
+
+  /* ── Contenido central ── */
+
+  .trail-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .trail-content > * {
+    pointer-events: auto;
+  }
+
+  .trail-heading {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.05;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  .trail-heading :global(em) {
+    font-style: italic;
+    color: #f49a40;
+  }
+
+  .trail-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn {
+    padding: 0.875rem 1.75rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+      transform 200ms ease,
+      background 200ms ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn-primary {
+    background: #f49a40;
+    color: #07143a;
+  }
+
+  .btn-primary:hover {
+    background: #ffb05a;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: #f5f5f0;
+    border: 1px solid rgba(245, 245, 240, 0.35);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(245, 245, 240, 0.08);
+    border-color: rgba(245, 245, 240, 0.6);
+  }
+
+  .trail-note {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(169, 204, 255, 0.6);
+    letter-spacing: 0.01em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .trail-canvas :global(.trail-item) {
+      animation: trail-in-out-reduced 800ms ease forwards;
+    }
+
+    @keyframes trail-in-out-reduced {
+      0% {
+        opacity: 0;
+      }
+      30%,
+      70% {
+        opacity: 0.9;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+  }
+</style>
+
+<script>
+  function initMouseTrail() {
+    const sections = document.querySelectorAll<HTMLElement>(".trail-section");
+
+    sections.forEach((section) => {
+      const canvas = section.querySelector<HTMLElement>(".trail-canvas");
+      const templates =
+        section.querySelectorAll<HTMLElement>(".trail-template");
+
+      if (!canvas || templates.length === 0) return;
+
+      const spawnDistance = parseInt(section.dataset.spawnDistance ?? "80", 10);
+      const duration = parseInt(section.dataset.imageDuration ?? "1500", 10);
+
+      let lastX: number | null = null;
+      let lastY: number | null = null;
+      let templateIndex = 0;
+
+      const sizes = [110, 130, 150, 170];
+      const rotations = [-12, -8, -5, -3, 3, 5, 8, 12];
+
+      function pick<T>(arr: T[]): T {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function spawnImage(x: number, y: number) {
+        const template = templates[templateIndex % templates.length];
+        templateIndex++;
+
+        const isSticker = template.dataset.sticker === "true";
+        const item = document.createElement("div");
+        item.className = "trail-item" + (isSticker ? " is-sticker" : "");
+
+        const size = pick(sizes);
+        const rot = pick(rotations);
+
+        item.style.setProperty("--size", `${size}px`);
+        item.style.setProperty("--rot", `${rot}deg`);
+        item.style.setProperty("--duration", `${duration}ms`);
+        item.style.left = `${x}px`;
+        item.style.top = `${y}px`;
+        item.innerHTML = template.innerHTML;
+
+        canvas.appendChild(item);
+        item.addEventListener("animationend", () => item.remove(), {
+          once: true,
+        });
+      }
+
+      function onMove(e: MouseEvent) {
+        const rect = section.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (lastX === null || lastY === null) {
+          spawnImage(x, y);
+          lastX = x;
+          lastY = y;
+          return;
+        }
+
+        const dx = x - lastX;
+        const dy = y - lastY;
+
+        if (Math.sqrt(dx * dx + dy * dy) >= spawnDistance) {
+          spawnImage(x, y);
+          lastX = x;
+          lastY = y;
+        }
+      }
+
+      section.addEventListener("mousemove", onMove);
+      section.addEventListener("mouseleave", () => {
+        lastX = null;
+        lastY = null;
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", initMouseTrail);
+  if (document.readyState !== "loading") initMouseTrail();
+  else document.addEventListener("DOMContentLoaded", initMouseTrail);
+</script>
