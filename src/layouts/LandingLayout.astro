@@ -78,5 +78,14 @@ const jsonLd = {
     </head>
     <body class="bg-landing-bg font-poppins text-landing-navy antialiased">
         <slot />
+        <script>
+            // Scroll suave con inercia (Lenis). Se desactiva si el sistema pide reducir movimiento.
+            import Lenis from "lenis";
+            import "lenis/dist/lenis.css";
+
+            if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                new Lenis({ autoRaf: true, lerp: 0.09, anchors: { offset: -96 } });
+            }
+        </script>
     </body>
 </html>

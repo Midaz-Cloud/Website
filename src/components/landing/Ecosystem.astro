@@ -68,8 +68,8 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
                     products.map((product, i) => (
                         <div
                             class:list={[
-                                "absolute inset-0 flex items-center justify-center transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none",
-                                i === 0 ? "opacity-100" : "pointer-events-none translate-x-8 opacity-0",
+                                "absolute inset-0 flex items-center justify-center transition-[opacity,transform,filter] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
+                                i === 0 ? "opacity-100" : "pointer-events-none translate-x-16 scale-95 opacity-0 blur-md",
                             ]}
                             data-product-slide={i}
                             aria-hidden={i === 0 ? "false" : "true"}
@@ -140,8 +140,10 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
                 slide.classList.toggle("opacity-0", !on);
                 slide.classList.toggle("pointer-events-none", !on);
                 // La saliente se va hacia la izquierda; las demás esperan a la derecha.
-                slide.classList.toggle("-translate-x-8", !on && i === prev);
-                slide.classList.toggle("translate-x-8", !on && i !== prev);
+                slide.classList.toggle("-translate-x-16", !on && i === prev);
+                slide.classList.toggle("translate-x-16", !on && i !== prev);
+                slide.classList.toggle("scale-95", !on);
+                slide.classList.toggle("blur-md", !on);
                 slide.setAttribute("aria-hidden", String(!on));
             });
             const tab = tabs[active];
