@@ -1,0 +1,96 @@
+---
+const socials = [
+    { name: "Facebook", href: "#", src: "/landing/icons/facebook.svg", w: 11, h: 22 },
+    { name: "LinkedIn", href: "#", src: "/landing/icons/linkedin.svg", w: 22, h: 22 },
+    { name: "X", href: "#", src: "/landing/icons/x.svg", w: 23, h: 23 },
+    { name: "Instagram", href: "#", src: "/landing/icons/instagram.svg", w: 22, h: 22 },
+];
+const ecosystem = [
+    ["Midaz Web", "Fila Cero", "Atlas", "Ágora"],
+    ["MidazPay", "Midaz App", "Midaz Marketplace", "Hermez - Asistente IA"],
+];
+const support = [
+    { label: "Dudas frecuentes", href: "#dudas" },
+    { label: "Centro de ayuda", href: "#" },
+    { label: "Contacto y soporte", href: "#contacto" },
+    { label: "Solicitud de Demo", href: "/comenzar" },
+];
+const legal = ["Términos y condiciones", "Política de privacidad"];
+const heading = "font-poppins text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-white/70";
+const link = "text-sm font-semibold leading-5 text-white hover:underline";
+---
+
+<footer id="contacto" class="overflow-hidden bg-landing-blue pb-12 text-white">
+    <div class="mx-auto flex max-w-[896px] flex-col items-center px-4 pt-8 sm:px-8">
+        <form
+            action="/comenzar"
+            method="get"
+            class="relative flex w-full max-w-[672px] items-center rounded-full border border-white/20 bg-white/[0.18] py-[9px] pl-6 pr-[9px] shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.05)] backdrop-blur-[2px] sm:h-[58px] sm:pl-[29px]"
+        >
+            <label for="footer-email" class="sr-only">Correo electrónico</label>
+            <input
+                id="footer-email"
+                name="email"
+                type="email"
+                required
+                placeholder="Escribe tu correo electrónico"
+                class="min-w-0 flex-1 bg-transparent py-[10px] text-base tracking-[0.45px] text-white placeholder:text-white/70 focus:outline-none"
+            />
+            <button
+                type="submit"
+                class="shrink-0 rounded-full bg-white px-5 py-3 text-base font-semibold leading-7 text-landing-blue drop-shadow-[0_1px_1px_rgba(0,0,0,0.05)] transition-colors hover:bg-white/90 sm:px-8"
+            >
+                Contactar ahora
+            </button>
+        </form>
+        <p class="pt-[14px] text-center text-sm font-medium leading-5 tracking-[-0.35px] text-white/90">
+            Tu cerebro operativo y fiscal. Factura, cobra y cumple con el SENIAT desde un solo sistema.
+        </p>
+        <nav aria-label="Redes sociales" class="flex items-center gap-5 pb-12 pt-10">
+            {
+                socials.map((s) => (
+                    <a href={s.href} aria-label={s.name} class="flex size-[23px] items-center justify-center opacity-100 transition-opacity hover:opacity-80">
+                        <img src={s.src} alt="" width={s.w} height={s.h} />
+                    </a>
+                ))
+            }
+        </nav>
+    </div>
+
+    <div class="-mb-4 flex h-[19vw] max-h-[242px] items-start justify-center overflow-hidden" aria-hidden="true">
+        <p class="whitespace-nowrap font-funnel text-[26vw] font-semibold uppercase leading-[0.78] tracking-[-0.05em] xl:text-[332.8px] xl:leading-[259.58px]">MIDAZ</p>
+    </div>
+
+    <div class="relative mx-auto max-w-[1152px] px-4 sm:px-8 lg:px-12 xl:px-[48px]">
+        <div class="flex flex-col gap-8 pt-4 md:flex-row md:items-start md:justify-between">
+            <div class="flex flex-col gap-3 border-t border-white/30 pt-3 md:w-[286px]">
+                <h2 class={heading}>Ecosistema</h2>
+                <div class="flex gap-3">
+                    {
+                        ecosystem.map((col, i) => (
+                            <ul class:list={["flex flex-col gap-2", i === 0 ? "w-[120px]" : "flex-1"]}>
+                                {col.map((item) => (
+                                    <li class="whitespace-nowrap">
+                                        <a href="#productos" class={link}>{item}</a>
+                                    </li>
+                                ))}
+                            </ul>
+                        ))
+                    }
+                </div>
+            </div>
+            <div class="flex flex-col gap-3 border-t border-white/30 pt-3 md:w-[226px] md:pb-14">
+                <h2 class={heading}>Soporte</h2>
+                <ul class="flex flex-col gap-3">
+                    {support.map((s) => <li><a href={s.href} class={link}>{s.label}</a></li>)}
+                </ul>
+            </div>
+            <div class="flex flex-col gap-3 border-t border-white/30 pt-3 md:w-[172px] md:pb-7">
+                <h2 class={heading}>Legal</h2>
+                <ul class="flex flex-col gap-2">
+                    {legal.map((l) => <li><a href="#" class={link}>{l}</a></li>)}
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>

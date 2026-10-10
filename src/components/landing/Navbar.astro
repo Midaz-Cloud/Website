@@ -1,0 +1,109 @@
+---
+const links = [
+    { label: "Home", href: "#inicio", active: true },
+    { label: "Soluciones", href: "#soluciones" },
+    { label: "Nuestros productos", href: "#productos" },
+    { label: "Cero multas", href: "#cero-multas" },
+    { label: "Dudas", href: "#dudas" },
+    { label: "Hermez", href: "#hermez" },
+];
+---
+
+<header class="sticky top-0 z-50 px-4 pt-4 sm:px-6 lg:px-10 lg:pt-[30px]">
+    <nav
+        class="relative mx-auto flex max-w-[1200px] items-center justify-between rounded-full border border-[rgba(0,75,224,0.35)] bg-[rgba(0,75,224,0.12)] px-5 py-[13px] shadow-[8px_20px_18px_-18px_rgba(0,0,0,0.35),0_0_15px_0_rgba(255,255,255,0.05)] backdrop-blur-[25px] lg:px-[25px]"
+        aria-label="Principal"
+    >
+        <!-- Línea de brillo superior -->
+        <span
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-x-[10%] top-0 h-px rounded-full bg-gradient-to-r from-[rgba(0,75,224,0)] via-[rgba(0,75,224,0.7)] to-[rgba(0,75,224,0)]"
+        ></span>
+
+        <a href="#inicio" class="relative flex shrink-0 items-center pt-[2px]" aria-label="Midaz, inicio">
+            <img src="/landing/icons/logo.svg" alt="Midaz" width="128" height="30" class="h-[29.5px] w-32" />
+        </a>
+
+        <ul class="hidden items-center gap-6 lg:flex">
+            {
+                links.map((link) => (
+                    <li>
+                        <a
+                            href={link.href}
+                            class:list={[
+                                "font-[Inter] text-sm leading-5 transition-colors",
+                                link.active
+                                    ? "font-bold text-landing-blue underline underline-offset-2"
+                                    : "font-medium text-landing-navy hover:text-landing-blue",
+                            ]}
+                            aria-current={link.active ? "page" : undefined}
+                        >
+                            {link.label}
+                        </a>
+                    </li>
+                ))
+            }
+        </ul>
+
+        <div class="flex items-center gap-3 lg:gap-4">
+            <button
+                type="button"
+                class="relative hidden h-7 w-12 items-center rounded-full border border-[rgba(0,75,224,0.2)] bg-landing-navy py-[3px] pl-[1px] backdrop-blur-[2px] sm:flex"
+                aria-label="Cambiar tema"
+                aria-pressed="false"
+            >
+                <img src="/landing/icons/moon.svg" alt="" width="14" height="14" class="absolute right-[6px] top-[6px] size-[14px]" />
+                <img src="/landing/icons/sun.svg" alt="" width="28" height="28" class="relative -mt-[2px] size-7" />
+            </button>
+            <a
+                href="/comenzar"
+                class="hidden rounded-full border border-landing-navy px-5 py-2 text-center font-[Inter] text-sm font-semibold leading-5 text-landing-navy shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-colors hover:bg-landing-navy hover:text-white sm:inline-flex"
+            >
+                Probar Demo
+            </a>
+            <a
+                href="#"
+                class="inline-flex rounded-full bg-landing-blue px-4 py-2 text-center font-[Inter] text-sm font-semibold leading-5 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#003bb3] sm:px-5"
+            >
+                Iniciar sesión
+            </a>
+
+            <!-- Menú móvil -->
+            <details class="group relative lg:hidden">
+                <summary
+                    class="flex size-9 cursor-pointer list-none items-center justify-center rounded-full text-landing-navy [&::-webkit-details-marker]:hidden"
+                    aria-label="Abrir menú"
+                >
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                        <path class="group-open:hidden" d="M4 7h16M4 12h16M4 17h16" />
+                        <path class="hidden group-open:block" d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                </summary>
+                <ul
+                    class="absolute right-0 top-12 flex w-60 flex-col gap-1 rounded-2xl border border-[rgba(0,75,224,0.2)] bg-white/95 p-3 shadow-xl backdrop-blur"
+                >
+                    {
+                        links.map((link) => (
+                            <li>
+                                <a
+                                    href={link.href}
+                                    class:list={[
+                                        "block rounded-xl px-3 py-2 font-[Inter] text-sm",
+                                        link.active ? "font-bold text-landing-blue" : "font-medium text-landing-navy hover:bg-landing-bg",
+                                    ]}
+                                >
+                                    {link.label}
+                                </a>
+                            </li>
+                        ))
+                    }
+                    <li class="sm:hidden">
+                        <a href="/comenzar" class="mt-1 block rounded-xl border border-landing-navy px-3 py-2 text-center font-[Inter] text-sm font-semibold">
+                            Probar Demo
+                        </a>
+                    </li>
+                </ul>
+            </details>
+        </div>
+    </nav>
+</header>

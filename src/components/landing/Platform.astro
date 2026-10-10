@@ -1,0 +1,61 @@
+---
+const features = [
+    {
+        title: ["Automatización", "Fiscal"],
+        icon: { src: "/landing/fiscal.webp", width: 190, height: 157 },
+        text: "Emisión automática de facturas digitales e impresas, reporte X y Z.",
+    },
+    {
+        title: ["Tasa BCV", "en vivo"],
+        icon: { src: "/landing/bank.webp", width: 174, height: 144 },
+        text: "Sincronización automática de divisas y múltiples medios de pago.",
+    },
+    {
+        title: ["Modo", "Offline"],
+        icon: { src: "/landing/offline.webp", width: 171, height: 142 },
+        text: "Sigue vendiendo en tu local aunque se vaya el internet.",
+    },
+];
+---
+
+<section id="cero-multas" class="relative isolate overflow-hidden py-5">
+    <!-- Fondo: gradientes suaves y el isotipo 3D -->
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+        <div class="absolute left-0 top-0 h-72 w-96 bg-[linear-gradient(143deg,rgba(128,141,116,0.15)_0%,rgba(128,141,116,0)_50%)] blur-[32px]"></div>
+        <div class="absolute right-0 top-0 h-72 w-96 bg-[linear-gradient(217deg,rgba(152,171,204,0.15)_0%,rgba(152,171,204,0)_50%)] blur-[32px]"></div>
+        <img
+            src="/landing/midaz-3d.webp"
+            alt=""
+            width="630"
+            height="556"
+            class="absolute bottom-0 left-1/2 w-[min(630px,110vw)] max-w-none -translate-x-1/2 opacity-60"
+            loading="lazy"
+        />
+    </div>
+
+    <div class="mx-auto flex max-w-[1280px] flex-col items-center gap-4 px-4 pb-12 pt-6 sm:px-8 xl:px-12">
+        <h2 class="pt-4 text-center font-funnel text-[clamp(2.25rem,5.5vw,3.375rem)] font-semibold leading-[1.24] tracking-[-0.033em] text-landing-navy">
+            <span class="block">Tranquilidad operativa y cumplimiento fiscal</span>
+            <span class="block text-landing-orange">en una sola plataforma</span>
+        </h2>
+        <p class="max-w-[750px] text-center text-base leading-[25px] text-[rgba(7,20,58,0.6)]">
+            Automatiza el cálculo de impuestos, sincroniza la tasa oficial al instante y mantén tus ventas activas en todo momento.
+        </p>
+
+        <ul class="mt-16 grid w-full max-w-[1024px] gap-7 pb-4 md:grid-cols-3 xl:mt-[67px]">
+            {
+                features.map((f) => (
+                    <li class="relative flex min-h-[410px] flex-col items-center justify-between rounded-[26px] border border-[rgba(152,171,204,0.6)] bg-[linear-gradient(180deg,rgba(152,171,204,0.14)_0%,rgba(152,171,204,0.08)_50%,rgba(152,171,204,0.17)_100%)] p-[37px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.04),inset_0_0_1px_2px_rgba(255,255,255,0.7)] backdrop-blur-[14px]">
+                        <h3 class="text-center font-poppins text-[14.5px] font-extrabold uppercase leading-[19.94px] tracking-[0.725px] text-landing-navy">
+                            {f.title[0]}
+                            <br />
+                            {f.title[1]}
+                        </h3>
+                        <img src={f.icon.src} alt="" width={f.icon.width} height={f.icon.height} class="my-8" loading="lazy" />
+                        <p class="max-w-[239px] text-center text-xs font-semibold leading-4 tracking-[0.3px] text-[rgba(48,52,43,0.8)]">{f.text}</p>
+                    </li>
+                ))
+            }
+        </ul>
+    </div>
+</section>

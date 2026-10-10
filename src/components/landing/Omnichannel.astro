@@ -1,0 +1,40 @@
+---
+const card = "rounded-2xl shadow-[0_12px_30px_-8px_rgba(0,0,0,0.18)] shrink-0";
+---
+
+<section id="soluciones" class="flex flex-col items-center gap-[25px] overflow-hidden pb-24 pt-12">
+    <img src="/landing/icons/badge.svg" alt="" aria-hidden="true" width="69" height="69" class="-mb-[10px] -mt-[1px] h-[69px] w-[69px]" />
+
+    <h2 class="px-4 text-center font-funnel text-[clamp(2.25rem,6vw,3.375rem)] font-semibold leading-none tracking-[-0.03em] text-[#030712]">
+        <span class="block">La misma operación,</span>
+        <span class="block">donde ocurra la venta</span>
+    </h2>
+
+    <div class="relative flex w-full max-w-[1280px] items-center justify-center px-4 xl:min-h-[520px]">
+        <!-- Tarjetas flotantes izquierda -->
+        <div aria-hidden="true" class="absolute left-[-24px] top-[167px] hidden items-center xl:flex">
+            <div class:list={[card, "h-[192px] w-[112px] bg-gradient-to-b from-[#872054] to-[#f43f8e] opacity-[0.85]"]}></div>
+            <div class:list={[card, "h-[240px] w-[144px] bg-landing-blue"]}></div>
+            <div class:list={[card, "h-[256px] w-[160px] bg-[#262626]"]}></div>
+        </div>
+        <!-- Tarjetas flotantes derecha -->
+        <div aria-hidden="true" class="absolute left-[68.83%] top-[167px] hidden items-center xl:flex">
+            <div class:list={[card, "h-[256px] w-[160px] bg-[#451a03]"]}></div>
+            <div class:list={[card, "h-[240px] w-[144px] bg-landing-blue"]}></div>
+            <div class:list={[card, "h-[192px] w-[112px] bg-[linear-gradient(120deg,#022c22_0%,#14532d_100%)] opacity-[0.85]"]}></div>
+        </div>
+
+        <img
+            src="/landing/macbook-full.webp"
+            alt="Midaz Web en una laptop: listado de facturas emitidas"
+            width="633"
+            height="385"
+            class="relative h-auto w-full max-w-[633px]"
+            loading="lazy"
+        />
+    </div>
+
+    <h3 class="max-w-[599px] px-4 font-poppins text-center text-[clamp(1.5rem,4vw,2.125rem)] font-bold leading-[1.18] tracking-[-0.85px] text-landing-blue">
+        Factura y cobra en el mostrador, con la cuenta hecha
+    </h3>
+</section>

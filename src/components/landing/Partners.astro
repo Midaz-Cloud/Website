@@ -1,0 +1,22 @@
+---
+const partners = [
+    { name: "Disglobal", src: "/landing/icons/disglobal.svg", width: 234, height: 35 },
+    { name: "Credicard", src: "/landing/icons/credicard.svg", width: 171, height: 51 },
+];
+---
+
+<section class="px-4 pb-16 pt-[65px] sm:px-8">
+    <h2 class="text-center font-funnel text-[clamp(1.75rem,4vw,2.125rem)] font-semibold leading-[1.18] text-landing-navy">
+        Manejado por los comercios<br />
+        <span class="text-landing-blue">líderes en Venezuela</span>
+    </h2>
+    <ul class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        {
+            partners.map((p) => (
+                <li class="flex h-[70px] w-full max-w-[287px] items-center justify-center rounded-2xl border border-[#8ca3c8] px-[17px] py-[13px]">
+                    <img src={p.src} alt={p.name} width={p.width} height={p.height} class="h-auto max-w-full" loading="lazy" />
+                </li>
+            ))
+        }
+    </ul>
+</section>

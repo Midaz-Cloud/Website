@@ -1,0 +1,36 @@
+---
+import "../styles/globals.css";
+
+const {
+    title = "Midaz - Sin errores. Sin multas.",
+    description = "MIDAZ es la infraestructura operativa e integral para el comercio moderno: facturación, ventas, inventario y cumplimiento fiscal en un solo sistema.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="description" content={description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="es_VE" />
+
+        <!-- Google Fonts: Funnel Display + Poppins + Inter -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@600;700&family=Inter:wght@500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+
+        <title>{title}</title>
+    </head>
+    <body class="bg-landing-bg font-poppins text-landing-navy antialiased">
+        <slot />
+    </body>
+</html>
