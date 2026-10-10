@@ -2,9 +2,35 @@
 import "../styles/globals.css";
 
 const {
-    title = "Midaz - Sin errores. Sin multas.",
-    description = "MIDAZ es la infraestructura operativa e integral para el comercio moderno: facturación, ventas, inventario y cumplimiento fiscal en un solo sistema.",
+    title = "Midaz: facturación, ventas e inventario sin errores ni multas",
+    description = "Sistema de facturación, punto de venta e inventario para comercios en Venezuela. IVA e IGTF automáticos, tasa BCV en vivo, modo offline y libros fiscales al día.",
+    image = "/landing/og-image.jpg",
 } = Astro.props;
+
+// Con `site` definido en astro.config.mjs se generan URLs absolutas (canonical, og:url, og:image).
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const ogImage = Astro.site ? new URL(image, Astro.site).href : image;
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "Organization",
+            name: "Midaz",
+            logo: Astro.site ? new URL("/logo-blue.svg", Astro.site).href : "/logo-blue.svg",
+            ...(Astro.site && { url: Astro.site.href }),
+        },
+        {
+            "@type": "SoftwareApplication",
+            name: "Midaz",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Web, Android, iOS",
+            description,
+            areaServed: "VE",
+            inLanguage: "es",
+        },
+    ],
+};
 ---
 
 <!doctype html>
@@ -13,12 +39,29 @@ const {
         <meta charset="UTF-8" />
         <meta name="description" content={description} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#004be0" />
+        <meta name="robots" content="index, follow" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
+        {canonical && <link rel="canonical" href={canonical} />}
+
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Midaz" />
+        <meta property="og:locale" content="es_VE" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:locale" content="es_VE" />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Midaz. Sin errores. Sin multas." />
+        {canonical && <meta property="og:url" content={canonical} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={ogImage} />
+
+        <link rel="preload" as="image" href="/landing/phone.webp" type="image/webp" fetchpriority="high" />
+        <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
         <!-- Google Fonts: Funnel Display + Poppins + Inter -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
