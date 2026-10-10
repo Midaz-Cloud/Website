@@ -9,6 +9,8 @@ const {
 
 // Con `site` definido en astro.config.mjs se generan URLs absolutas (canonical, og:url, og:image).
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+// Los despliegues de vista previa de Vercel no se indexan.
+const robots = process.env.VERCEL_ENV === "preview" ? "noindex, nofollow" : "index, follow";
 const ogImage = Astro.site ? new URL(image, Astro.site).href : image;
 
 const jsonLd = {
@@ -40,8 +42,9 @@ const jsonLd = {
         <meta name="description" content={description} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#004be0" />
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content={robots} />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="sitemap" href="/sitemap.xml" />
         <meta name="generator" content={Astro.generator} />
         {canonical && <link rel="canonical" href={canonical} />}
 
