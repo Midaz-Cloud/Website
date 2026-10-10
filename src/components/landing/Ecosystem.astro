@@ -1,7 +1,17 @@
 ---
 import Overview from "./Overview.astro";
 
-const products = ["Midaz Web (Core)", "Fila Cero", "Atlas", "Ágora", "MidazPay", "Midaz App", "Midaz Marketplace"];
+// Cada pestaña muestra su pantalla en el panel central. Fila Cero, Atlas y Ágora aún no tienen
+// captura en el Figma, así que muestran un panel con su nombre hasta que se agregue.
+const products = [
+    { name: "Midaz Web (Core)", image: { src: "/landing/macbook.webp", width: 604, height: 385, alt: "Midaz Web en una laptop mostrando el módulo de facturas" }, laptop: true },
+    { name: "Fila Cero" },
+    { name: "Atlas" },
+    { name: "Ágora" },
+    { name: "MidazPay", image: { src: "/landing/pos.webp", width: 314, height: 411, alt: "MidazPay en un punto de venta Disglobal" } },
+    { name: "Midaz App", image: { src: "/landing/phone.webp", width: 361, height: 594, alt: "Midaz App: pedidos desde la mesa en un iPhone" } },
+    { name: "Midaz Marketplace", image: { src: "/landing/iphone15.webp", width: 196, height: 391, alt: "Midaz Marketplace: ficha de producto en un iPhone" } },
+];
 const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
 ---
 
@@ -19,14 +29,17 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
     <div class="pb-5">
         <div role="tablist" aria-label="Productos Midaz" class="flex gap-[10px] overflow-x-auto px-4 py-2 [scrollbar-width:none] md:flex-wrap md:justify-center" data-product-tabs>
             {
-                products.map((name, i) => (
+                products.map((product, i) => (
                     <button
                         type="button"
                         role="tab"
+                        id={`producto-tab-${i}`}
+                        aria-controls="producto-panel"
                         aria-selected={i === 0 ? "true" : "false"}
+                        tabindex={i === 0 ? 0 : -1}
                         class="group flex h-[42px] shrink-0 items-center justify-center gap-[10px] rounded-[10px] border border-[#d1d5db] bg-white px-5 text-base font-medium leading-4 text-landing-navy transition-colors hover:border-landing-navy aria-selected:border-landing-navy aria-selected:bg-landing-navy aria-selected:h-10 aria-selected:border-0 aria-selected:px-[21.5px] aria-selected:text-white aria-selected:drop-shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
                     >
-                        {name}
+                        {product.name}
                         <img src="/landing/icons/arrow-circle-right.svg" alt="" width="28" height="28" class="hidden size-7 group-aria-selected:block" />
                     </button>
                 ))
@@ -43,9 +56,42 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
             <div class="order-2 aspect-[314/411] overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] lg:order-none lg:h-[411px] lg:w-[314px] lg:shrink-0" style={{ backgroundImage: panelBg }}>
                 <img src="/landing/pos.webp" alt="Punto de venta Disglobal con Midaz" width="314" height="411" class="h-full w-full object-contain" loading="lazy" />
             </div>
-            <div class="relative order-1 col-span-2 aspect-[604/465] lg:order-none lg:h-[465px] lg:w-[604px] lg:shrink-0">
-                <div class="absolute inset-y-0 left-[5.43%] right-[5.43%] rounded-[20px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)]" style={{ backgroundImage: panelBg }}></div>
-                <img src="/landing/macbook.webp" alt="Midaz Web en una laptop mostrando el módulo de facturas" width="604" height="385" class="absolute left-0 top-1/2 w-full -translate-y-1/2" loading="lazy" />
+            <div
+                id="producto-panel"
+                role="tabpanel"
+                aria-labelledby="producto-tab-0"
+                class="relative order-1 col-span-2 aspect-[604/465] lg:order-none lg:h-[465px] lg:w-[604px] lg:shrink-0"
+                data-product-panel
+            >
+                <div class="absolute inset-y-0 left-[5.43%] right-[5.43%] overflow-hidden rounded-[20px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)]" style={{ backgroundImage: panelBg }}></div>
+                {
+                    products.map((product, i) => (
+                        <div
+                            class:list={[
+                                "absolute inset-0 flex items-center justify-center transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none",
+                                i === 0 ? "opacity-100" : "pointer-events-none translate-x-8 opacity-0",
+                            ]}
+                            data-product-slide={i}
+                            aria-hidden={i === 0 ? "false" : "true"}
+                        >
+                            {product.image ? (
+                                <img
+                                    src={product.image.src}
+                                    alt={product.image.alt}
+                                    width={product.image.width}
+                                    height={product.image.height}
+                                    class:list={[product.laptop ? "absolute left-0 top-1/2 w-full -translate-y-1/2" : "h-[88%] w-auto"]}
+                                    loading="lazy"
+                                />
+                            ) : (
+                                <div class="flex flex-col items-center gap-4 px-[12%] text-center text-white">
+                                    <img src="/landing/icons/logo.svg" alt="" width="128" height="30" class="h-[30px] w-32 brightness-0 invert" />
+                                    <p class="font-funnel text-[clamp(2rem,6vw,3.375rem)] font-semibold leading-none tracking-[-0.03em]">{product.name}</p>
+                                </div>
+                            )}
+                        </div>
+                    ))
+                }
             </div>
             <div class="order-3 aspect-[314/411] overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] lg:order-none lg:h-[411px] lg:w-[314px] lg:shrink-0" style={{ backgroundImage: panelBg }}>
                 <div class="flex h-full items-center justify-center">
@@ -65,12 +111,78 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
 </section>
 
 <script>
+    // Pestañas de productos: avanzan solas cada pocos segundos (se pausan con el mouse encima,
+    // con el foco dentro o fuera de pantalla) y cambian la pantalla del panel central.
+    const INTERVAL = 4500;
     document.querySelectorAll<HTMLElement>("[data-product-tabs]").forEach((list) => {
+        const section = list.closest("section")!;
         const tabs = Array.from(list.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
-        tabs.forEach((tab) =>
+        const panel = section.querySelector<HTMLElement>("[data-product-panel]")!;
+        const slides = Array.from(section.querySelectorAll<HTMLElement>("[data-product-slide]"));
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+        let active = 0;
+        let timer: number | undefined;
+        let hovering = false;
+        let focused = false;
+        let visible = false;
+
+        const select = (index: number) => {
+            const prev = active;
+            active = (index + tabs.length) % tabs.length;
+            tabs.forEach((t, i) => {
+                t.setAttribute("aria-selected", String(i === active));
+                t.tabIndex = i === active ? 0 : -1;
+            });
+            panel.setAttribute("aria-labelledby", tabs[active].id);
+            slides.forEach((slide, i) => {
+                const on = i === active;
+                slide.classList.toggle("opacity-100", on);
+                slide.classList.toggle("opacity-0", !on);
+                slide.classList.toggle("pointer-events-none", !on);
+                // La saliente se va hacia la izquierda; las demás esperan a la derecha.
+                slide.classList.toggle("-translate-x-8", !on && i === prev);
+                slide.classList.toggle("translate-x-8", !on && i !== prev);
+                slide.setAttribute("aria-hidden", String(!on));
+            });
+            const tab = tabs[active];
+            list.scrollTo({ left: tab.offsetLeft - (list.clientWidth - tab.offsetWidth) / 2, behavior: "smooth" });
+        };
+
+        const stop = () => window.clearInterval(timer);
+        const start = () => {
+            stop();
+            if (reduced.matches || hovering || focused || !visible) return;
+            timer = window.setInterval(() => select(active + 1), INTERVAL);
+        };
+
+        tabs.forEach((tab, i) =>
             tab.addEventListener("click", () => {
-                tabs.forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
+                select(i);
+                start();
             }),
         );
+        list.addEventListener("keydown", (e) => {
+            const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+            if (!step) return;
+            e.preventDefault();
+            select(active + step);
+            tabs[active].focus();
+        });
+        [list, panel].forEach((el) => {
+            el.addEventListener("mouseenter", () => ((hovering = true), stop()));
+            el.addEventListener("mouseleave", () => ((hovering = false), start()));
+        });
+        // Solo el foco de teclado pausa; un clic con el mouse no debe dejarlo detenido.
+        list.addEventListener("focusin", (e) => {
+            if (!(e.target as HTMLElement).matches(":focus-visible")) return;
+            focused = true;
+            stop();
+        });
+        list.addEventListener("focusout", () => ((focused = false), start()));
+        new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting;
+            start();
+        }).observe(panel);
+        reduced.addEventListener("change", start);
     });
 </script>
