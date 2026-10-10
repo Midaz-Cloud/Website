@@ -1,9 +1,9 @@
 ---
 const socials = [
-    { name: "Facebook", href: "#", src: "/landing/icons/facebook.svg", w: 11, h: 22 },
-    { name: "LinkedIn", href: "#", src: "/landing/icons/linkedin.svg", w: 22, h: 22 },
-    { name: "X", href: "#", src: "/landing/icons/x.svg", w: 23, h: 23 },
-    { name: "Instagram", href: "#", src: "/landing/icons/instagram.svg", w: 22, h: 22 },
+    { name: "Facebook", href: "#", src: "/landing/icons/facebook.svg", w: 11, h: 22, box: 22, ml: 0 },
+    { name: "LinkedIn", href: "#", src: "/landing/icons/linkedin.svg", w: 22, h: 22, box: 22, ml: 20 },
+    { name: "X", href: "#", src: "/landing/icons/x.svg", w: 23, h: 23, box: 23, ml: 27 },
+    { name: "Instagram", href: "#", src: "/landing/icons/instagram.svg", w: 22, h: 22, box: 22, ml: 27 },
 ];
 const ecosystem = [
     ["Midaz Web", "Fila Cero", "Atlas", "Ágora"],
@@ -46,10 +46,10 @@ const link = "text-sm font-semibold leading-5 text-white hover:underline";
         <p class="pt-[14px] text-center text-sm font-medium leading-5 tracking-[-0.35px] text-white/90">
             Tu cerebro operativo y fiscal. Factura, cobra y cumple con el SENIAT desde un solo sistema.
         </p>
-        <nav aria-label="Redes sociales" class="flex items-center gap-5 pb-12 pt-10">
+        <nav aria-label="Redes sociales" class="flex w-[170px] items-start pb-12 pt-10">
             {
                 socials.map((s) => (
-                    <a href={s.href} aria-label={s.name} class="flex size-[23px] items-center justify-center opacity-100 transition-opacity hover:opacity-80">
+                    <a href={s.href} aria-label={s.name} class="flex shrink-0 items-center justify-center opacity-100 transition-opacity hover:opacity-80" style={`width:${s.box}px;height:${s.box}px;margin-left:${s.ml}px`}>
                         <img src={s.src} alt="" width={s.w} height={s.h} />
                     </a>
                 ))
@@ -58,17 +58,17 @@ const link = "text-sm font-semibold leading-5 text-white hover:underline";
     </div>
 
     <div class="-mb-4 flex h-[19vw] max-h-[242px] items-start justify-center overflow-hidden" aria-hidden="true">
-        <p class="whitespace-nowrap font-funnel text-[26vw] font-semibold uppercase leading-[0.78] tracking-[-0.05em] xl:text-[332.8px] xl:leading-[259.58px]">MIDAZ</p>
+        <p class="-translate-x-[0.0225em] whitespace-nowrap font-funnel text-[26vw] font-semibold uppercase leading-[0.78] tracking-[-0.05em] xl:text-[332.8px] xl:leading-[259.58px]">MIDAZ</p>
     </div>
 
-    <div class="relative mx-auto max-w-[1152px] px-4 sm:px-8 lg:px-12 xl:px-[48px]">
+    <div class="relative mx-auto max-w-[1152px] bg-landing-blue px-4 sm:px-8 lg:px-12 xl:px-[48px]">
         <div class="flex flex-col gap-8 pt-4 md:flex-row md:items-start md:justify-between">
             <div class="flex flex-col gap-3 border-t border-white/30 pt-3 md:w-[286px]">
                 <h2 class={heading}>Ecosistema</h2>
                 <div class="flex gap-3">
                     {
                         ecosystem.map((col, i) => (
-                            <ul class:list={["flex flex-col gap-2", i === 0 ? "w-[120px]" : "flex-1"]}>
+                            <ul class:list={["flex flex-col gap-2 leading-5", i === 0 ? "w-[120px]" : "flex-1"]}>
                                 {col.map((item) => (
                                     <li class="whitespace-nowrap">
                                         <a href="#productos" class={link}>{item}</a>
@@ -79,15 +79,15 @@ const link = "text-sm font-semibold leading-5 text-white hover:underline";
                     }
                 </div>
             </div>
-            <div class="flex flex-col gap-3 border-t border-white/30 pt-3 md:w-[226px] md:pb-14">
+            <div class="flex flex-col gap-3 border-t border-white/30 pt-3 md:w-[226px]">
                 <h2 class={heading}>Soporte</h2>
-                <ul class="flex flex-col gap-3">
+                <ul class="flex flex-col gap-3 leading-5">
                     {support.map((s) => <li><a href={s.href} class={link}>{s.label}</a></li>)}
                 </ul>
             </div>
-            <div class="flex flex-col gap-3 border-t border-white/30 pt-3 md:w-[172px] md:pb-7">
+            <div class="flex flex-col gap-3 border-t border-white/30 pt-3 md:w-[172px]">
                 <h2 class={heading}>Legal</h2>
-                <ul class="flex flex-col gap-2">
+                <ul class="flex flex-col gap-2 leading-5">
                     {legal.map((l) => <li><a href="#" class={link}>{l}</a></li>)}
                 </ul>
             </div>

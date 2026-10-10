@@ -13,7 +13,7 @@ const features = [
     {
         title: ["Modo", "Offline"],
         icon: { src: "/landing/offline.webp", width: 171, height: 142 },
-        text: "Sigue vendiendo en tu local aunque se vaya el internet.",
+        text: "Sigue vendiendo en tu local aunque\u00a0se\u00a0vaya\u00a0el\u00a0internet.",
     },
 ];
 ---
@@ -28,12 +28,12 @@ const features = [
             alt=""
             width="630"
             height="556"
-            class="absolute bottom-0 left-1/2 w-[min(630px,110vw)] max-w-none -translate-x-1/2 opacity-60"
+            class="absolute bottom-0 left-1/2 w-[min(630px,110vw)] max-w-none -translate-x-1/2 xl:left-[327px] xl:translate-x-0 opacity-60"
             loading="lazy"
         />
     </div>
 
-    <div class="mx-auto flex max-w-[1280px] flex-col items-center gap-4 px-4 pb-12 pt-6 sm:px-8 xl:px-12">
+    <div class="mx-auto flex max-w-[1280px] flex-col items-center gap-4 px-4 pb-12 pt-6 sm:px-8 xl:px-12 xl:pb-[33px]">
         <h2 class="pt-4 text-center font-funnel text-[clamp(2.25rem,5.5vw,3.375rem)] font-semibold leading-[1.24] tracking-[-0.033em] text-landing-navy">
             <span class="block">Tranquilidad operativa y cumplimiento fiscal</span>
             <span class="block text-landing-orange">en una sola plataforma</span>
@@ -42,10 +42,10 @@ const features = [
             Automatiza el cálculo de impuestos, sincroniza la tasa oficial al instante y mantén tus ventas activas en todo momento.
         </p>
 
-        <ul class="mt-16 grid w-full max-w-[1024px] gap-7 pb-4 md:grid-cols-3 xl:mt-[67px]">
+        <ul class="mt-16 grid w-full max-w-[1024px] gap-7 pb-4 md:grid-cols-3 xl:pb-0 xl:mt-[67px]">
             {
                 features.map((f) => (
-                    <li class="relative flex min-h-[410px] flex-col items-center justify-between rounded-[26px] border border-[rgba(152,171,204,0.6)] bg-[linear-gradient(180deg,rgba(152,171,204,0.14)_0%,rgba(152,171,204,0.08)_50%,rgba(152,171,204,0.17)_100%)] p-[37px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.04),inset_0_0_1px_2px_rgba(255,255,255,0.7)] backdrop-blur-[14px]">
+                    <li class="relative flex min-h-[425px] flex-col items-center justify-between rounded-[26px] border border-[rgba(152,171,204,0.6)] bg-[linear-gradient(180deg,rgba(152,171,204,0.14)_0%,rgba(152,171,204,0.08)_50%,rgba(152,171,204,0.17)_100%)] p-[37px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.04),inset_0_0_1px_2px_rgba(255,255,255,0.7)] backdrop-blur-[14px]">
                         <h3 class="text-center font-poppins text-[14.5px] font-extrabold uppercase leading-[19.94px] tracking-[0.725px] text-landing-navy">
                             {f.title[0]}
                             <br />

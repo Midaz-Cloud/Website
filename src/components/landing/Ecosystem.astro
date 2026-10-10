@@ -5,14 +5,14 @@ const products = ["Midaz Web (Core)", "Fila Cero", "Atlas", "Ágora", "MidazPay"
 const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
 ---
 
-<section id="productos" class="pt-6">
+<section id="productos" class="pt-6 lg:pt-0">
     <header class="mx-auto flex max-w-[673px] flex-col items-center gap-4 px-4 pb-[30px] text-center">
         <h2 class="font-funnel text-[clamp(2.25rem,6vw,3.375rem)] font-semibold leading-[1.02] tracking-[-0.041em] text-landing-navy">
             <span class="block text-landing-orange">Un ecosistema completo,</span>
             <span class="block">no una app suelta</span>
         </h2>
-        <p class="max-w-[641px] text-base leading-[25px] text-[rgba(7,20,58,0.6)]">
-            Empiezas por donde te haga falta y creces sin cambiar de sistema. El inventario, los precios y la contabilidad son los mismos en todos los canales.
+        <p class="max-w-[641px] text-base lg:-mx-2 lg:max-w-none leading-[25px] text-[rgba(7,20,58,0.6)]">
+            Empiezas por donde te haga falta y creces sin cambiar de sistema. El inventario,<br class="hidden lg:inline" /> los precios y la contabilidad son los mismos en todos los canales.
         </p>
     </header>
 
@@ -24,7 +24,7 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
                         type="button"
                         role="tab"
                         aria-selected={i === 0 ? "true" : "false"}
-                        class="group flex h-[42px] shrink-0 items-center justify-center gap-[10px] rounded-[10px] border border-[#d1d5db] bg-white px-[21px] text-base font-medium leading-4 text-landing-navy transition-colors hover:border-landing-navy aria-selected:border-landing-navy aria-selected:bg-landing-navy aria-selected:px-5 aria-selected:text-white aria-selected:drop-shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
+                        class="group flex h-[42px] shrink-0 items-center justify-center gap-[10px] rounded-[10px] border border-[#d1d5db] bg-white px-5 text-base font-medium leading-4 text-landing-navy transition-colors hover:border-landing-navy aria-selected:border-landing-navy aria-selected:bg-landing-navy aria-selected:h-10 aria-selected:border-0 aria-selected:px-[21.5px] aria-selected:text-white aria-selected:drop-shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
                     >
                         {name}
                         <img src="/landing/icons/arrow-circle-right.svg" alt="" width="28" height="28" class="hidden size-7 group-aria-selected:block" />
@@ -35,15 +35,15 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
     </div>
 
     <!-- Galería de dispositivos -->
-    <div class="overflow-hidden pb-4 pt-2">
-        <div class="mx-auto grid max-w-[640px] grid-cols-2 gap-[10px] px-4 lg:flex lg:max-w-none lg:items-center lg:justify-center lg:px-0">
-            <div class="hidden h-[345px] w-[314px] shrink-0 overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] xl:block" style={{ backgroundImage: panelBg }}>
+    <div class="overflow-hidden pb-4 pt-2 lg:pb-[44px] lg:pt-[15px]">
+        <div class="mx-auto grid max-w-[640px] grid-cols-2 gap-[10px] px-4 lg:flex lg:max-w-none lg:items-center lg:justify-center lg:gap-0 lg:px-0 xl:translate-x-[1.5px]">
+            <div class="hidden h-[345px] w-[314px] shrink-0 xl:mr-[10px] overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] xl:block" style={{ backgroundImage: panelBg }}>
                 <img src="/landing/pos.webp" alt="" width="314" height="411" class="h-full w-full object-contain p-2" loading="lazy" />
             </div>
             <div class="order-2 aspect-[314/411] overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] lg:order-none lg:h-[411px] lg:w-[314px] lg:shrink-0" style={{ backgroundImage: panelBg }}>
                 <img src="/landing/pos.webp" alt="Punto de venta Disglobal con Midaz" width="314" height="411" class="h-full w-full object-contain" loading="lazy" />
             </div>
-            <div class="relative order-1 col-span-2 aspect-[604/465] lg:order-none lg:-mx-[1px] lg:h-[465px] lg:w-[604px] lg:shrink-0">
+            <div class="relative order-1 col-span-2 aspect-[604/465] lg:order-none lg:h-[465px] lg:w-[604px] lg:shrink-0">
                 <div class="absolute inset-y-0 left-[5.43%] right-[5.43%] rounded-[20px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)]" style={{ backgroundImage: panelBg }}></div>
                 <img src="/landing/macbook.webp" alt="Midaz Web en una laptop mostrando el módulo de facturas" width="604" height="385" class="absolute left-0 top-1/2 w-full -translate-y-1/2" loading="lazy" />
             </div>
@@ -52,7 +52,7 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
                     <img src="/landing/iphone15.webp" alt="App Midaz en un iPhone mostrando un producto" width="196" height="391" class="h-[95%] w-auto" loading="lazy" />
                 </div>
             </div>
-            <div class="hidden h-[345px] w-[314px] shrink-0 overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] xl:block" style={{ backgroundImage: panelBg }}>
+            <div class="hidden h-[345px] w-[314px] shrink-0 xl:ml-[10px] overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] xl:block" style={{ backgroundImage: panelBg }}>
                 <img src="/landing/pos.webp" alt="" width="314" height="411" class="h-full w-full object-contain p-2" loading="lazy" />
             </div>
         </div>
