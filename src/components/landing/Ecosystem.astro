@@ -8,11 +8,19 @@ const products = [
     { name: "Fila Cero" },
     { name: "Atlas" },
     { name: "Ágora" },
-    { name: "MidazPay", image: { src: "/landing/pos.webp", width: 314, height: 411, alt: "MidazPay en un punto de venta Disglobal" } },
+    { name: "MidazPay", image: { src: "/landing/pos.webp", width: 314, height: 411, alt: "MidazPay en un punto de venta Disglobal" }, fill: true },
     { name: "Midaz App", image: { src: "/landing/phone.webp", width: 361, height: 594, alt: "Midaz App: pedidos desde la mesa en un iPhone" } },
     { name: "Midaz Marketplace", image: { src: "/landing/iphone15.webp", width: 196, height: 391, alt: "Midaz Marketplace: ficha de producto en un iPhone" } },
 ];
 const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
+// Posición de cada tarjeta según su distancia a la activa: centro, vecinas, extremos y fuera de vista.
+// x es el centro de la tarjeta respecto al centro del carrusel (px de Figma a 1280).
+const slots: Record<string, { x: number; w: number; h: number; o: number; z: number }> = {
+    "0": { x: 0, w: 538, h: 465, o: 1, z: 30 },
+    "1": { x: 459, w: 314, h: 411, o: 1, z: 20 },
+    "2": { x: 783, w: 314, h: 345, o: 1, z: 10 },
+    "3": { x: 1107, w: 314, h: 345, o: 0, z: 0 },
+};
 ---
 
 <section id="productos" class="pt-6 lg:pt-0">
@@ -47,60 +55,56 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
         </div>
     </div>
 
-    <!-- Galería de dispositivos -->
+    <!-- Carrusel de dispositivos: todas las tarjetas se deslizan en horizontal y la activa queda al centro.
+         Las medidas de cada posición son las del Figma (centro 538×465, vecinas 314×411, extremos 314×345);
+         --k las escala en pantallas más angostas. -->
     <div class="overflow-hidden pb-4 pt-2 lg:pb-[44px] lg:pt-[15px]">
-        <div class="mx-auto grid max-w-[640px] grid-cols-2 gap-[10px] px-4 lg:flex lg:max-w-none lg:items-center lg:justify-center lg:gap-0 lg:px-0 xl:translate-x-[1.5px]">
-            <div class="hidden h-[345px] w-[314px] shrink-0 xl:mr-[10px] overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] xl:block" style={{ backgroundImage: panelBg }}>
-                <img src="/landing/pos.webp" alt="" width="314" height="411" class="h-full w-full object-contain p-2" loading="lazy" />
-            </div>
-            <div class="order-2 aspect-[314/411] overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] lg:order-none lg:h-[411px] lg:w-[314px] lg:shrink-0" style={{ backgroundImage: panelBg }}>
-                <img src="/landing/pos.webp" alt="Punto de venta Disglobal con Midaz" width="314" height="411" class="h-full w-full object-contain" loading="lazy" />
-            </div>
-            <div
-                id="producto-panel"
-                role="tabpanel"
-                aria-labelledby="producto-tab-0"
-                class="relative order-1 col-span-2 aspect-[604/465] lg:order-none lg:h-[465px] lg:w-[604px] lg:shrink-0"
-                data-product-panel
-            >
-                <div class="absolute inset-y-0 left-[5.43%] right-[5.43%] overflow-hidden rounded-[20px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)]" style={{ backgroundImage: panelBg }}></div>
-                {
-                    products.map((product, i) => (
+        <div
+            id="producto-panel"
+            role="tabpanel"
+            aria-labelledby="producto-tab-0"
+            aria-roledescription="carrusel"
+            class="relative mx-auto h-[calc(var(--k)*465px)] w-full touch-pan-y select-none [--k:0.56] sm:[--k:0.8] lg:[--k:1] xl:translate-x-[1.5px]"
+            data-product-panel
+        >
+            {
+                products.map((product, i) => {
+                    const d = i > products.length / 2 ? i - products.length : i;
+                    const slot = slots[String(Math.min(Math.abs(d), 3))];
+                    return (
                         <div
-                            class:list={[
-                                "absolute inset-0 flex items-center justify-center transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none",
-                                i === 0 ? "opacity-100" : "pointer-events-none translate-x-8 opacity-0",
-                            ]}
+                            class="group absolute left-1/2 top-1/2 transition-[transform,width,height,opacity] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
+                            style={`--x:${Math.sign(d) * slot.x};width:calc(var(--k)*${slot.w}px);height:calc(var(--k)*${slot.h}px);opacity:${slot.o};z-index:${slot.z};transform:translate(-50%,-50%) translateX(calc(var(--x)*var(--k)*1px))`}
                             data-product-slide={i}
-                            aria-hidden={i === 0 ? "false" : "true"}
+                            data-pos={d === 0 ? "center" : "side"}
+                            aria-hidden={d === 0 ? "false" : "true"}
                         >
-                            {product.image ? (
-                                <img
-                                    src={product.image.src}
-                                    alt={product.image.alt}
-                                    width={product.image.width}
-                                    height={product.image.height}
-                                    class:list={[product.laptop ? "absolute left-0 top-1/2 w-full -translate-y-1/2" : "h-[88%] w-auto"]}
-                                    loading="lazy"
-                                />
-                            ) : (
-                                <div class="flex flex-col items-center gap-4 px-[12%] text-center text-white">
-                                    <img src="/landing/icons/logo.svg" alt="" width="128" height="30" class="h-[30px] w-32 brightness-0 invert" />
-                                    <p class="font-funnel text-[clamp(2rem,6vw,3.375rem)] font-semibold leading-none tracking-[-0.03em]">{product.name}</p>
-                                </div>
-                            )}
+                            <div class="absolute inset-0 overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] transition-[border-radius] duration-[900ms] group-data-[pos=center]:rounded-[20px]" style={{ backgroundImage: panelBg }}></div>
+                            <div class="absolute inset-0 flex cursor-pointer items-center justify-center group-data-[pos=center]:cursor-default">
+                                {product.image ? (
+                                    <img
+                                        src={product.image.src}
+                                        alt={product.image.alt}
+                                        width={product.image.width}
+                                        height={product.image.height}
+                                        draggable="false"
+                                        class:list={[
+                                            "relative max-w-none transition-[width,height] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
+                                            product.laptop ? "h-auto w-[94%] group-data-[pos=center]:w-[112.2%]" : product.fill ? "h-full w-auto group-data-[pos=center]:h-[88%]" : "h-[92%] w-auto group-data-[pos=center]:h-[88%]",
+                                        ]}
+                                        loading={i === 0 ? "eager" : "lazy"}
+                                    />
+                                ) : (
+                                    <div class="relative flex flex-col items-center gap-[calc(var(--k)*16px)] px-[12%] text-center text-white">
+                                        <img src="/landing/icons/logo.svg" alt="" width="128" height="30" draggable="false" class="h-auto w-[calc(var(--k)*96px)] brightness-0 invert group-data-[pos=center]:w-[calc(var(--k)*128px)]" />
+                                        <p class="font-funnel text-[calc(var(--k)*30px)] font-semibold leading-none tracking-[-0.03em] group-data-[pos=center]:text-[calc(var(--k)*54px)]">{product.name}</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    ))
-                }
-            </div>
-            <div class="order-3 aspect-[314/411] overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] lg:order-none lg:h-[411px] lg:w-[314px] lg:shrink-0" style={{ backgroundImage: panelBg }}>
-                <div class="flex h-full items-center justify-center">
-                    <img src="/landing/iphone15.webp" alt="App Midaz en un iPhone mostrando un producto" width="196" height="391" class="h-[95%] w-auto" loading="lazy" />
-                </div>
-            </div>
-            <div class="hidden h-[345px] w-[314px] shrink-0 xl:ml-[10px] overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] xl:block" style={{ backgroundImage: panelBg }}>
-                <img src="/landing/pos.webp" alt="" width="314" height="411" class="h-full w-full object-contain p-2" loading="lazy" />
-            </div>
+                    );
+                })
+            }
         </div>
     </div>
 
@@ -110,39 +114,54 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
     </Overview>
 </section>
 
-<script>
-    // Pestañas de productos: avanzan solas cada pocos segundos (se pausan con el mouse encima,
-    // con el foco dentro o fuera de pantalla) y cambian la pantalla del panel central.
+<script define:vars={{ slots }}>
+    // Carrusel de productos: avanza solo cada pocos segundos (se pausa con el mouse encima, con el
+    // foco de teclado o fuera de pantalla). Las pestañas, un clic en una tarjeta lateral o deslizar
+    // con el dedo también lo mueven.
     const INTERVAL = 4500;
-    document.querySelectorAll<HTMLElement>("[data-product-tabs]").forEach((list) => {
-        const section = list.closest("section")!;
-        const tabs = Array.from(list.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
-        const panel = section.querySelector<HTMLElement>("[data-product-panel]")!;
-        const slides = Array.from(section.querySelectorAll<HTMLElement>("[data-product-slide]"));
+    document.querySelectorAll("[data-product-tabs]").forEach((list) => {
+        const section = list.closest("section");
+        const tabs = Array.from(list.querySelectorAll('[role="tab"]'));
+        const panel = section.querySelector("[data-product-panel]");
+        const slides = Array.from(section.querySelectorAll("[data-product-slide]"));
+        const n = slides.length;
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const offsets = slides.map((_, i) => (i > n / 2 ? i - n : i));
         let active = 0;
-        let timer: number | undefined;
+        let timer;
         let hovering = false;
         let focused = false;
         let visible = false;
 
-        const select = (index: number) => {
-            const prev = active;
-            active = (index + tabs.length) % tabs.length;
+        const place = (slide, d, animate) => {
+            const slot = slots[String(Math.min(Math.abs(d), 3))];
+            if (!animate) slide.style.transition = "none";
+            slide.style.setProperty("--x", String(Math.sign(d) * slot.x));
+            slide.style.width = `calc(var(--k)*${slot.w}px)`;
+            slide.style.height = `calc(var(--k)*${slot.h}px)`;
+            slide.style.opacity = String(slot.o);
+            slide.style.zIndex = String(slot.z);
+            slide.dataset.pos = d === 0 ? "center" : "side";
+            slide.setAttribute("aria-hidden", String(d !== 0));
+            if (!animate) {
+                slide.getBoundingClientRect();
+                slide.style.transition = "";
+            }
+        };
+
+        const select = (index) => {
+            active = ((index % n) + n) % n;
             tabs.forEach((t, i) => {
                 t.setAttribute("aria-selected", String(i === active));
                 t.tabIndex = i === active ? 0 : -1;
             });
             panel.setAttribute("aria-labelledby", tabs[active].id);
             slides.forEach((slide, i) => {
-                const on = i === active;
-                slide.classList.toggle("opacity-100", on);
-                slide.classList.toggle("opacity-0", !on);
-                slide.classList.toggle("pointer-events-none", !on);
-                // La saliente se va hacia la izquierda; las demás esperan a la derecha.
-                slide.classList.toggle("-translate-x-8", !on && i === prev);
-                slide.classList.toggle("translate-x-8", !on && i !== prev);
-                slide.setAttribute("aria-hidden", String(!on));
+                let d = (((i - active) % n) + n) % n;
+                if (d > n / 2) d -= n;
+                // La tarjeta que da la vuelta (de un extremo al otro) salta sin cruzar el carrusel.
+                place(slide, d, Math.abs(d - offsets[i]) <= n / 2);
+                offsets[i] = d;
             });
             const tab = tabs[active];
             list.scrollTo({ left: tab.offsetLeft - (list.clientWidth - tab.offsetWidth) / 2, behavior: "smooth" });
@@ -154,13 +173,13 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
             if (reduced.matches || hovering || focused || !visible) return;
             timer = window.setInterval(() => select(active + 1), INTERVAL);
         };
+        const go = (index) => {
+            select(index);
+            start();
+        };
 
-        tabs.forEach((tab, i) =>
-            tab.addEventListener("click", () => {
-                select(i);
-                start();
-            }),
-        );
+        tabs.forEach((tab, i) => tab.addEventListener("click", () => go(i)));
+        slides.forEach((slide, i) => slide.addEventListener("click", () => i !== active && go(i)));
         list.addEventListener("keydown", (e) => {
             const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
             if (!step) return;
@@ -168,13 +187,33 @@ const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
             select(active + step);
             tabs[active].focus();
         });
+
+        // Deslizar con el dedo (o arrastrar con el mouse) cambia de tarjeta.
+        let downX = null;
+        panel.addEventListener("pointerdown", (e) => (downX = e.clientX));
+        panel.addEventListener("pointerup", (e) => {
+            if (downX === null) return;
+            const dx = e.clientX - downX;
+            downX = null;
+            if (Math.abs(dx) > 40) go(active + (dx < 0 ? 1 : -1));
+        });
+        panel.addEventListener("pointercancel", () => (downX = null));
+
+        // Escala del carrusel: tamaño de Figma desde 1024px; más angosto, la tarjeta central ocupa ~78% del ancho.
+        const resize = () => {
+            const w = panel.clientWidth;
+            panel.style.setProperty("--k", String(w >= 1024 ? 1 : Math.min(1, (w * 0.78) / 538)));
+        };
+        new ResizeObserver(resize).observe(panel);
+        resize();
+
         [list, panel].forEach((el) => {
             el.addEventListener("mouseenter", () => ((hovering = true), stop()));
             el.addEventListener("mouseleave", () => ((hovering = false), start()));
         });
         // Solo el foco de teclado pausa; un clic con el mouse no debe dejarlo detenido.
         list.addEventListener("focusin", (e) => {
-            if (!(e.target as HTMLElement).matches(":focus-visible")) return;
+            if (!e.target.matches(":focus-visible")) return;
             focused = true;
             stop();
         });
