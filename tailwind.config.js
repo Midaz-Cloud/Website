@@ -13,6 +13,10 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        funnel: ['"Funnel Display"', "system-ui", "sans-serif"],
+        poppins: ["Poppins", "system-ui", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -55,6 +59,15 @@ module.exports = {
           blue: "#1e3a8a",
           gold: "#fbbf24",
           navy: "#0f172a",
+        },
+        // Tokens de la landing (Figma "Landing page - Midaz")
+        landing: {
+          navy: "#07143a",
+          blue: "#004be0",
+          orange: "#e67800",
+          amber: "#ffac44",
+          slate: "#98abcc",
+          bg: "#f6f7fa",
         },
       },
       borderRadius: {

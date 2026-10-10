@@ -1,0 +1,112 @@
+---
+// Hero principal. En ≥1280px replica las posiciones absolutas del Figma (lienzo de 1280×885);
+// por debajo, los mismos elementos fluyen en columna.
+const stats = [
+    { value: "3", unit: "%", label: "IGTF automático por forma de pago", width: 122, unitGap: 16 },
+    { value: "100", unit: "%", label: "Cumplimiento fiscal y libros al día", width: 126, unitGap: 23 },
+    { value: "BCV", label: "Tasa oficial actualizada cada día", width: 143 },
+];
+---
+
+<section id="inicio" class="relative overflow-hidden xl:-mt-[62px]">
+    <div class="relative mx-auto flex max-w-[1280px] flex-col items-center px-4 pb-16 pt-10 sm:px-8 xl:block xl:h-[947px] xl:px-0 xl:pb-0 xl:pt-0">
+        <!-- Marca de agua -->
+        <img
+            src="/landing/icons/hero-vector.svg"
+            alt=""
+            aria-hidden="true"
+            width="901"
+            height="875"
+            class="pointer-events-none absolute left-1/2 top-16 w-[min(901px,140vw)] max-w-none -translate-x-1/2 xl:left-[190px] xl:top-[47px] xl:translate-x-0"
+        />
+        <!-- Halo detrás del teléfono -->
+        <div
+            aria-hidden="true"
+            class="pointer-events-none absolute left-1/2 top-[45%] h-[415px] w-[min(480px,90vw)] -translate-x-1/2 rounded-full bg-[rgba(219,234,254,0.35)] blur-[32px] xl:top-[345px]"
+        ></div>
+
+        <!-- Píldoras de contacto -->
+        <div class="relative z-10 order-1 flex w-full flex-wrap justify-center gap-3 xl:contents">
+            <a
+                href="#contacto"
+                class="flex h-[41px] items-center justify-center gap-[10px] rounded-2xl border border-[rgba(152,171,204,0.3)] bg-white/80 px-[15px] xl:justify-start xl:gap-[9px] xl:pl-[21px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] backdrop-blur-[2px] transition-transform hover:-translate-y-0.5 xl:absolute xl:left-[80px] xl:top-[180px] xl:w-[214px]"
+            >
+                <img src="/landing/icons/call.svg" alt="" width="21" height="21" class="size-[21px]" />
+                <span class="text-base font-semibold leading-[11.25px] text-landing-navy">Contacto directo</span>
+            </a>
+            <a
+                href="/comenzar"
+                class="flex h-[41px] items-center justify-center gap-[10px] rounded-2xl border border-[rgba(152,171,204,0.3)] bg-white/80 px-[13px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] backdrop-blur-[2px] transition-transform hover:-translate-y-0.5 xl:absolute xl:right-[80px] xl:top-[180px] xl:w-[176px]"
+            >
+                <img src="/landing/icons/fast-forward.svg" alt="" width="21" height="21" class="size-[21px]" />
+                <span class="text-base font-semibold leading-[15px] tracking-[-0.25px] text-landing-navy">Solicitar Demo</span>
+            </a>
+        </div>
+
+        <!-- Titular -->
+        <h1
+            class="relative z-0 order-2 mt-10 text-center font-funnel text-[clamp(3rem,10vw,5.625rem)] font-bold leading-[0.84] tracking-[-0.021em] text-landing-navy xl:absolute xl:left-[423px] xl:top-[153px] xl:w-[495px] xl:mt-0 xl:text-[90px] xl:leading-[75px] xl:tracking-[-1.8885px]"
+        >
+            <span class="block">Midaz.</span>
+            <span class="block text-landing-amber">Sin errores.</span>
+            <span class="block">Sin multas.</span>
+        </h1>
+
+        <!-- Teléfono -->
+        <div class="relative z-0 order-3 mt-4 w-[min(361px,80vw)] xl:absolute xl:left-[443px] xl:top-[345px] xl:mt-0 xl:w-[361px]">
+            <img
+                src="/landing/phone.webp"
+                alt="App de pedidos de Midaz en un iPhone"
+                width="361"
+                height="594"
+                class="relative w-full"
+                fetchpriority="high"
+            />
+            <!-- Sombra en el piso -->
+            <div
+                aria-hidden="true"
+                class="absolute -bottom-2 left-1/2 h-[38px] w-[86%] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgba(0,0,0,0.22),rgba(0,0,0,0.07)_45%,rgba(0,0,0,0)_75%)] blur-[11.5px]"
+            ></div>
+        </div>
+
+        <!-- Tarjetas naranjas -->
+        <div class="relative z-10 order-4 mt-8 grid w-full max-w-[400px] gap-4 xl:contents">
+            <div
+                class="rounded-[15px] border-2 border-[rgba(255,149,33,0.5)] bg-[rgba(255,149,33,0.1)] p-[26px] shadow-[0_4px_6px_-4px_rgba(0,0,0,0.1)] backdrop-blur-[10px] xl:absolute xl:left-[755px] xl:top-[437px] xl:w-[400px]"
+            >
+                <p class="text-xs font-semibold uppercase leading-4 tracking-[1.2px] text-[rgba(255,149,33,0.8)]">Flujo unificado</p>
+                <p class="mt-[6px] text-xl font-bold leading-7 text-landing-orange">Facturación, ventas y control en un solo lugar</p>
+            </div>
+            <div
+                class="rounded-[15px] border-2 border-[rgba(255,149,33,0.5)] bg-[rgba(255,149,33,0.1)] p-[26px] shadow-[0_4px_6px_1px_rgba(0,0,0,0.1)] backdrop-blur-[10px] xl:absolute xl:left-[123px] xl:top-[618px] xl:w-[400px]"
+            >
+                <p class="text-xs font-semibold uppercase leading-4 tracking-[1.2px] text-[rgba(255,149,33,0.8)]">Control operativo</p>
+                <p class="mt-[6px] text-xl font-bold leading-7 text-landing-orange">Ventas en caja y reportes de inventario al instante</p>
+            </div>
+        </div>
+
+        <!-- Métricas -->
+        <div class="relative z-10 order-5 mt-10 grid w-full max-w-[560px] grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 xl:contents">
+            <div class="col-span-2 sm:col-span-4 xl:absolute xl:left-[121px] xl:top-[507px] xl:w-[300px]">
+                <p class="flex items-end font-light xl:mt-1 xl:-mb-1 leading-[72px] text-landing-navy">
+                    <span class="text-[clamp(3rem,12vw,4rem)] tracking-[-3.6px]">8 · 16 · 31</span>
+                    <span class="mb-3 ml-2 text-sm font-semibold uppercase tracking-[0.7px] xl:mb-[7px] xl:ml-[5px]">%</span>
+                </p>
+                <p class="mt-1 text-xs leading-[13.5px] tracking-[0.225px] text-landing-navy xl:ml-1">Alícuotas de IVA calculadas automáticamente</p>
+            </div>
+            <div class="contents xl:absolute xl:left-[775px] xl:top-[678px] xl:flex xl:w-[453px] xl:items-start xl:gap-[30px]">
+                {
+                    stats.map((stat) => (
+                        <div class="xl:w-[125px] xl:shrink-0 xl:overflow-visible">
+                            <p class="flex items-end font-light leading-[72px] text-landing-navy xl:mt-2">
+                                <span class="whitespace-nowrap text-[clamp(3rem,12vw,4rem)] tracking-[-3.6px]">{stat.value}</span>
+                                {stat.unit && <span class="mb-3 ml-3 text-sm font-semibold uppercase tracking-[0.7px] xl:mb-[10px] xl:ml-[var(--unit-gap)]" style={`--unit-gap:${stat.unitGap}px`}>{stat.unit}</span>}
+                            </p>
+                            <p class="mt-1 text-xs leading-[13.5px] tracking-[0.225px] text-landing-navy xl:-mt-1" style={`width:${stat.width}px`}>{stat.label}</p>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+    </div>
+</section>
