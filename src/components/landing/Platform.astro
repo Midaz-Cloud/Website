@@ -2,33 +2,33 @@
 const features = [
     {
         title: ["Automatización", "Fiscal"],
-        icon: { src: "/landing/fiscal.webp", width: 190, height: 157 },
+        icon: { src: "/landing/icons/shield-card.svg", width: 123, height: 123 },
         text: "Emisión automática de facturas digitales e impresas, reporte X y Z.",
     },
     {
         title: ["Tasa BCV", "en vivo"],
-        icon: { src: "/landing/bank.webp", width: 174, height: 144 },
+        icon: { src: "/landing/icons/account-balance.svg", width: 113, height: 113 },
         text: "Sincronización automática de divisas y múltiples medios de pago.",
     },
     {
         title: ["Modo", "Offline"],
-        icon: { src: "/landing/offline.webp", width: 171, height: 142 },
+        icon: { src: "/landing/icons/wifi-off.svg", width: 114, height: 114 },
         text: "Sigue vendiendo en tu local aunque\u00a0se\u00a0vaya\u00a0el\u00a0internet.",
     },
 ];
 ---
 
 <section id="cero-multas" class="relative isolate overflow-hidden py-5">
-    <!-- Fondo: gradientes suaves y el isotipo 3D -->
+    <!-- Fondo: gradientes suaves y el isotipo 3D, ubicados respecto al lienzo de 1280px centrado -->
     <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
-        <div class="absolute left-0 top-0 h-72 w-96 bg-[linear-gradient(143deg,rgba(128,141,116,0.15)_0%,rgba(128,141,116,0)_50%)] blur-[32px]"></div>
-        <div class="absolute right-0 top-0 h-72 w-96 bg-[linear-gradient(217deg,rgba(152,171,204,0.15)_0%,rgba(152,171,204,0)_50%)] blur-[32px]"></div>
+        <div class="absolute left-[max(0px,calc(50%-640px))] top-0 h-72 w-96 bg-[linear-gradient(143deg,rgba(128,141,116,0.15)_0%,rgba(128,141,116,0)_50%)] blur-[32px]"></div>
+        <div class="absolute right-[max(0px,calc(50%-640px))] top-0 h-72 w-96 bg-[linear-gradient(217deg,rgba(152,171,204,0.15)_0%,rgba(152,171,204,0)_50%)] blur-[32px]"></div>
         <img
             src="/landing/midaz-3d.webp"
             alt=""
             width="630"
             height="556"
-            class="absolute bottom-0 left-1/2 w-[min(630px,110vw)] max-w-none -translate-x-1/2 xl:left-[327px] xl:translate-x-0 opacity-60"
+            class="absolute bottom-0 left-1/2 w-[min(630px,110vw)] max-w-none -translate-x-1/2 xl:left-[calc(50%-313px)] xl:translate-x-0 opacity-60"
             loading="lazy"
         />
     </div>
@@ -51,7 +51,9 @@ const features = [
                             <br />
                             {f.title[1]}
                         </h3>
-                        <img src={f.icon.src} alt="" width={f.icon.width} height={f.icon.height} class="my-8" loading="lazy" />
+                        <div class="flex flex-1 items-center justify-center py-8">
+                            <img src={f.icon.src} alt="" width={f.icon.width} height={f.icon.height} loading="lazy" />
+                        </div>
                         <p class="max-w-[239px] text-center text-xs font-semibold leading-4 tracking-[0.3px] text-[rgba(48,52,43,0.8)]">{f.text}</p>
                     </li>
                 ))
