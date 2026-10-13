@@ -1,26 +1,112 @@
 ---
-import Overview from "./Overview.astro";
-
-// Cada pestaña muestra su pantalla en el panel central. Fila Cero, Atlas y Ágora aún no tienen
-// captura en el Figma, así que muestran un panel con su nombre hasta que se agregue.
-const products = [
-    { name: "Midaz Web (Core)", image: { src: "/landing/macbook.webp", width: 604, height: 385, alt: "Midaz Web en una laptop mostrando el módulo de facturas" }, laptop: true },
-    { name: "Fila Cero" },
-    { name: "Atlas" },
-    { name: "Ágora" },
-    { name: "MidazPay", image: { src: "/landing/pos.webp", width: 314, height: 411, alt: "MidazPay en un punto de venta Disglobal" }, fill: true },
-    { name: "Midaz App", image: { src: "/landing/phone.webp", width: 361, height: 594, alt: "Midaz App: pedidos desde la mesa en un iPhone" } },
-    { name: "Midaz Marketplace", image: { src: "/landing/iphone15.webp", width: 196, height: 391, alt: "Midaz Marketplace: ficha de producto en un iPhone" } },
-];
-const panelBg = "linear-gradient(152deg, #07143a 1.5%, #1337a0 97.6%)";
-// Posición de cada tarjeta según su distancia a la activa: centro, vecinas, extremos y fuera de vista.
-// x es el centro de la tarjeta respecto al centro del carrusel (px de Figma a 1280).
-const slots: Record<string, { x: number; w: number; h: number; o: number; z: number }> = {
-    "0": { x: 0, w: 538, h: 465, o: 1, z: 30 },
-    "1": { x: 459, w: 314, h: 411, o: 1, z: 20 },
-    "2": { x: 783, w: 314, h: 345, o: 1, z: 10 },
-    "3": { x: 1107, w: 314, h: 345, o: 0, z: 0 },
+// "Un ecosistema completo": carrusel con una tarjeta por producto (Figma, sección "Ecosistema",
+// un módulo por producto). La pestaña activa lleva su tarjeta al centro y cambia el texto de abajo.
+type Product = {
+    name: string;
+    short: string;
+    title: string;
+    text: string;
+    image: { src: string; width: number; height: number; alt: string };
+    // "laptop": el ancho manda (en el centro se sale de la tarjeta); "device": manda el alto.
+    kind: "laptop" | "device";
+    // Fracción de la tarjeta que ocupa la imagen: [centro, lateral].
+    fit: [number, number];
+    soon?: boolean;
+    // Posición del titular y del párrafo en el lienzo de 1280px (x y ancho).
+    copy: { tx: number; tw: number; px: number; pw: number };
 };
+const products: Product[] = [
+    {
+        name: "Midaz Web (Core)",
+        short: "Midaz Web",
+        title: "es el centro operativo de tu negocio",
+        text: "Sincroniza todas tus sedes y canales de venta en tiempo real. Controla tus libros de ventas, la tasa BCV y tu inventario sin errores operativos ni riesgos fiscales.",
+        image: { src: "/landing/macbook.webp", width: 1207, height: 770, alt: "Midaz Web en una laptop mostrando el módulo de facturas" },
+        kind: "laptop",
+        fit: [603.5 / 538, 0.93],
+        copy: { tx: 169, tw: 392, px: 611, pw: 500 },
+    },
+    {
+        name: "Fila Cero",
+        short: "Fila Cero",
+        title: "es el punto de venta ágil para cobros en caja y comanderas",
+        text: "Agiliza las colas y procesa pedidos en segundos. Sincroniza las ventas de tus cajas físicas directamente con el inventario central y la facturación fiscal de tu negocio.",
+        image: { src: "/landing/iphone15.webp", width: 392, height: 782, alt: "Fila Cero en un iPhone: ficha de producto con precio y extras" },
+        kind: "device",
+        fit: [0.914, 0.95],
+        copy: { tx: 69, tw: 592, px: 711, pw: 500 },
+    },
+    {
+        name: "Atlas",
+        short: "Atlas",
+        title: "es la solución de autogestión y pedidos independientes.",
+        text: "Transforma la experiencia de compra en el establecimiento con atención rápida y sin colas. Procesa pagos con tarjetas o métodos digitales y envía las comandes directamente a cocina o despacho.",
+        image: { src: "/landing/kiosko.webp", width: 408, height: 930, alt: "Atlas en un kiosco de autoservicio" },
+        kind: "device",
+        fit: [1, 0.97],
+        copy: { tx: 47, tw: 592, px: 689, pw: 544 },
+    },
+    {
+        name: "Ágora",
+        short: "Ágora",
+        title: "es tu canal de ventas e-commerce integrado.",
+        text: "Vende por internet con catálogo dinámico y cobros en línea. Sincroniza precios, promociones e inventario al instante con el resto de tus sedes.",
+        image: { src: "/landing/agora.webp", width: 338, height: 870, alt: "Ágora en un punto de venta Disglobal" },
+        kind: "device",
+        fit: [0.935, 0.91],
+        copy: { tx: 47, tw: 592, px: 689, pw: 530 },
+    },
+    {
+        name: "MidazPay",
+        short: "MidazPay",
+        title: "es el sistema de cobros inteligentes en tiempo real.",
+        text: "Unifica todos tus métodos de pago físicos y digitales en una sola plataforma. Sincroniza las comisiones bancarias y la facturación fiscal sin intervención manual.",
+        image: { src: "/landing/pos-n82.webp", width: 387, height: 889, alt: "MidazPay en un punto de venta Disglobal con el carrito a cobrar" },
+        kind: "device",
+        fit: [0.955, 0.92],
+        copy: { tx: 47, tw: 592, px: 689, pw: 530 },
+    },
+    {
+        name: "Midaz App",
+        short: "Midaz App",
+        title: "es el centro de control gerencial en tu bolsillo.",
+        text: "Monitorea las ventas en vivo, el flujo de caja y las métricas clave de tus sedes desde cualquier lugar. Recibe alertas en tiempo real y toma decisiones informadas al instante.",
+        image: { src: "/landing/iphone15.webp", width: 392, height: 782, alt: "" },
+        kind: "device",
+        fit: [0.87, 0.89],
+        soon: true,
+        copy: { tx: 47, tw: 592, px: 689, pw: 530 },
+    },
+    {
+        name: "Midaz Marketplace",
+        short: "Midaz Marketplace",
+        title: "es el conector con plataformas de delivery y ventas externas.",
+        text: "Sincroniza tus pedidos de terceros directamente en tu cocina y caja. Centraliza el menú, los precios y la facturación fiscal de todos tus canales en un solo lugar.",
+        image: { src: "/landing/marketplace.webp", width: 1207, height: 812, alt: "Midaz Marketplace en una laptop: comercios cerca de ti" },
+        kind: "laptop",
+        fit: [603.5 / 538, 0.93],
+        // En el Figma el titular empieza en x=-13 y el párrafo pasa de 1280px; aquí se recortan para que quepan.
+        copy: { tx: 16, tw: 712, px: 749, pw: 515 },
+    },
+];
+const panelBg = "linear-gradient(155deg, #07143a 1.5%, #1337a0 97.6%)";
+const n = products.length;
+// Alto de la tarjeta según su distancia a la activa (centro, vecinas, siguientes, extremos).
+const heights = [465, 411, 345, 255];
+// Ancho de la tarjeta activa: las laptops ocupan 538px; el resto, 314px como las laterales.
+const centerWidth = (p: Product) => (p.kind === "laptop" ? 538 : 314);
+const gap = (p: Product) => (p.kind === "laptop" ? 32.78 : 10);
+const xFor = (d: number, center: Product) => {
+    if (d === 0) return 0;
+    const first = centerWidth(center) / 2 + gap(center) + 157;
+    return Math.sign(d) * (first + (Math.abs(d) - 1) * 324);
+};
+const offset = (i: number, active: number) => {
+    let d = (((i - active) % n) + n) % n;
+    if (d > n / 2) d -= n;
+    return d;
+};
+const layout = products.map((p) => ({ w: centerWidth(p), g: gap(p), laptop: p.kind === "laptop" }));
 ---
 
 <section id="productos" class="pt-6 lg:pt-0">
@@ -55,33 +141,66 @@ const slots: Record<string, { x: number; w: number; h: number; o: number; z: num
         </div>
     </div>
 
-    <!-- Carrusel de dispositivos: todas las tarjetas se deslizan en horizontal y la activa queda al centro.
-         Las medidas de cada posición son las del Figma (centro 538×465, vecinas 314×411, extremos 314×345);
-         --k las escala en pantallas más angostas. -->
-    <div class="overflow-hidden pb-4 pt-2 lg:pb-[44px] lg:pt-[15px]">
+    <!-- Carrusel: todas las tarjetas se deslizan en horizontal y la activa queda al centro. Las medidas
+         son las del Figma a 1280px; --k las escala en pantallas más angostas. -->
+    <div class="overflow-hidden pt-[15px] lg:pb-[44px]">
         <div
             id="producto-panel"
             role="tabpanel"
             aria-labelledby="producto-tab-0"
             aria-roledescription="carrusel"
-            class="relative mx-auto h-[calc(var(--k)*465px)] w-full touch-pan-y select-none [--k:0.56] sm:[--k:0.8] lg:[--k:1] xl:translate-x-[1.5px]"
+            class="relative mx-auto h-[calc(var(--k)*465px)] w-full touch-pan-y select-none [--k:0.6] sm:[--k:0.8] lg:[--k:1] xl:translate-x-[-0.25px]"
             data-product-panel
         >
             {
                 products.map((product, i) => {
-                    const d = i > products.length / 2 ? i - products.length : i;
-                    const slot = slots[String(Math.min(Math.abs(d), 3))];
+                    const d = offset(i, 0);
+                    const w = d === 0 ? centerWidth(product) : 314;
+                    const h = heights[Math.abs(d)];
                     return (
                         <div
-                            class="group absolute left-1/2 top-1/2 transition-[transform,width,height,opacity] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
-                            style={`--x:${Math.sign(d) * slot.x};width:calc(var(--k)*${slot.w}px);height:calc(var(--k)*${slot.h}px);opacity:${slot.o};z-index:${slot.z};transform:translate(-50%,-50%) translateX(calc(var(--x)*var(--k)*1px))`}
+                            class="group absolute left-1/2 top-1/2 transition-[transform,width,height] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
+                            style={`--x:${xFor(d, products[0])};--ch:${h};--fc:${product.fit[0]};--fs:${product.fit[1]};width:calc(var(--k)*${w}px);height:calc(var(--k)*var(--ch)*1px);z-index:${10 - Math.abs(d)};transform:translate(-50%,-50%) translateX(calc(var(--x)*var(--k)*1px))`}
                             data-product-slide={i}
                             data-pos={d === 0 ? "center" : "side"}
                             aria-hidden={d === 0 ? "false" : "true"}
                         >
-                            <div class="absolute inset-0 overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)] transition-[border-radius] duration-[900ms] group-data-[pos=center]:rounded-[20px]" style={{ backgroundImage: panelBg }}></div>
+                            <div
+                                class:list={[
+                                    "absolute inset-0 overflow-hidden rounded-[10px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)]",
+                                    product.kind === "laptop" && "transition-[border-radius] duration-[900ms] group-data-[pos=center]:rounded-[calc(var(--k)*20px)]",
+                                ]}
+                                style={{ backgroundImage: product.soon ? `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), ${panelBg}` : panelBg }}
+                            >
+                                {product.soon && (
+                                    <img
+                                        src={product.image.src}
+                                        alt=""
+                                        width={product.image.width}
+                                        height={product.image.height}
+                                        draggable="false"
+                                        class="absolute left-1/2 top-1/2 h-[calc(var(--k)*var(--ch)*var(--fs)*1px)] w-auto max-w-none -translate-x-1/2 -translate-y-1/2 opacity-60 blur-[calc(var(--k)*9px)] transition-[height] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-data-[pos=center]:h-[calc(var(--k)*var(--ch)*var(--fc)*1px)]"
+                                        loading="lazy"
+                                    />
+                                )}
+                            </div>
                             <div class="absolute inset-0 flex cursor-pointer items-center justify-center group-data-[pos=center]:cursor-default">
-                                {product.image ? (
+                                {product.soon ? (
+                                    <>
+                                        <img
+                                            src="/landing/reloj.webp"
+                                            alt=""
+                                            width="290"
+                                            height="290"
+                                            draggable="false"
+                                            class="absolute left-1/2 top-[calc(var(--k)*var(--ch)*0.171px)] size-[calc(var(--k)*var(--ch)*0.42px)] -translate-x-1/2 transition-all duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-data-[pos=center]:top-[calc(var(--k)*var(--ch)*0.247px)] group-data-[pos=center]:size-[calc(var(--k)*128px)]"
+                                            loading="lazy"
+                                        />
+                                        <p class="absolute left-1/2 top-[calc(50%+var(--k)*var(--ch)*0.2px)] flex h-[calc(var(--k)*66px)] w-[calc(var(--k)*200px)] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[calc(var(--k)*15px)] border-2 border-white/50 bg-white/10 font-poppins text-[calc(var(--k)*20px)] font-bold leading-[21px] text-white shadow-[0_4px_6px_1px_rgba(0,0,0,0.1)] backdrop-blur-[10px] transition-all duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-data-[pos=center]:top-[calc(50%+var(--k)*var(--ch)*0.092px)] group-data-[pos=center]:h-[calc(var(--k)*59px)] group-data-[pos=center]:w-[calc(var(--k)*230px)]">
+                                            Próximamente
+                                        </p>
+                                    </>
+                                ) : (
                                     <img
                                         src={product.image.src}
                                         alt={product.image.alt}
@@ -90,15 +209,12 @@ const slots: Record<string, { x: number; w: number; h: number; o: number; z: num
                                         draggable="false"
                                         class:list={[
                                             "relative max-w-none transition-[width,height] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
-                                            product.laptop ? "h-auto w-[94%] group-data-[pos=center]:w-[112.2%]" : product.fill ? "h-full w-auto group-data-[pos=center]:h-[88%]" : "h-[92%] w-auto group-data-[pos=center]:h-[88%]",
+                                            product.kind === "laptop"
+                                                ? "h-auto w-[calc(var(--k)*314px*var(--fs))] group-data-[pos=center]:w-[calc(var(--k)*538px*var(--fc))]"
+                                                : "h-[calc(var(--k)*var(--ch)*var(--fs)*1px)] w-auto group-data-[pos=center]:h-[calc(var(--k)*var(--ch)*var(--fc)*1px)]",
                                         ]}
-                                        loading={i === 0 ? "eager" : "lazy"}
+                                        loading={Math.abs(d) <= 1 ? "eager" : "lazy"}
                                     />
-                                ) : (
-                                    <div class="relative flex flex-col items-center gap-[calc(var(--k)*16px)] px-[12%] text-center text-white">
-                                        <img src="/landing/icons/logo.svg" alt="" width="128" height="30" draggable="false" class="h-auto w-[calc(var(--k)*96px)] brightness-0 invert group-data-[pos=center]:w-[calc(var(--k)*128px)]" />
-                                        <p class="font-funnel text-[calc(var(--k)*30px)] font-semibold leading-none tracking-[-0.03em] group-data-[pos=center]:text-[calc(var(--k)*54px)]">{product.name}</p>
-                                    </div>
                                 )}
                             </div>
                         </div>
@@ -108,13 +224,37 @@ const slots: Record<string, { x: number; w: number; h: number; o: number; z: num
         </div>
     </div>
 
-    <Overview align="center">
-        <Fragment slot="title"><span class="text-landing-blue">Midaz Web</span> es el centro operativo de tu negocio</Fragment>
-        Sincroniza todas tus sedes y canales de venta en tiempo real. Controla tus libros de ventas, la tasa BCV y tu inventario sin errores operativos ni riesgos fiscales.
-    </Overview>
+    <!-- Texto del producto activo: en 1280px cada uno va en la posición de su módulo del Figma. -->
+    <div class="relative mx-auto grid max-w-[1280px] px-4 py-10 sm:px-8 xl:h-[156px] xl:px-0 xl:py-0" aria-live="polite">
+        {
+            products.map((product, i) => (
+                <div
+                    class:list={[
+                        "col-start-1 row-start-1 flex flex-col gap-6 transition-[opacity,transform,filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none lg:flex-row lg:items-center lg:justify-center lg:gap-[50px] xl:block",
+                        i === 0 ? "opacity-100" : "pointer-events-none translate-y-4 opacity-0 blur-sm",
+                    ]}
+                    data-product-copy={i}
+                    aria-hidden={i === 0 ? "false" : "true"}
+                >
+                    <h3
+                        class="font-funnel text-[clamp(1.75rem,4vw,2.125rem)] font-semibold leading-[1.18] text-landing-navy lg:max-w-[560px] xl:absolute xl:left-[var(--tx)] xl:top-[38px] xl:w-[var(--tw)] xl:max-w-none xl:leading-10"
+                        style={`--tx:${product.copy.tx}px;--tw:${product.copy.tw}px`}
+                    >
+                        <span class="text-landing-blue">{product.short}</span> {product.title.split("e-commerce").flatMap((part, k) => (k ? [<span class="whitespace-nowrap">e-commerce</span>, part] : [part]))}
+                    </h3>
+                    <p
+                        class="max-w-[544px] text-base leading-[25px] text-[rgba(7,20,58,0.6)] lg:shrink-0 xl:absolute xl:left-[var(--px)] xl:top-[40.5px] xl:w-[var(--pw)] xl:max-w-none"
+                        style={`--px:${product.copy.px}px;--pw:${product.copy.pw}px`}
+                    >
+                        {product.text}
+                    </p>
+                </div>
+            ))
+        }
+    </div>
 </section>
 
-<script define:vars={{ slots }}>
+<script define:vars={{ layout, heights }}>
     // Carrusel de productos: avanza solo cada pocos segundos (se pausa con el mouse encima, con el
     // foco de teclado o fuera de pantalla). Las pestañas, un clic en una tarjeta lateral o deslizar
     // con el dedo también lo mueven.
@@ -124,6 +264,7 @@ const slots: Record<string, { x: number; w: number; h: number; o: number; z: num
         const tabs = Array.from(list.querySelectorAll('[role="tab"]'));
         const panel = section.querySelector("[data-product-panel]");
         const slides = Array.from(section.querySelectorAll("[data-product-slide]"));
+        const copies = Array.from(section.querySelectorAll("[data-product-copy]"));
         const n = slides.length;
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
         const offsets = slides.map((_, i) => (i > n / 2 ? i - n : i));
@@ -133,14 +274,16 @@ const slots: Record<string, { x: number; w: number; h: number; o: number; z: num
         let focused = false;
         let visible = false;
 
-        const place = (slide, d, animate) => {
-            const slot = slots[String(Math.min(Math.abs(d), 3))];
+        const xFor = (d, c) => (d === 0 ? 0 : Math.sign(d) * (c.w / 2 + c.g + 157 + (Math.abs(d) - 1) * 324));
+
+        const place = (slide, i, d, animate) => {
+            const center = layout[active];
+            const w = d === 0 ? layout[i].w : 314;
             if (!animate) slide.style.transition = "none";
-            slide.style.setProperty("--x", String(Math.sign(d) * slot.x));
-            slide.style.width = `calc(var(--k)*${slot.w}px)`;
-            slide.style.height = `calc(var(--k)*${slot.h}px)`;
-            slide.style.opacity = String(slot.o);
-            slide.style.zIndex = String(slot.z);
+            slide.style.setProperty("--x", String(xFor(d, center)));
+            slide.style.setProperty("--ch", String(heights[Math.min(Math.abs(d), 3)]));
+            slide.style.width = `calc(var(--k)*${w}px)`;
+            slide.style.zIndex = String(10 - Math.abs(d));
             slide.dataset.pos = d === 0 ? "center" : "side";
             slide.setAttribute("aria-hidden", String(d !== 0));
             if (!animate) {
@@ -160,8 +303,17 @@ const slots: Record<string, { x: number; w: number; h: number; o: number; z: num
                 let d = (((i - active) % n) + n) % n;
                 if (d > n / 2) d -= n;
                 // La tarjeta que da la vuelta (de un extremo al otro) salta sin cruzar el carrusel.
-                place(slide, d, Math.abs(d - offsets[i]) <= n / 2);
+                place(slide, i, d, Math.abs(d - offsets[i]) <= n / 2);
                 offsets[i] = d;
+            });
+            copies.forEach((copy, i) => {
+                const on = i === active;
+                copy.classList.toggle("opacity-100", on);
+                copy.classList.toggle("opacity-0", !on);
+                copy.classList.toggle("translate-y-4", !on);
+                copy.classList.toggle("blur-sm", !on);
+                copy.classList.toggle("pointer-events-none", !on);
+                copy.setAttribute("aria-hidden", String(!on));
             });
             const tab = tabs[active];
             list.scrollTo({ left: tab.offsetLeft - (list.clientWidth - tab.offsetWidth) / 2, behavior: "smooth" });
@@ -199,10 +351,10 @@ const slots: Record<string, { x: number; w: number; h: number; o: number; z: num
         });
         panel.addEventListener("pointercancel", () => (downX = null));
 
-        // Escala del carrusel: tamaño de Figma desde 1024px; más angosto, la tarjeta central ocupa ~78% del ancho.
+        // Escala: tamaño de Figma desde 1024px; más angosto, una laptop activa ocupa casi todo el ancho.
         const resize = () => {
             const w = panel.clientWidth;
-            panel.style.setProperty("--k", String(w >= 1024 ? 1 : Math.min(1, (w * 0.78) / 538)));
+            panel.style.setProperty("--k", String(w >= 1024 ? 1 : Math.min(1, (w - 32) / 538)));
         };
         new ResizeObserver(resize).observe(panel);
         resize();
