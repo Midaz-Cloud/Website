@@ -13,6 +13,10 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        funnel: ['"Funnel Display"', "system-ui", "sans-serif"],
+        poppins: ["Poppins", "system-ui", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -56,6 +60,15 @@ module.exports = {
           gold: "#fbbf24",
           navy: "#0f172a",
         },
+        // Tokens de la landing (Figma "Landing page - Midaz")
+        landing: {
+          navy: "#07143a",
+          blue: "#004be0",
+          orange: "#e67800",
+          amber: "#ffac44",
+          slate: "#98abcc",
+          bg: "#f6f7fa",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -83,6 +96,15 @@ module.exports = {
           "0%": { backgroundPosition: "0 0" },
           "100%": { backgroundPosition: "100% -100%" },
         },
+        // Flotación suave del teléfono del hero y de su sombra (empiezan en reposo).
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-12px)" },
+        },
+        "float-shadow": {
+          "0%, 100%": { transform: "translateX(-50%) scale(1)", opacity: "1" },
+          "50%": { transform: "translateX(-50%) scale(0.88)", opacity: "0.7" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -90,6 +112,8 @@ module.exports = {
         fadeIn: "fadeIn 0.5s ease-out",
         slideUp: "slideUp 0.6s ease-out",
         "line-shadow": "line-shadow 15s linear infinite",
+        float: "float 6s ease-in-out infinite",
+        "float-shadow": "float-shadow 6s ease-in-out infinite",
       },
     },
   },

@@ -1,0 +1,91 @@
+---
+import "../styles/globals.css";
+
+const {
+    title = "Midaz: facturación, ventas e inventario sin errores ni multas",
+    description = "Sistema de facturación, punto de venta e inventario para comercios en Venezuela. IVA e IGTF automáticos, tasa BCV en vivo, modo offline y libros fiscales al día.",
+    image = "/landing/og-image.jpg",
+} = Astro.props;
+
+// Con `site` definido en astro.config.mjs se generan URLs absolutas (canonical, og:url, og:image).
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+// Los despliegues de vista previa de Vercel no se indexan.
+const robots = process.env.VERCEL_ENV === "preview" ? "noindex, nofollow" : "index, follow";
+const ogImage = Astro.site ? new URL(image, Astro.site).href : image;
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "Organization",
+            name: "Midaz",
+            logo: Astro.site ? new URL("/logo-blue.svg", Astro.site).href : "/logo-blue.svg",
+            ...(Astro.site && { url: Astro.site.href }),
+        },
+        {
+            "@type": "SoftwareApplication",
+            name: "Midaz",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Web, Android, iOS",
+            description,
+            areaServed: "VE",
+            inLanguage: "es",
+        },
+    ],
+};
+---
+
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="description" content={description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#004be0" />
+        <meta name="robots" content={robots} />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="sitemap" href="/sitemap.xml" />
+        <meta name="generator" content={Astro.generator} />
+        {canonical && <link rel="canonical" href={canonical} />}
+
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Midaz" />
+        <meta property="og:locale" content="es_VE" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Midaz. Sin errores. Sin multas." />
+        {canonical && <meta property="og:url" content={canonical} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={ogImage} />
+
+        <link rel="preload" as="image" href="/landing/phone.webp" type="image/webp" fetchpriority="high" />
+        <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+        <!-- Google Fonts: Funnel Display + Poppins + Inter -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@600;700&family=Inter:wght@500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+
+        <title>{title}</title>
+    </head>
+    <body class="bg-landing-bg font-poppins text-landing-navy antialiased">
+        <slot />
+        <script>
+            // Scroll suave con inercia (Lenis). Se desactiva si el sistema pide reducir movimiento.
+            import Lenis from "lenis";
+            import "lenis/dist/lenis.css";
+
+            if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                new Lenis({ autoRaf: true, lerp: 0.09, anchors: { offset: -96 } });
+            }
+        </script>
+    </body>
+</html>

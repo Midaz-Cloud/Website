@@ -1,0 +1,52 @@
+---
+const tick = "h-8 w-px bg-black/55";
+---
+
+<section id="hermez" class="overflow-hidden bg-[#fff7ef] px-4 pb-14 pt-10 sm:px-8 xl:h-[805px] xl:px-14 xl:pt-14">
+    <div class="mx-auto max-w-[1168px]">
+        <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-1 text-base leading-[19.5px] tracking-[-0.325px] md:justify-between">
+            <p class="font-bold text-[#111210]">Inteligencia operativa</p>
+            <p class="order-first w-full text-center font-semibold text-[#8f918c] md:order-none md:w-auto">Tu asistente virtual</p>
+            <p class="font-bold text-[#111210]">Respuestas inmediatas</p>
+        </div>
+
+        <div class="relative mt-6 flex flex-col items-center gap-[27px] xl:mt-[16.5px]">
+            <!-- Órbita técnica -->
+            <div aria-hidden="true" class="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div class="relative aspect-square w-[min(580px,92vw)] shrink-0 rounded-full border border-black/40">
+                    {
+                        [0, 45, 90, 135].map((deg) => (
+                            <div class="absolute inset-0 flex flex-col items-center justify-between" style={`transform: rotate(${deg}deg)`}>
+                                <span class={tick} />
+                                <span class={tick} />
+                            </div>
+                        ))
+                    }
+                </div>
+            </div>
+
+            <div class="relative flex h-14 items-center justify-center">
+                <h2 class="translate-y-[28px] font-funnel text-[clamp(4.5rem,16vw,8rem)] font-bold leading-[45px] tracking-[-1.76px] text-landing-orange">HERMEZ</h2>
+            </div>
+            <div class="relative flex aspect-square w-[min(490px,80vw)] items-center justify-center">
+                <img
+                    src="/landing/hermez.webp"
+                    alt="Hermez, el asistente virtual de Midaz"
+                    width="527"
+                    height="527"
+                    class="absolute left-1/2 top-1/2 w-[107.5%] max-w-none -translate-x-1/2 -translate-y-1/2"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+
+        <div class="mx-auto mt-6 flex max-w-[658px] flex-col items-center gap-[5px] text-center xl:mt-[12.5px]">
+            <h3 class="font-poppins text-base font-bold leading-[19.5px] tracking-[-0.24px] text-[#111210]">Copiloto estratégico</h3>
+            <blockquote class="relative max-w-[510px] pl-[18px] text-xs leading-[15.4px] tracking-[-0.055px] text-[#999a95]">
+                <span aria-hidden="true" class="absolute left-0 top-0 font-funnel text-2xl leading-none text-[#c9cac5]">“</span>
+                <span aria-hidden="true" class="absolute bottom-0 left-[3px] top-5 w-px bg-[#d9dad5]"></span>
+                Hermez evalúa constantemente el flujo de datos de tu empresa para ofrecerte sugerencias estratégicas, predecir tendencias de ventas y optimizar la toma de decisiones en cada punto de venta.
+            </blockquote>
+        </div>
+    </div>
+</section>

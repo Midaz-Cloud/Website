@@ -1,0 +1,191 @@
+---
+// "La misma operación, donde ocurra la venta".
+// En ≥1024px el bloque (idéntico al Figma en reposo) queda fijo mientras se hace scroll y el
+// dispositivo central cambia de pantalla en cada paso; en móvil los pasos van uno debajo del otro.
+const card = "rounded-2xl shadow-[0_12px_30px_-8px_rgba(0,0,0,0.18)] shrink-0";
+
+const steps = [
+    {
+        title: "Factura y cobra en el mostrador, con la cuenta hecha",
+        src: "/landing/macbook-full.webp",
+        alt: "Midaz Web en una laptop: listado de facturas emitidas",
+        width: 633,
+        height: 385,
+        displayHeight: 385,
+    },
+    {
+        title: "Cobra en caja con el total en bolívares y la tasa BCV al día",
+        src: "/landing/pos.webp",
+        alt: "Punto de venta Disglobal con el carrito de Midaz y el total a cobrar",
+        width: 314,
+        height: 411,
+        displayHeight: 440,
+    },
+    {
+        title: "Tus clientes piden directo desde la mesa, sin descargar apps",
+        src: "/landing/phone.webp",
+        alt: "App de pedidos de Midaz en un iPhone, pedido desde la mesa",
+        width: 361,
+        height: 594,
+        displayHeight: 470,
+    },
+    {
+        title: "Cada producto con su precio, sus extras y sus alérgenos",
+        src: "/landing/iphone15.webp",
+        alt: "Ficha de producto en Midaz con precio, extras y alérgenos",
+        width: 196,
+        height: 391,
+        displayHeight: 430,
+    },
+];
+---
+
+<section
+    id="soluciones"
+    class="relative overflow-x-clip lg:h-[calc(985px+var(--steps)*70vh)]"
+    style={`--steps:${steps.length - 1}`}
+    data-scroll-story
+>
+    <!-- En escritorio el bloque mide lo mismo que en Figma (985px) y se fija cuando el texto del paso entra en pantalla -->
+    <div class="flex flex-col items-center gap-[25px] pb-24 pt-12 lg:sticky lg:top-[min(0px,calc(100vh-889px))] lg:h-[985px]" data-story-pin>
+        <img src="/landing/icons/badge.svg" alt="" aria-hidden="true" width="69" height="69" class="-mb-[10px] -mt-[1px] h-[69px] w-[69px]" />
+
+        <h2 class="px-4 text-center font-funnel text-[clamp(2.25rem,6vw,3.375rem)] font-semibold leading-none tracking-[-0.03em] text-[#030712]">
+            <span class="block">La misma operación,</span>
+            <span class="block">donde ocurra la venta</span>
+        </h2>
+
+        <div class="relative hidden h-[520px] w-full max-w-[1280px] shrink-0 justify-center lg:flex">
+            <!-- Tarjetas flotantes izquierda -->
+            <div aria-hidden="true" class="absolute left-[-24px] top-[167px] hidden h-[256px] items-center will-change-transform xl:flex motion-reduce:!transform-none" style="transform: translate3d(calc(var(--p, 0) * -56px), calc(var(--p, 0) * -28px), 0)">
+                <div class:list={[card, "h-[192px] w-[112px] bg-gradient-to-b from-[#872054] to-[#f43f8e] opacity-[0.85]"]}></div>
+                <div class:list={[card, "h-[240px] w-[144px] bg-landing-blue"]}></div>
+                <div class:list={[card, "h-[256px] w-[160px] bg-[#262626]"]}></div>
+            </div>
+            <!-- Tarjetas flotantes derecha -->
+            <div aria-hidden="true" class="absolute left-[68.83%] top-[167px] hidden h-[256px] items-center will-change-transform xl:flex motion-reduce:!transform-none" style="transform: translate3d(calc(var(--p, 0) * 56px), calc(var(--p, 0) * -28px), 0)">
+                <div class:list={[card, "h-[256px] w-[160px] bg-[#451a03]"]}></div>
+                <div class:list={[card, "h-[240px] w-[144px] bg-landing-blue"]}></div>
+                <div class:list={[card, "h-[192px] w-[112px] bg-[linear-gradient(120deg,#022c22_0%,#14532d_100%)] opacity-[0.85]"]}></div>
+            </div>
+
+            <!-- Una pantalla por paso; la primera es la composición de Figma -->
+            <div class="relative h-full w-full max-w-[633px]">
+                {
+                    steps.map((step, i) => (
+                        <div
+                            class:list={[
+                                "absolute inset-0 flex items-center justify-center transition-[opacity,transform,filter] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
+                                i === 0 ? "opacity-100" : "translate-y-16 scale-90 opacity-0 blur-md",
+                            ]}
+                            data-story-item={i}
+                            aria-hidden={i === 0 ? "false" : "true"}
+                        >
+                            <img
+                                src={step.src}
+                                alt={step.alt}
+                                width={step.width}
+                                height={step.height}
+                                class="w-auto max-w-full object-contain will-change-transform motion-reduce:!transform-none"
+                                style={`height:${step.displayHeight}px;transform:translate3d(0,calc(var(--s, 0) * -24px),0) scale(calc(1 + var(--s, 0) * 0.04))`}
+                                loading={i === 0 ? "eager" : "lazy"}
+                            />
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+
+        <div class="hidden w-[min(640px,90vw)] place-items-center px-4 lg:grid">
+            {
+                steps.map((step, i) => (
+                    <h3
+                        class:list={[
+                            "col-start-1 row-start-1 max-w-[599px] text-center font-poppins text-[34px] font-bold leading-10 tracking-[-0.85px] text-landing-blue transition-[opacity,transform,filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
+                            i === 0 ? "opacity-100" : "translate-y-6 opacity-0 blur-sm",
+                        ]}
+                        data-story-caption={i}
+                        aria-hidden={i === 0 ? "false" : "true"}
+                    >
+                        {step.title}
+                    </h3>
+                ))
+            }
+        </div>
+
+        <!-- Móvil y tablet: pasos apilados -->
+        <ul class="flex w-full flex-col items-center gap-14 px-4 lg:hidden">
+            {
+                steps.map((step) => (
+                    <li class="flex w-full max-w-[633px] flex-col items-center gap-4 text-center">
+                        <img src={step.src} alt={step.alt} width={step.width} height={step.height} class="h-auto max-h-[420px] w-auto max-w-full" loading="lazy" />
+                        <h3 class="max-w-[599px] font-poppins text-[clamp(1.5rem,4vw,2.125rem)] font-bold leading-[1.18] tracking-[-0.85px] text-landing-blue">{step.title}</h3>
+                    </li>
+                ))
+            }
+        </ul>
+    </div>
+</section>
+
+<script>
+    // Escenario con scroll: la pantalla activa depende del avance dentro de la sección. Además,
+    // --p (avance total) mueve las tarjetas laterales y --s (avance dentro del paso) desplaza el
+    // dispositivo, así todo acompaña el scroll en vez de cambiar de golpe.
+    const story = document.querySelector<HTMLElement>("[data-scroll-story]");
+    if (story) {
+        const items = Array.from(story.querySelectorAll<HTMLElement>("[data-story-item]"));
+        const captions = Array.from(story.querySelectorAll<HTMLElement>("[data-story-caption]"));
+        const pin = story.querySelector<HTMLElement>("[data-story-pin]")!;
+        const count = items.length;
+        const desktop = window.matchMedia("(min-width: 1024px)");
+        const hidden = { item: ["translate-y-16", "-translate-y-16", "scale-90", "opacity-0", "blur-md"], caption: ["translate-y-6", "-translate-y-6", "opacity-0", "blur-sm"] };
+        let active = 0;
+
+        const setActive = (index: number) => {
+            if (index === active) return;
+            active = index;
+            const apply = (el: HTMLElement, i: number, kind: "item" | "caption") => {
+                const on = i === index;
+                el.classList.remove(...hidden[kind], "opacity-100");
+                if (on) el.classList.add("opacity-100");
+                else {
+                    // Las anteriores salen hacia arriba; las siguientes esperan abajo.
+                    const shift = kind === "item" ? "translate-y-16" : "translate-y-6";
+                    el.classList.add(i < index ? `-${shift}` : shift, ...hidden[kind].filter((c) => !c.includes("translate")));
+                }
+                el.setAttribute("aria-hidden", String(!on));
+            };
+            items.forEach((el, i) => apply(el, i, "item"));
+            captions.forEach((el, i) => apply(el, i, "caption"));
+        };
+
+        const update = () => {
+            if (!desktop.matches) return;
+            // El bloque queda fijo (en su `top` de CSS) hasta que la sección termina.
+            const start = -parseFloat(getComputedStyle(pin).top) || 0;
+            const travel = story.offsetHeight - pin.offsetHeight;
+            const scrolled = -story.getBoundingClientRect().top - start;
+            const progress = travel > 0 ? Math.min(1, Math.max(0, scrolled / travel)) : 0;
+            const position = Math.min(count - 0.0001, progress * count);
+            story.style.setProperty("--p", progress.toFixed(4));
+            story.style.setProperty("--s", (position % 1).toFixed(4));
+            setActive(Math.floor(position));
+        };
+
+        let ticking = false;
+        window.addEventListener(
+            "scroll",
+            () => {
+                if (ticking) return;
+                ticking = true;
+                requestAnimationFrame(() => {
+                    update();
+                    ticking = false;
+                });
+            },
+            { passive: true },
+        );
+        desktop.addEventListener("change", update);
+        update();
+    }
+</script>

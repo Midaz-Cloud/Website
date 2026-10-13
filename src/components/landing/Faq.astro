@@ -1,0 +1,107 @@
+---
+// Tarjetas de preguntas frecuentes. La tarjeta activa se muestra grande, con su respuesta,
+// como la 02 del diseño; al pasar el mouse, tocar o enfocar otra, esa pasa a ser la principal.
+const faqs = [
+    {
+        question: "¿Qué pasa si se va el internet?",
+        answer: "Sigues vendiendo. Midaz guarda las ventas y facturas en el equipo y las sincroniza solas cuando vuelve la conexión.",
+        width: 308.75,
+        height: 360,
+        questionWidth: 169,
+    },
+    {
+        question: "¿Puedo llevar varias sucursales?",
+        answer: "Sí. Cada sucursal maneja sus existencias y su correlativo, con precios centralizados y reportes consolidados.",
+        image: { src: "/landing/sucursales.webp", width: 159, height: 160 },
+        width: 308.75,
+        height: 360,
+    },
+    {
+        question: "¿Cuánto tarda en estar funcionando?",
+        answer: "Te acompañamos a configurar tu negocio y cargar tus productos para que empieces a facturar cuanto antes.",
+        width: 308.75,
+        height: 364,
+    },
+    {
+        question: "¿Dónde viven mis datos?",
+        answer: "En la nube, respaldados y disponibles desde cualquier equipo. La información de tu negocio es tuya.",
+        width: 272,
+        height: 305,
+        questionWidth: 149,
+    },
+];
+const initial = 1;
+const number = "text-[72px] font-normal leading-[72px] tracking-[-3.6px] text-[rgba(203,213,225,0.8)]";
+---
+
+<section id="dudas" class="relative overflow-hidden py-16 xl:h-[776px] xl:py-0">
+    <img
+        src="/landing/icons/faq-vector.svg"
+        alt=""
+        aria-hidden="true"
+        width="445"
+        height="658"
+        class="pointer-events-none absolute left-[max(0px,calc(50%-640px))] top-[59px] hidden md:block"
+    />
+
+    <div class="relative mx-auto flex max-w-[1280px] flex-col items-center gap-10 xl:h-full xl:justify-center">
+        <h2 class="px-4 text-center font-funnel xl:translate-x-[36px] text-[clamp(2.5rem,6vw,3.5rem)] font-bold leading-none tracking-[-1.4px] text-[#14181f]">
+            Preguntas <span class="text-landing-orange">frecuentes</span>
+        </h2>
+
+        <ul
+            class="flex w-full snap-x snap-mandatory items-end gap-[15px] overflow-x-auto px-4 pb-6 [scrollbar-width:none] xl:w-[1329px] xl:max-w-none xl:translate-x-[11.5px] xl:justify-center xl:overflow-visible xl:px-0 xl:pb-0"
+            data-faq
+        >
+            {
+                faqs.map((faq, i) => (
+                    <li
+                        tabindex="0"
+                        data-faq-card
+                        data-active={i === initial ? "true" : "false"}
+                        style={`--w:${faq.width}px;--h:${faq.height}px`}
+                        class="group flex h-[var(--h)] w-[min(var(--w),85vw)] shrink-0 cursor-pointer snap-center flex-col justify-between rounded-3xl border border-white/80 bg-white/70 p-[29px] shadow-[0_4px_20px_-2px_rgba(0,0,0,0.02),0_0_0_1px_rgba(0,0,0,0.02)] backdrop-blur-[2px] transition-[width,height,padding,background-color,box-shadow] duration-500 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-landing-blue motion-reduce:transition-none data-[active=true]:h-[500px] data-[active=true]:w-[min(394.66px,85vw)] data-[active=true]:cursor-default data-[active=true]:border-[rgba(241,245,249,0.9)] data-[active=true]:bg-white/60 data-[active=true]:p-[25px] data-[active=true]:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.07),0_0_0_1px_rgba(0,0,0,0.03)]"
+                    >
+                        <div class="flex flex-col gap-3">
+                            <span class={number} aria-hidden="true">{String(i + 1).padStart(2, "0")}.</span>
+                            {faq.image && (
+                                <img
+                                    src={faq.image.src}
+                                    alt=""
+                                    width={faq.image.width}
+                                    height={faq.image.height}
+                                    class="h-0 w-[159px] self-start object-contain opacity-0 transition-[height,opacity] duration-500 motion-reduce:transition-none group-data-[active=true]:h-[160px] group-data-[active=true]:opacity-100"
+                                    loading="lazy"
+                                />
+                            )}
+                        </div>
+                        <div class="flex flex-col">
+                            <h3
+                                class="font-poppins text-lg font-semibold leading-[24.75px] tracking-[-0.45px] text-[#0f172a] transition-[font-size,line-height] duration-500 motion-reduce:transition-none group-data-[active=true]:max-w-none group-data-[active=true]:text-2xl group-data-[active=true]:font-bold group-data-[active=true]:leading-[33px] group-data-[active=true]:tracking-[-0.6px]"
+                                style={faq.questionWidth ? `max-width:${faq.questionWidth}px` : undefined}
+                            >
+                                {faq.question}
+                            </h3>
+                            <div class="grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity,margin] duration-500 motion-reduce:transition-none group-data-[active=true]:mt-[25px] group-data-[active=true]:grid-rows-[1fr] group-data-[active=true]:opacity-100">
+                                <p class="overflow-hidden text-xs leading-[21.13px] text-[rgba(7,20,58,0.6)]">{faq.answer}</p>
+                            </div>
+                        </div>
+                    </li>
+                ))
+            }
+        </ul>
+    </div>
+</section>
+
+<script>
+    document.querySelectorAll<HTMLElement>("[data-faq]").forEach((list) => {
+        const cards = Array.from(list.querySelectorAll<HTMLElement>("[data-faq-card]"));
+        const activate = (card: HTMLElement) => cards.forEach((c) => (c.dataset.active = String(c === card)));
+        const hover = window.matchMedia("(hover: hover)");
+        cards.forEach((card) => {
+            card.addEventListener("mouseenter", () => hover.matches && activate(card));
+            card.addEventListener("click", () => activate(card));
+            card.addEventListener("focus", () => activate(card));
+        });
+    });
+</script>
