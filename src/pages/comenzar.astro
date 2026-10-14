@@ -1,16 +1,9 @@
 ---
-// Alta rápida: el cliente deja sus datos, elige un plan y paga por Pago Móvil.
-// La referencia se envía a soporte para verificarla y crear el usuario.
+// Alta rápida: el cliente deja sus datos y elige un plan. La solicitud llega a soporte
+// por correo y un asesor lo contacta para el pago y la creación del usuario.
 import "../styles/onboarding.css";
 
 const SUPPORT_EMAIL = "soporte@midazve.com";
-
-// Datos de la cuenta que recibe el Pago Móvil.
-const PAGO_MOVIL = {
-    banco: "POR DEFINIR",
-    telefono: "POR DEFINIR",
-    rif: "POR DEFINIR",
-};
 
 const PLANS = [
     {
@@ -52,31 +45,6 @@ const PLANS = [
     },
 ];
 
-const BANKS = [
-    "0102 Banco de Venezuela",
-    "0104 Venezolano de Crédito",
-    "0105 Mercantil",
-    "0108 Provincial",
-    "0114 Bancaribe",
-    "0115 Exterior",
-    "0128 Banco Caroní",
-    "0134 Banesco",
-    "0137 Sofitasa",
-    "0138 Banco Plaza",
-    "0151 BFC Banco Fondo Común",
-    "0156 100% Banco",
-    "0157 DelSur",
-    "0163 Banco del Tesoro",
-    "0166 Banco Agrícola de Venezuela",
-    "0168 Bancrecer",
-    "0169 R4 Banco Microfinanciero",
-    "0171 Banco Activo",
-    "0172 Bancamiga",
-    "0174 Banplus",
-    "0175 Banco Digital de los Trabajadores",
-    "0177 Banfanb",
-    "0191 BNC Nacional de Crédito",
-];
 ---
 
 <!doctype html>
@@ -84,7 +52,7 @@ const BANKS = [
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-        <meta name="description" content="Crea tu cuenta de Midaz en minutos: tus datos, tu plan y el pago por Pago Móvil." />
+        <meta name="description" content="Crea tu cuenta de Midaz en minutos: déjanos tus datos, elige tu plan y te contactamos." />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
         <title>Empieza con Midaz | Midaz</title>
@@ -114,19 +82,8 @@ const BANKS = [
             .plan li { font-size: 13px; padding-left: 18px; position: relative; }
             .plan li::before { content: "✓"; position: absolute; left: 0; color: var(--good); font-weight: 700; }
             .plan .tag { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; background: var(--amber); color: var(--navy); }
-            .pay-box { background: var(--navy); color: #f2f4fb; border-radius: var(--radius); padding: 18px 18px 14px; box-shadow: var(--shadow); }
-            .pay-box h3 { color: #fff; font-size: 16px; margin-bottom: 10px; }
-            .pay-row { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid rgba(255, 255, 255, 0.12); font-size: 14px; }
-            .pay-row span { color: #b7bcda; }
-            .pay-row b { font-variant-numeric: tabular-nums; }
-            .copy { background: none; border: 1px solid rgba(255, 255, 255, 0.3); color: #f2f4fb; border-radius: 99px; font: inherit; font-size: 12px; font-weight: 600; padding: 3px 10px; cursor: pointer; margin-left: 8px; }
-            .copy:hover { border-color: #fff; }
-            select {
-                width: 100%; border: 1px solid var(--border); border-radius: 9px; background: var(--surface);
-                color: var(--text); padding: 11px 12px; font-size: 14.5px; font-family: inherit;
-            }
             .hint { font-size: 12.5px; color: var(--text-faint); }
-            .err { font-size: 12.5px; color: var(--bad); }
+            .hint a { color: var(--blue); font-weight: 600; }
             .done-box { text-align: center; padding: 28px 8px; }
             .done-box .check { width: 56px; height: 56px; border-radius: 99px; background: var(--good-bg); color: var(--good); font-size: 28px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
             .done-box p { color: var(--text-dim); font-size: 14.5px; line-height: 1.55; max-width: 46ch; margin: 10px auto 0; }
@@ -154,14 +111,14 @@ const BANKS = [
             <footer class="foot">¿Prefieres que te acompañemos? Escríbenos a {SUPPORT_EMAIL}.</footer>
         </div>
 
-        <script is:inline define:vars={{ SUPPORT_EMAIL, PAGO_MOVIL, PLANS, BANKS }}>
+        <script is:inline define:vars={{ SUPPORT_EMAIL, PLANS }}>
             (function () {
                 "use strict";
 
-                var STORE_KEY = "midaz-alta-v1";
-                var STEPS = ["Tus datos", "Tu plan", "Pago Móvil"];
-                var state = load() || { step: 0, data: {}, plan: null, pay: {} };
-                var D = state.data, Y = state.pay;
+                var STORE_KEY = "midaz-alta-v2";
+                var STEPS = ["Tus datos", "Tu plan"];
+                var state = load() || { step: 0, data: {}, plan: null };
+                var D = state.data;
                 var container = document.getElementById("stepContainer");
 
                 function load() { try { return JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) { return null; } }
@@ -188,17 +145,6 @@ const BANKS = [
                     if (digits(D.phone).length < 10) m.push("teléfono");
                     return m;
                 }
-                function missingPay() {
-                    var m = [];
-                    if (!Y.bank) m.push("banco de origen");
-                    if (digits(Y.phone).length < 10) m.push("teléfono que pagó");
-                    if (!/^[VEJGP]?-?\d{6,9}$/i.test((Y.id || "").trim())) m.push("cédula o RIF del titular");
-                    if (!/^\d{4,12}$/.test(digits(Y.ref)) || digits(Y.ref) !== (Y.ref || "").trim()) m.push("referencia (solo números, 4 a 12 dígitos)");
-                    if (!(parseFloat(String(Y.amount || "").replace(",", ".")) > 0)) m.push("monto pagado");
-                    if (!Y.date) m.push("fecha del pago");
-                    return m;
-                }
-
                 function goTo(i) {
                     if (i > 0 && missingData().length) i = 0;
                     if (i > 1 && !plan()) i = 1;
@@ -211,12 +157,12 @@ const BANKS = [
                 function render() {
                     if (state.step > 0 && missingData().length) state.step = 0;
                     if (state.step > 1 && !plan()) state.step = 1;
-                    var done = state.step === 3;
+                    var done = state.step === 2;
                     $("stepDots").innerHTML = STEPS.map(function (_, i) {
                         return '<span class="dot' + (i < state.step ? " done" : i === state.step ? " current" : "") + '"></span>';
                     }).join("");
                     $("stepLabel").textContent = done ? "Listo" : "Paso " + (state.step + 1) + " de " + STEPS.length + " · " + STEPS[state.step];
-                    [renderData, renderPlans, renderPay, renderDone][state.step]();
+                    [renderData, renderPlans, renderDone][state.step]();
                 }
 
                 function field(id, label, type, placeholder, value, extra) {
@@ -266,7 +212,7 @@ const BANKS = [
                                 '<span class="desc">' + esc(p.description) + "</span>" +
                                 "<ul>" + p.features.map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul></button>";
                         }).join("") + "</div>" +
-                        '<div class="step-nav"><button type="button" class="btn btn-outline" id="backBtn">◀ Atrás</button><button type="button" class="btn btn-blue" id="nextBtn">Ir a pagar ▶</button></div>';
+                        '<div class="step-nav"><button type="button" class="btn btn-outline" id="backBtn">◀ Atrás</button><button type="button" class="btn btn-blue" id="nextBtn">Enviar solicitud</button></div>';
                     function update() {
                         container.querySelectorAll(".plan").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.id === state.plan ? "true" : "false"); });
                         $("nextBtn").disabled = !plan();
@@ -276,70 +222,18 @@ const BANKS = [
                     });
                     update();
                     $("backBtn").addEventListener("click", function () { goTo(0); });
-                    $("nextBtn").addEventListener("click", function () { goTo(2); });
-                }
-
-                function renderPay() {
-                    var p = plan();
-                    var today = new Date().toISOString().slice(0, 10);
-                    if (!Y.date) Y.date = today;
-                    container.innerHTML =
-                        '<div class="step-intro"><h2>Paga por Pago Móvil</h2><p>Haz el Pago Móvil desde tu banco con estos datos y luego registra la referencia.</p></div>' +
-                        '<div class="pay-box">' +
-                            "<h3>" + esc(p.product + " · " + p.name) + "</h3>" +
-                            '<div class="pay-row"><span>Monto</span><b>' + usd(p.price) + " en Bs a tasa BCV</b></div>" +
-                            '<div class="pay-row"><span>Banco</span><b>' + esc(PAGO_MOVIL.banco) + '<button type="button" class="copy" data-copy="' + esc(PAGO_MOVIL.banco.slice(0, 4)) + '">Copiar</button></b></div>' +
-                            '<div class="pay-row"><span>Teléfono</span><b>' + esc(PAGO_MOVIL.telefono) + '<button type="button" class="copy" data-copy="' + esc(digits(PAGO_MOVIL.telefono)) + '">Copiar</button></b></div>' +
-                            '<div class="pay-row"><span>RIF</span><b>' + esc(PAGO_MOVIL.rif) + '<button type="button" class="copy" data-copy="' + esc(PAGO_MOVIL.rif) + '">Copiar</button></b></div>' +
-                        "</div>" +
-                        '<div class="step-head-row" style="padding-top:22px"><h2>Registra tu pago</h2></div>' +
-                        '<div class="profile-fields">' +
-                            '<div class="two">' +
-                                '<div class="field"><label for="pBank">Banco desde el que pagaste</label><select id="pBank"><option value="">Selecciona tu banco</option>' +
-                                    BANKS.map(function (b) { return '<option' + (Y.bank === b ? " selected" : "") + ">" + esc(b) + "</option>"; }).join("") +
-                                "</select></div>" +
-                                field("pPhone", "Teléfono que pagó", "tel", "0414 123 4567", Y.phone || D.phone, 'inputmode="tel"') +
-                            "</div>" +
-                            '<div class="two">' +
-                                field("pId", "Cédula o RIF del titular", "text", "V-12345678", Y.id, 'autocapitalize="characters"') +
-                                field("pRef", "Número de referencia", "text", "Ej. 004512", Y.ref, 'inputmode="numeric" maxlength="12"') +
-                            "</div>" +
-                            '<div class="two">' +
-                                field("pAmount", "Monto pagado (Bs)", "text", "Ej. 1.234,56", Y.amount, 'inputmode="decimal"') +
-                                field("pDate", "Fecha del pago", "date", "", Y.date, 'max="' + today + '"') +
-                            "</div>" +
-                            '<p class="hint">La referencia está en el comprobante que te da tu banco al terminar el Pago Móvil.</p>' +
-                        "</div>" +
-                        '<div class="step-nav"><button type="button" class="btn btn-outline" id="backBtn">◀ Atrás</button><span class="nav-fill missing-note" id="missingNote"></span><button type="button" class="btn btn-blue" id="nextBtn">Validar pago</button></div>';
-
-                    if (!Y.phone) Y.phone = D.phone;
-                    function update() {
-                        var m = missingPay();
-                        $("nextBtn").disabled = m.length > 0;
-                        $("missingNote").textContent = m.length ? "Falta: " + m.join(", ") : "";
-                    }
-                    bindInputs({ pPhone: "phone", pId: "id", pRef: "ref", pAmount: "amount", pDate: "date" }, Y, update);
-                    $("pBank").addEventListener("change", function () { Y.bank = this.value; persist(); update(); });
-                    container.querySelectorAll(".copy").forEach(function (b) {
-                        b.addEventListener("click", function () {
-                            if (navigator.clipboard) navigator.clipboard.writeText(b.dataset.copy).catch(function () {});
-                            b.textContent = "Copiado ✓";
-                            setTimeout(function () { b.textContent = "Copiar"; }, 1500);
-                        });
-                    });
-                    update();
-                    $("backBtn").addEventListener("click", function () { goTo(1); });
                     $("nextBtn").addEventListener("click", function () {
-                        if (missingPay().length) return;
+                        if (!plan()) return;
                         state.sentAt = new Date().toISOString();
-                        goTo(3);
+                        window.location.href = mailto();
+                        goTo(2);
                     });
                 }
 
                 function summary() {
                     var p = plan();
                     return [
-                        "Nueva alta en Midaz",
+                        "Nueva solicitud de alta en Midaz",
                         "",
                         "Cliente",
                         "- Nombre: " + D.name,
@@ -350,31 +244,26 @@ const BANKS = [
                         "",
                         "Plan: " + p.product + " " + p.name + " (" + usd(p.price) + p.period + ")",
                         "",
-                        "Pago Móvil por verificar",
-                        "- Banco de origen: " + Y.bank,
-                        "- Teléfono que pagó: " + Y.phone,
-                        "- Cédula/RIF del titular: " + Y.id,
-                        "- Referencia: " + digits(Y.ref),
-                        "- Monto: Bs " + Y.amount,
-                        "- Fecha: " + Y.date,
+                        "Contactar al cliente para el pago y crear su usuario.",
                     ].join("\n");
+                }
+
+                function mailto() {
+                    return "mailto:" + SUPPORT_EMAIL + "?subject=" + encodeURIComponent("Alta Midaz: " + D.company) + "&body=" + encodeURIComponent(summary());
                 }
 
                 function renderDone() {
                     var p = plan();
-                    var mailto = "mailto:" + SUPPORT_EMAIL + "?subject=" + encodeURIComponent("Alta Midaz: " + D.company + " · ref " + digits(Y.ref)) + "&body=" + encodeURIComponent(summary());
                     container.innerHTML =
                         '<div class="done-box">' +
                             '<div class="check">✓</div>' +
-                            "<h2>Último paso: envíanos tu pago</h2>" +
-                            "<p>Toca el botón para mandar tu referencia " + esc(digits(Y.ref)) + " y tu plan " + esc(p.product + " " + p.name) +
-                            " a soporte. Al confirmar el pago creamos tu usuario y te escribimos a <strong>" + esc(D.email) + "</strong>.</p>" +
-                            '<a class="btn btn-primary" id="mailBtn" href="' + mailto + '">Enviar a soporte</a>' +
-                            '<p class="hint" id="sentNote" hidden>Si no se abrió tu correo, escribe a ' + esc(SUPPORT_EMAIL) + " con tu referencia.</p>" +
-                            '<p><button type="button" class="edit-profile-link" id="editBtn">✎ Corregir datos del pago</button></p>' +
+                            "<h2>¡Listo! Te contactaremos</h2>" +
+                            "<p>Recibimos tu solicitud del plan " + esc(p.product + " " + p.name) + ". Un asesor de Midaz te escribirá a <strong>" + esc(D.email) +
+                            "</strong> o al " + esc(D.phone) + " para coordinar el pago y activar tu cuenta.</p>" +
+                            '<p class="hint">Si no se abrió tu correo, <a href="' + mailto() + '">toca aquí para enviar la solicitud</a> o escríbenos a ' + esc(SUPPORT_EMAIL) + ".</p>" +
+                            '<p><button type="button" class="edit-profile-link" id="editBtn">✎ Cambiar mis datos o plan</button></p>' +
                         "</div>";
-                    $("mailBtn").addEventListener("click", function () { $("sentNote").hidden = false; });
-                    $("editBtn").addEventListener("click", function () { goTo(2); });
+                    $("editBtn").addEventListener("click", function () { goTo(0); });
                 }
 
                 render();
