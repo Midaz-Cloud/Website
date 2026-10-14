@@ -1,6 +1,7 @@
-// Función de Vercel: recibe la solicitud de alta de /comenzar y la envía por correo a soporte con Resend.
-// Variables en Vercel: RESEND_API_KEY (obligatoria), ALTA_FROM (remitente de un dominio verificado en Resend)
+// Función de Vercel: recibe la solicitud de alta de /comenzar y la envía por correo a soporte desde una cuenta de Gmail.
+// Variables en Vercel: GMAIL_USER y GMAIL_APP_PASSWORD (contraseña de aplicación de Google, no la normal),
 // y ALTA_TO (destinatario, por defecto soporte@midazve.com).
+import nodemailer from "nodemailer";
 
 const FIELDS = {
     name: "Nombre",
@@ -32,8 +33,9 @@ export default async function handler(req, res) {
         return res.status(400).json({ ok: false, error: "datos", missing });
     }
 
-    const key = process.env.RESEND_API_KEY;
-    if (!key) return res.status(503).json({ ok: false, error: "sin-configurar" });
+    const user = process.env.GMAIL_USER;
+    const pass = process.env.GMAIL_APP_PASSWORD;
+    if (!user || !pass) return res.status(503).json({ ok: false, error: "sin-configurar" });
 
     const text = [
         "Nueva solicitud de alta en Midaz",
@@ -43,20 +45,17 @@ export default async function handler(req, res) {
         "Contactar al cliente para el pago y crear su usuario.",
     ].join("\n");
 
-    const r = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-            from: process.env.ALTA_FROM || "Midaz <onboarding@resend.dev>",
-            to: [process.env.ALTA_TO || "soporte@midazve.com"],
-            reply_to: data.email,
+    try {
+        const transport = nodemailer.createTransport({ service: "gmail", auth: { user, pass: pass.replace(/\s+/g, "") } });
+        await transport.sendMail({
+            from: `Midaz <${user}>`,
+            to: process.env.ALTA_TO || "soporte@midazve.com",
+            replyTo: data.email,
             subject: `Alta Midaz: ${data.company} · ${data.plan}`,
             text,
-        }),
-    }).catch(() => null);
-
-    if (!r || !r.ok) {
-        console.error("Resend falló", r && r.status, r && (await r.text().catch(() => "")));
+        });
+    } catch (e) {
+        console.error("Gmail falló", e && e.message);
         return res.status(502).json({ ok: false, error: "envio" });
     }
     return res.status(200).json({ ok: true });
