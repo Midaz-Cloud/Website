@@ -1,6 +1,6 @@
 ---
-// Alta rápida: el cliente deja sus datos y elige un plan. La solicitud llega a soporte
-// por correo y un asesor lo contacta para el pago y la creación del usuario.
+// Alta rápida: el cliente deja sus datos y elige un plan. La solicitud llega sola a soporte
+// por correo (api/alta.js) y un asesor lo contacta para el pago y la creación del usuario.
 import "../styles/onboarding.css";
 
 const SUPPORT_EMAIL = "soporte@midazve.com";
@@ -83,7 +83,8 @@ const PLANS = [
             .plan li::before { content: "✓"; position: absolute; left: 0; color: var(--good); font-weight: 700; }
             .plan .tag { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; background: var(--amber); color: var(--navy); }
             .hint { font-size: 12.5px; color: var(--text-faint); }
-            .hint a { color: var(--blue); font-weight: 600; }
+            .hint a, .err a { color: var(--blue); font-weight: 600; }
+            .err { font-size: 13px; color: var(--bad); }
             .done-box { text-align: center; padding: 28px 8px; }
             .done-box .check { width: 56px; height: 56px; border-radius: 99px; background: var(--good-bg); color: var(--good); font-size: 28px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
             .done-box p { color: var(--text-dim); font-size: 14.5px; line-height: 1.55; max-width: 46ch; margin: 10px auto 0; }
@@ -212,7 +213,8 @@ const PLANS = [
                                 '<span class="desc">' + esc(p.description) + "</span>" +
                                 "<ul>" + p.features.map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul></button>";
                         }).join("") + "</div>" +
-                        '<div class="step-nav"><button type="button" class="btn btn-outline" id="backBtn">◀ Atrás</button><button type="button" class="btn btn-blue" id="nextBtn">Enviar solicitud</button></div>';
+                        '<input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">' +
+                        '<div class="step-nav"><button type="button" class="btn btn-outline" id="backBtn">◀ Atrás</button><span class="nav-fill err" id="sendError" role="alert" hidden></span><button type="button" class="btn btn-blue" id="nextBtn">Enviar solicitud</button></div>';
                     function update() {
                         container.querySelectorAll(".plan").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.id === state.plan ? "true" : "false"); });
                         $("nextBtn").disabled = !plan();
@@ -223,10 +225,31 @@ const PLANS = [
                     update();
                     $("backBtn").addEventListener("click", function () { goTo(0); });
                     $("nextBtn").addEventListener("click", function () {
-                        if (!plan()) return;
-                        state.sentAt = new Date().toISOString();
-                        window.location.href = mailto();
-                        goTo(2);
+                        var btn = this, p = plan();
+                        if (!p || btn.disabled) return;
+                        btn.disabled = true;
+                        btn.textContent = "Enviando…";
+                        $("sendError").hidden = true;
+                        fetch("/api/alta", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                name: D.name, company: D.company, rif: D.rif, email: D.email, phone: D.phone,
+                                plan: p.product + " " + p.name + " (" + usd(p.price) + p.period + ")",
+                                website: $("website").value,
+                            }),
+                        })
+                            .then(function (r) { if (!r.ok) throw new Error(r.status); })
+                            .then(function () {
+                                state.sentAt = new Date().toISOString();
+                                goTo(2);
+                            })
+                            .catch(function () {
+                                btn.disabled = false;
+                                btn.textContent = "Reintentar";
+                                $("sendError").innerHTML = 'No pudimos enviar tu solicitud. Intenta de nuevo o <a href="' + mailto() + '">envíala por correo</a>.';
+                                $("sendError").hidden = false;
+                            });
                     });
                 }
 
@@ -260,7 +283,6 @@ const PLANS = [
                             "<h2>¡Listo! Te contactaremos</h2>" +
                             "<p>Recibimos tu solicitud del plan " + esc(p.product + " " + p.name) + ". Un asesor de Midaz te escribirá a <strong>" + esc(D.email) +
                             "</strong> o al " + esc(D.phone) + " para coordinar el pago y activar tu cuenta.</p>" +
-                            '<p class="hint">Si no se abrió tu correo, <a href="' + mailto() + '">toca aquí para enviar la solicitud</a> o escríbenos a ' + esc(SUPPORT_EMAIL) + ".</p>" +
                             '<p><button type="button" class="edit-profile-link" id="editBtn">✎ Cambiar mis datos o plan</button></p>' +
                         "</div>";
                     $("editBtn").addEventListener("click", function () { goTo(0); });
