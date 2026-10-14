@@ -26,17 +26,24 @@ const tick = "h-8 w-px bg-black/55";
             </div>
 
             <div class="relative flex h-14 items-center justify-center">
-                <h2 class="translate-y-[28px] font-funnel text-[clamp(4.5rem,16vw,8rem)] font-bold leading-[45px] tracking-[-1.76px] text-landing-orange">HERMEZ</h2>
+                <h2 class="translate-y-[41px] font-funnel text-[clamp(4.5rem,16vw,8rem)] font-bold leading-[45px] tracking-[-1.76px] text-landing-orange">HERMEZ</h2>
             </div>
             <div class="relative flex aspect-square w-[min(490px,80vw)] items-center justify-center">
-                <img
-                    src="/landing/hermez.webp"
-                    alt="Hermez, el asistente virtual de Midaz"
-                    width="527"
-                    height="527"
-                    class="absolute left-1/2 top-1/2 w-[107.5%] max-w-none -translate-x-1/2 -translate-y-1/2"
-                    loading="lazy"
-                />
+                <!-- Video del Figma con fondo transparente: 1160×652 sobre el cuadro de 490 -->
+                <video
+                    class="absolute left-[-68.37%] top-[-20%] w-[236.73%] max-w-none"
+                    width="1160"
+                    height="652"
+                    poster="/landing/hermez-poster.webp"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    preload="metadata"
+                    aria-label="Hermez, el asistente virtual de Midaz"
+                >
+                    <source src="/landing/hermez.mp4" type="video/mp4" />
+                </video>
             </div>
         </div>
 
