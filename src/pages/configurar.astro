@@ -1,0 +1,679 @@
+---
+// Configuración detallada: se llena con el cliente (ventas o soporte). Describe el negocio,
+// elige módulos y el resumen se envía a soporte.
+const SUPPORT_EMAIL = "soporte@midazve.com";
+import "../styles/onboarding.css";
+---
+
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+        <meta
+            name="description"
+            content="Cuéntanos cómo opera tu negocio y te mostramos solo los módulos de Midaz que aplican, paso a paso."
+        />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <meta name="robots" content="noindex" />
+        <title>Configura tu Midaz | Midaz</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@600;700&family=Funnel+Sans:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+
+    </head>
+    <body>
+        <div class="wrap">
+            <a class="brand" href="/" aria-label="Midaz, volver al inicio">
+                <img class="logo-light" src="/logo-blue.svg" alt="Midaz" />
+                <img class="logo-dark" src="/logo-white.svg" alt="" aria-hidden="true" />
+            </a>
+            <header class="topbar">
+                <span class="eyebrow">Midaz · Onboarding</span>
+                <h1>Configura tu Midaz</h1>
+            </header>
+
+            <div class="step-progress">
+                <div class="step-label" id="stepLabel">Paso 1</div>
+                <div class="dots" id="stepDots"></div>
+            </div>
+
+            <div id="stepContainer"></div>
+
+            <footer class="foot">
+                Midaz, configuración inicial. Tus respuestas quedan guardadas en este navegador hasta que las envíes.
+            </footer>
+        </div>
+
+        <script is:inline define:vars={{ SUPPORT_EMAIL }}>
+            (function () {
+                "use strict";
+
+                /* ================= catálogo ================= */
+                var STAGES = [
+                    { key: "ventas", title: "Ventas y cómo cobras" },
+                    { key: "operacion", title: "Operación diaria" },
+                    { key: "finanzas", title: "Finanzas y cumplimiento" },
+                    { key: "equipo", title: "Estructura y equipo" },
+                ];
+
+                var MODULES = [
+                    {
+                        id: "facturacion", stage: "ventas",
+                        title: "Ventas y facturación",
+                        sub: "Cobrar, emitir el documento correcto y llevar el libro de ventas.",
+                        dynamicIncl: function (p) {
+                            if (p.declares === "no") return [
+                                "Venta rápida desde caja o POS con nota de entrega en PDF",
+                                "Órdenes, comandas y cobro mixto (bolívares, divisas, pago móvil, tarjeta)",
+                                "Cierre diario de caja y conciliación de pagos",
+                                "Notas de crédito y devoluciones",
+                            ];
+                            var byType = {
+                                fiscal_machine: "Impresora fiscal homologada por el SENIAT: reporte X y Z, correlativos, control fiscal",
+                                pos_machine: "Terminal POS con ticket no fiscal (sin validez ante el SENIAT)",
+                                digital_invoicing: "Factura digital emitida por API con proveedor autorizado (HKA): PDF y correo al cliente",
+                                hybrid: "Máquina fiscal y factura digital a la vez, se elige en caja al cobrar",
+                            };
+                            return [
+                                byType[p.invoicing] || "Máquina fiscal, POS, factura digital o híbrido, según tu caso",
+                                "Órdenes, comandas y cobro mixto (bolívares, divisas, pago móvil, tarjeta) con IGTF",
+                                "Libro de ventas mensual y cierre diario de caja",
+                                "Notas de crédito y débito, conciliación de pagos por método y cuenta bancaria",
+                                "Validación automática de pago móvil contra el banco (evita cobros dobles)",
+                            ];
+                        },
+                        todo: ["Ventas a crédito con cuotas (hoy solo abonos y saldo de cliente)"],
+                        rec: function () { return { level: "rec" }; },
+                    },
+                    {
+                        id: "dispositivos", stage: "ventas",
+                        title: "Dispositivos y canales",
+                        sub: "Con qué cobras y cómo llega el pedido a cocina o mostrador.",
+                        incl: [
+                            "POS móvil Midaz Pay (equipos Nexgo y Castles) para cobrar con tarjeta y emitir desde el aparato",
+                            "Kiosko de autoservicio para que el cliente pida y pague solo",
+                            "Comandera y pantalla de cocina (KDS) para preparar en orden",
+                            "Carta digital por QR para ver el menú desde el celular",
+                        ],
+                        todo: ["Impresión de comanda en impresora térmica genérica (hoy por pantalla)"],
+                        rec: function (p) {
+                            return { level: p.model === "food_service" || p.model === "retail_food" ? "rec" : "opt" };
+                        },
+                    },
+                    {
+                        id: "fila_cero", stage: "ventas",
+                        title: "Fila Cero",
+                        sub: "El cliente escanea el QR de la mesa, pide y paga desde su celular, sin esperar al mesonero.",
+                        incl: [
+                            "Dos modos: pide y paga al final (mesa) o paga antes y cocina prepara solo lo cobrado (mostrador)",
+                            "Propina opcional y cortesía de estacionamiento validada por monto mínimo",
+                            "La comanda llega sola a cocina al confirmar el pago",
+                        ],
+                        todo: ["El pago en línea con tarjeta depende del banco o adquirente que integres"],
+                        rec: function (p) {
+                            return { level: p.model === "food_service" || p.model === "retail_food" ? "rec" : "opt" };
+                        },
+                    },
+                    {
+                        id: "inventario", stage: "operacion",
+                        title: "Inventario",
+                        sub: "Almacenes, existencias y cuánto vale lo que tienes.",
+                        incl: [
+                            "Productos, categorías, tallas y modificadores",
+                            "Almacenes por sede, transferencias, conteos físicos y mermas",
+                            "Valorización de inventario con histórico y reportes de rotación",
+                            "Producción con recetas (para comida)",
+                            "Importación masiva de productos",
+                        ],
+                        todo: ["Costo promedio por almacén (hoy es global por producto)"],
+                        rec: function () { return { level: "rec" }; },
+                    },
+                    {
+                        id: "compras", stage: "operacion",
+                        title: "Compras y cuentas por pagar",
+                        sub: "Del pedido al proveedor hasta el pago, con la contabilidad automática.",
+                        incl: [
+                            "Solicitud de compra con aprobación y orden de compra por proveedor",
+                            "Recepción de mercancía parcial o total, sube el stock solo",
+                            "Factura de proveedor con alerta si el precio subió",
+                            "Cuentas por pagar, pagos y flujo de caja proyectado por moneda",
+                        ],
+                        todo: [
+                            "Comprar sin pasar por orden de compra (hoy siempre se exige)",
+                            "IGTF calculado en pagos a proveedores en divisas",
+                        ],
+                        rec: function () { return { level: "rec" }; },
+                    },
+                    {
+                        id: "citas", stage: "operacion",
+                        title: "Citas, expedientes y presupuestos",
+                        sub: "Agenda, ficha del cliente y presupuesto antes de cobrar. Para clínica, taller, salón o consultoría.",
+                        incl: [
+                            "Agenda por profesional con reserva pública por enlace y recordatorios",
+                            "Expediente del cliente (persona, vehículo o mascota) con formularios propios",
+                            "Presupuesto con aprobación por línea; al cobrar se marca ejecutado solo",
+                            "Cuenta del cliente: abonos, saldo a favor y deuda",
+                            "Cola de atención del día",
+                        ],
+                        todo: ["Factura fiscal de anticipo (hoy el abono queda en la cuenta del cliente)"],
+                        rec: function () { return { level: "rec" }; },
+                    },
+                    {
+                        id: "liquidacion", stage: "operacion",
+                        title: "Liquidación a profesionales",
+                        sub: "Cuánto le toca a cada profesional que atendió y cuánto al negocio.",
+                        incl: [
+                            "Reparto por porcentaje o monto por servicio",
+                            "Resumen por período para pagar a cada profesional",
+                        ],
+                        todo: ["El resumen es por toda la organización, no por sede"],
+                        rec: function () { return { level: "rec" }; },
+                    },
+                    {
+                        id: "contabilidad", stage: "finanzas",
+                        title: "Contabilidad",
+                        sub: "Libro diario, cierre mensual y reportes, alimentados solos por ventas, compras y nómina.",
+                        incl: [
+                            "Plan de cuentas venezolano con asistente de configuración",
+                            "Asientos automáticos y manuales, cierre de período mensual",
+                            "Libro de compras con retenciones de IVA e ISLR y sus comprobantes",
+                            "Activos fijos con depreciación, centros de costo, INPC",
+                            "Balance, estado de resultados, mayor y más, con exportación a Excel",
+                        ],
+                        todo: [
+                            "Importar ventas hechas en otro sistema (hoy se asientan a mano)",
+                            "Prorrateo de IVA solo si llevas el libro de ventas en Midaz",
+                        ],
+                        rec: function (p) { return { level: p.declares === "no" ? "opt" : "rec" }; },
+                    },
+                    {
+                        id: "impuestos", stage: "finanzas",
+                        title: "Impuestos y tasas",
+                        sub: "Alícuotas de IVA y tasa del BCV al día, para que caja y contabilidad usen el mismo número.",
+                        incl: [
+                            "Alícuotas de IVA configurables por producto",
+                            "Tasa BCV actualizada automáticamente, con historial",
+                            "Perfil de encargado de impuestos sin acceso a usuarios ni roles",
+                        ],
+                        todo: [],
+                        rec: function (p) { return { level: p.declares === "no" ? "opt" : "rec" }; },
+                    },
+                    {
+                        id: "nomina", stage: "finanzas",
+                        title: "Nómina",
+                        sub: "Quincenas, recibos y pago al banco.",
+                        incl: [
+                            "Empleados, gerencias, novedades y cálculo de cada quincena (IVSS, FAOV, paro forzoso, INCES, ISLR)",
+                            "Vacaciones, bono vacacional y utilidades",
+                            "Recibos en PDF verificables y exportación bancaria",
+                            "Carta de trabajo y asiento contable automático al cerrar",
+                        ],
+                        todo: ["Prestaciones sociales acumuladas (Art. 142 LOTTT)", "Liquidación al egreso del trabajador"],
+                        rec: function () { return { level: "rec" }; },
+                    },
+                    {
+                        id: "sucursales", stage: "equipo",
+                        title: "Sucursales y kioskos",
+                        sub: "Varias sedes bajo una sola organización, cada una con sus cajas y equipos.",
+                        incl: [
+                            "Sedes con PIN propio, cajas, POS y kioskos registrados por serial",
+                            "Almacén por sede y transferencias entre ellas",
+                            "Métricas por sede en el panel",
+                        ],
+                        todo: [],
+                        rec: function () { return { level: "rec" }; },
+                    },
+                    {
+                        id: "marketplace", stage: "equipo",
+                        title: "Marketplace",
+                        sub: "Catálogo compartido para vender lo de otra sede o comercio desde tu caja.",
+                        incl: [
+                            "Publicar tu catálogo para otras sedes de la organización",
+                            "Vender productos de otro comercio con inventario centralizado",
+                        ],
+                        todo: ["No aplica a comida preparada, solo productos terminados"],
+                        rec: function (p) {
+                            return { level: (p.model === "retail" || p.model === "retail_food") && p.branches === "many" ? "rec" : "opt" };
+                        },
+                    },
+                    {
+                        id: "administracion", stage: "equipo",
+                        title: "Administración",
+                        sub: "Quién entra y qué puede tocar.",
+                        incl: [
+                            "Usuarios con roles del sistema o roles personalizados por permiso",
+                            "Doble factor de autenticación (MFA) y recuperación por código",
+                            "Datos de la empresa, cuentas bancarias y métodos de pago",
+                        ],
+                        todo: [],
+                        rec: function () { return { level: "rec" }; },
+                    },
+                    {
+                        id: "auditoria", stage: "equipo",
+                        title: "Auditoría",
+                        sub: "Qué hizo cada quien, cuándo y desde dónde.",
+                        incl: [
+                            "Registro de operaciones críticas y errores por usuario",
+                            "Alertas de actividad sospechosa e inicios de sesión",
+                            "Reportes de ventas por producto y por POS",
+                        ],
+                        todo: [],
+                        rec: function (p) { return { level: p.branches === "many" ? "rec" : "opt" }; },
+                    },
+                    {
+                        id: "hermez", stage: "equipo",
+                        title: "Hermez, asistente con IA",
+                        sub: "Pregúntale a Midaz en lenguaje normal: cómo hago tal cosa, cuánto me falta por pagar.",
+                        incl: [
+                            "Chat dentro del sistema que responde sobre cómo usar Midaz",
+                            "Consulta datos a los que tu usuario ya tiene acceso (nómina, vacaciones, etc.)",
+                        ],
+                        todo: ["Responde solo sobre datos que puede consultar; no calcula cifras por su cuenta"],
+                        rec: function () { return { level: "opt" }; },
+                    },
+                ];
+
+                // Módulos que no aplican a un perfil: no aparecen ni se mencionan.
+                var NA_RULES = {
+                    fila_cero: function (p) { return p.model === "service_only"; },
+                    citas: function (p) { return p.model !== "service_only"; },
+                    liquidacion: function (p) { return p.model !== "service_only"; },
+                    inventario: function (p) { return p.model === "service_only"; },
+                    marketplace: function (p) { return p.model === "food_service" || p.model === "service_only"; },
+                };
+                function isNA(mod, p) { var fn = NA_RULES[mod.id]; return fn ? fn(p) : false; }
+
+                var STORE_KEY = "midaz-onboarding-v2";
+                var LABELS = { yes: "Lo quiero", maybe: "Con cambios", no: "No por ahora" };
+                var LEVEL_LABEL = { rec: "Recomendado", opt: "Opcional" };
+                var MODEL_LABEL = { retail: "Retail", food_service: "Servicio de comida", retail_food: "Retail + comida", service_only: "Solo servicios" };
+                var INV_LABEL = { fiscal_machine: "Máquina fiscal", pos_machine: "POS sin máquina fiscal", digital_invoicing: "Facturación digital", hybrid: "Híbrido" };
+
+                /* ================= estado y persistencia ================= */
+                function load() {
+                    try { var raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+                }
+                function persist() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+                var state = load() || { profile: {}, decisions: {}, step: 0 };
+                if (!state.profile) state.profile = {};
+                if (!state.decisions) state.decisions = {};
+                if (typeof state.step !== "number") state.step = 0;
+                var P = state.profile;
+
+                function esc(s) {
+                    return String(s).replace(/[&<>"']/g, function (c) {
+                        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+                    });
+                }
+                function $(id) { return document.getElementById(id); }
+
+                function validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v || ""); }
+                function validPhone(v) { return (v || "").replace(/\D/g, "").length >= 10; }
+
+                function missingFields(p) {
+                    var miss = [];
+                    if (!p.company || !p.company.trim()) miss.push("nombre de la empresa");
+                    if (!p.responder || !p.responder.trim()) miss.push("quién responde");
+                    if (!validEmail(p.email)) miss.push("correo válido");
+                    if (!validPhone(p.phone)) miss.push("teléfono");
+                    if (!p.model) miss.push("tipo de negocio");
+                    if (!p.declares) miss.push("si declaras impuestos");
+                    if (p.declares === "yes" && !p.invoicing) miss.push("cómo facturas hoy");
+                    if (!p.branches) miss.push("cantidad de sedes");
+                    if (!p.payroll) miss.push("si tienes empleados en nómina");
+                    return miss;
+                }
+
+                /* ================= pasos dinámicos ================= */
+                function buildSteps() {
+                    var steps = [{ type: "profile" }];
+                    STAGES.forEach(function (stage) {
+                        var mods = MODULES.filter(function (m) { return m.stage === stage.key && !isNA(m, P); });
+                        if (mods.length) steps.push({ type: "modules", stage: stage, modules: mods });
+                    });
+                    steps.push({ type: "summary" });
+                    return steps;
+                }
+
+                /* ================= render ================= */
+                var container = $("stepContainer");
+
+                function goTo(index) {
+                    var steps = buildSteps();
+                    if (index < 0) index = 0;
+                    if (index > steps.length - 1) index = steps.length - 1;
+                    // El perfil completo es requisito para avanzar.
+                    if (index > 0 && missingFields(P).length) index = 0;
+                    state.step = index;
+                    persist();
+                    render();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+
+                function render() {
+                    var steps = buildSteps();
+                    if (state.step > steps.length - 1) state.step = steps.length - 1;
+                    if (state.step > 0 && missingFields(P).length) state.step = 0;
+                    var step = steps[state.step];
+
+                    $("stepDots").innerHTML = steps.map(function (s, i) {
+                        var cls = "dot" + (i < state.step ? " done" : i === state.step ? " current" : "");
+                        return '<span class="' + cls + '"></span>';
+                    }).join("");
+                    var label = step.type === "profile" ? "Tu negocio" : step.type === "summary" ? "Resumen" : step.stage.title;
+                    $("stepLabel").textContent = "Paso " + (state.step + 1) + " de " + steps.length + " · " + label;
+
+                    if (step.type === "profile") renderProfile();
+                    else if (step.type === "modules") renderModules(step);
+                    else renderSummary(steps);
+                }
+
+                function chipGroup(key, options) {
+                    return '<div class="chips" data-key="' + key + '">' + options.map(function (o) {
+                        return '<button type="button" class="chip" data-value="' + o[0] + '">' + o[1] + (o[2] ? "<small>" + o[2] + "</small>" : "") + "</button>";
+                    }).join("") + "</div>";
+                }
+
+                function renderProfile() {
+                    container.innerHTML =
+                        '<div class="step-intro">' +
+                            "<h2>Cuéntanos de tu negocio</h2>" +
+                            "<p>Con esto te mostramos solo los módulos que aplican a tu caso, no los 15 de una vez.</p>" +
+                        "</div>" +
+                        '<div class="profile-fields">' +
+                            '<div class="two">' +
+                                '<div class="field"><label for="companyName">Nombre de la empresa</label><input id="companyName" type="text" placeholder="Ej. Farmacia La Salud, C.A." autocomplete="organization"></div>' +
+                                '<div class="field"><label for="responderName">Quién responde</label><input id="responderName" type="text" placeholder="Nombre y cargo" autocomplete="name"></div>' +
+                            "</div>" +
+                            '<div class="two">' +
+                                '<div class="field"><label for="emailInput">Correo para tu usuario</label><input id="emailInput" type="email" inputmode="email" placeholder="tu@empresa.com" autocomplete="email"></div>' +
+                                '<div class="field"><label for="phoneInput">Teléfono o WhatsApp</label><input id="phoneInput" type="tel" inputmode="tel" placeholder="0414 123 4567" autocomplete="tel"></div>' +
+                            "</div>" +
+                            '<div class="field"><span class="lbl">Tipo de negocio</span>' + chipGroup("model", [
+                                ["retail", "Retail", "Venta directa, control de stock físico"],
+                                ["food_service", "Servicio de comida", "Restaurante, combos, recetas, producción"],
+                                ["retail_food", "Retail + comida", "Supermercado con deli o cafetería"],
+                                ["service_only", "Solo servicios", "Sin inventario físico, servicios puros"],
+                            ]) + "</div>" +
+                            '<div class="two">' +
+                                '<div class="field"><span class="lbl">¿Declaras impuestos (IVA)?</span>' + chipGroup("declares", [["yes", "Sí, declaro"], ["no", "No declaro"]]) + "</div>" +
+                                '<div class="field" id="invoicingField"><span class="lbl">¿Cómo facturas hoy?</span>' + chipGroup("invoicing", [
+                                    ["fiscal_machine", "Máquina fiscal"],
+                                    ["pos_machine", "POS sin máquina fiscal"],
+                                    ["digital_invoicing", "Facturación digital"],
+                                    ["hybrid", "Híbrido"],
+                                ]) + "</div>" +
+                            "</div>" +
+                            '<div class="two">' +
+                                '<div class="field"><span class="lbl">¿Cuántas sedes?</span>' + chipGroup("branches", [["one", "Una"], ["many", "Varias"]]) + "</div>" +
+                                '<div class="field"><span class="lbl">¿Tienes empleados en nómina?</span>' + chipGroup("payroll", [["yes", "Sí"], ["no", "No"]]) + "</div>" +
+                            "</div>" +
+                        "</div>" +
+                        '<div class="step-nav">' +
+                            '<span class="nav-fill missing-note" id="missingNote"></span>' +
+                            '<button type="button" class="btn btn-blue" id="continueBtn">Continuar</button>' +
+                        "</div>";
+
+                    [["companyName", "company"], ["responderName", "responder"], ["emailInput", "email"], ["phoneInput", "phone"]].forEach(function (f) {
+                        var el = $(f[0]);
+                        el.value = P[f[1]] || "";
+                        el.addEventListener("input", function () {
+                            P[f[1]] = f[1] === "email" ? el.value.trim() : el.value;
+                            persist();
+                            updateContinue();
+                        });
+                    });
+
+                    document.querySelectorAll(".chips").forEach(function (group) {
+                        var key = group.dataset.key;
+                        var chips = group.querySelectorAll(".chip");
+                        function paint() {
+                            chips.forEach(function (c) { c.setAttribute("aria-pressed", P[key] === c.dataset.value ? "true" : "false"); });
+                        }
+                        chips.forEach(function (c) {
+                            c.addEventListener("click", function () {
+                                P[key] = P[key] === c.dataset.value ? undefined : c.dataset.value;
+                                if (key === "declares") {
+                                    $("invoicingField").hidden = P.declares === "no";
+                                    if (P.declares === "no") { P.invoicing = undefined; document.querySelector('[data-key="invoicing"]').querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", "false"); }); }
+                                }
+                                persist();
+                                paint();
+                                updateContinue();
+                            });
+                        });
+                        paint();
+                    });
+                    $("invoicingField").hidden = P.declares === "no";
+
+                    function updateContinue() {
+                        var miss = missingFields(P);
+                        $("continueBtn").disabled = miss.length > 0;
+                        $("missingNote").textContent = miss.length ? "Falta: " + miss.join(", ") : "";
+                    }
+                    updateContinue();
+
+                    $("continueBtn").addEventListener("click", function () {
+                        if (missingFields(P).length) return;
+                        goTo(1);
+                    });
+                }
+
+                function moduleCardHtml(mod, index, level) {
+                    return (
+                        '<article class="card" data-id="' + mod.id + '">' +
+                            '<div class="card-head" data-role="toggle" role="button" tabindex="0" aria-expanded="false">' +
+                                '<span class="card-num">' + (index + 1) + "</span>" +
+                                '<div class="card-titles">' +
+                                    "<h3>" + esc(mod.title) + "</h3>" +
+                                    '<div class="sub">' + esc(mod.sub) + "</div>" +
+                                    '<span class="badge ' + level + '">' + LEVEL_LABEL[level] + "</span>" +
+                                "</div>" +
+                                '<span class="status-chip pending" data-role="chip">Pendiente</span>' +
+                                '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
+                            "</div>" +
+                            '<div class="card-body"><div class="card-body-inner">' +
+                                '<div class="lists">' +
+                                    '<div class="list-box incl"><h4>Incluye</h4><ul data-role="incl"></ul></div>' +
+                                    '<div class="list-box todo"><h4>Todavía no</h4><ul data-role="todo"></ul></div>' +
+                                "</div>" +
+                                '<div class="decision-row"><span>¿Lo quieres en tu Midaz?</span><div class="segmented" role="group" aria-label="Decisión">' +
+                                    '<button type="button" class="seg-btn yes" data-decision="yes" aria-pressed="false">Lo quiero</button>' +
+                                    '<button type="button" class="seg-btn maybe" data-decision="maybe" aria-pressed="false">Con cambios</button>' +
+                                    '<button type="button" class="seg-btn no" data-decision="no" aria-pressed="false">No por ahora</button>' +
+                                "</div></div>" +
+                                '<div class="note-field"><label for="note-' + mod.id + '">¿Qué le falta o qué cambiarías?</label><textarea id="note-' + mod.id + '" placeholder="Opcional"></textarea></div>' +
+                            "</div></div>" +
+                        "</article>"
+                    );
+                }
+
+                function renderModules(step) {
+                    container.innerHTML =
+                        '<div class="step-head-row">' +
+                            "<h2>" + esc(step.stage.title) + "</h2>" +
+                            '<button type="button" class="edit-profile-link" id="editProfileLink">✎ Editar perfil del negocio</button>' +
+                        "</div>" +
+                        '<div class="modules">' + step.modules.map(function (mod, i) { return moduleCardHtml(mod, i, mod.rec(P).level); }).join("") + "</div>" +
+                        '<div class="step-nav">' +
+                            '<button type="button" class="btn btn-outline" id="backBtn">◀ Atrás</button>' +
+                            '<button type="button" class="btn btn-blue" id="continueBtn">Continuar ▶</button>' +
+                        "</div>";
+
+                    $("editProfileLink").addEventListener("click", function () { goTo(0); });
+                    $("backBtn").addEventListener("click", function () { goTo(state.step - 1); });
+                    $("continueBtn").addEventListener("click", function () { goTo(state.step + 1); });
+
+                    step.modules.forEach(function (mod) {
+                        var card = container.querySelector('[data-id="' + mod.id + '"]');
+                        var head = card.querySelector('[data-role="toggle"]');
+                        var chip = card.querySelector('[data-role="chip"]');
+                        var textarea = card.querySelector("textarea");
+                        var entry = state.decisions[mod.id] || null;
+
+                        var incl = typeof mod.dynamicIncl === "function" ? mod.dynamicIncl(P) : mod.incl || [];
+                        card.querySelector('[data-role="incl"]').innerHTML = incl.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("");
+                        var todo = mod.todo || [];
+                        card.querySelector('[data-role="todo"]').innerHTML = todo.length
+                            ? todo.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("")
+                            : '<li class="muted">Nada relevante</li>';
+
+                        function toggle() {
+                            card.classList.toggle("open");
+                            head.setAttribute("aria-expanded", card.classList.contains("open") ? "true" : "false");
+                        }
+                        head.addEventListener("click", toggle);
+                        head.addEventListener("keydown", function (e) {
+                            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+                        });
+
+                        function paintDecision(dec) {
+                            card.querySelectorAll(".seg-btn").forEach(function (btn) {
+                                btn.setAttribute("aria-pressed", btn.dataset.decision === dec ? "true" : "false");
+                            });
+                            if (dec) { chip.className = "status-chip " + dec; chip.textContent = LABELS[dec]; }
+                            else { chip.className = "status-chip pending"; chip.textContent = "Pendiente"; }
+                        }
+                        function setDecision(dec) {
+                            if (dec) {
+                                entry = state.decisions[mod.id] || { decision: null, note: "" };
+                                entry.decision = dec;
+                                state.decisions[mod.id] = entry;
+                            } else if (entry) {
+                                entry.decision = null;
+                                if (!entry.note) delete state.decisions[mod.id];
+                            }
+                            persist();
+                            paintDecision(dec);
+                        }
+                        card.querySelectorAll(".seg-btn").forEach(function (btn) {
+                            btn.addEventListener("click", function (e) {
+                                e.stopPropagation();
+                                var cur = state.decisions[mod.id] && state.decisions[mod.id].decision;
+                                setDecision(cur === btn.dataset.decision ? null : btn.dataset.decision);
+                            });
+                        });
+
+                        textarea.value = (entry && entry.note) || "";
+                        textarea.addEventListener("input", function () {
+                            entry = state.decisions[mod.id] || { decision: null, note: "" };
+                            entry.note = textarea.value;
+                            state.decisions[mod.id] = entry;
+                            persist();
+                        });
+
+                        if (entry && entry.decision) paintDecision(entry.decision);
+                    });
+                }
+
+                function buildSummary() {
+                    var counts = { yes: 0, maybe: 0, no: 0 };
+                    var chosen = [], changes = [], dropped = [];
+                    var lines = [];
+                    lines.push("Configuración inicial de Midaz");
+                    lines.push("Empresa: " + (P.company || "(sin nombre)"));
+                    lines.push("Responde: " + (P.responder || "(sin nombre)"));
+                    lines.push("Correo: " + (P.email || "(sin correo)"));
+                    lines.push("Teléfono: " + (P.phone || "(sin teléfono)"));
+                    lines.push("Fecha: " + new Date().toLocaleDateString("es-VE", { year: "numeric", month: "long", day: "numeric" }));
+                    lines.push("");
+                    lines.push("Perfil del negocio");
+                    lines.push("- Tipo: " + (MODEL_LABEL[P.model] || "sin definir"));
+                    lines.push("- Declara impuestos: " + (P.declares === "yes" ? "sí" : P.declares === "no" ? "no" : "sin definir"));
+                    if (P.declares !== "no") lines.push("- Factura hoy con: " + (INV_LABEL[P.invoicing] || "sin definir"));
+                    lines.push("- Sedes: " + (P.branches === "many" ? "varias" : P.branches === "one" ? "una" : "sin definir"));
+                    lines.push("- Nómina: " + (P.payroll === "yes" ? "sí" : P.payroll === "no" ? "no" : "sin definir"));
+                    lines.push("");
+                    lines.push("Módulos revisados");
+
+                    MODULES.filter(function (m) { return !isNA(m, P); }).forEach(function (mod, i) {
+                        var e = state.decisions[mod.id] || {};
+                        var dec = e.decision;
+                        if (dec) { counts[dec]++; (dec === "yes" ? chosen : dec === "maybe" ? changes : dropped).push(mod.title); }
+                        lines.push((i + 1) + ". " + mod.title + " [" + LEVEL_LABEL[mod.rec(P).level] + "]: " + (dec ? LABELS[dec] : "Sin decidir"));
+                        if (e.note && e.note.trim()) lines.push("   Nota: " + e.note.trim());
+                    });
+                    lines.push("");
+                    lines.push("Elegidos: " + (chosen.length ? chosen.join(", ") : "ninguno"));
+                    lines.push("Con cambios: " + (changes.length ? changes.join(", ") : "ninguno"));
+                    lines.push("Descartados por ahora: " + (dropped.length ? dropped.join(", ") : "ninguno"));
+                    return { text: lines.join("\n"), counts: counts, chosen: chosen, changes: changes, dropped: dropped };
+                }
+
+                function renderSummary(steps) {
+                    var s = buildSummary();
+                    var subject = "Nuevo usuario Midaz: " + (P.company || "empresa");
+
+                    container.innerHTML =
+                        '<button type="button" class="back-link" id="backLink">◀ Volver a los módulos</button>' +
+                        '<div class="summary-box">' +
+                            "<h2>Resumen para enviar</h2>" +
+                            '<p class="lead">Se arma solo con tu perfil y lo que marcaste. Al enviarlo se abre tu correo con todo listo para ' + SUPPORT_EMAIL + '; soporte crea tu usuario y te escribe a ' + esc(P.email || "tu correo") + ".</p>" +
+                            '<div class="summary-stats">' +
+                                '<div class="stat yes"><span class="n">' + s.counts.yes + '</span><span class="l">Lo quiero</span></div>' +
+                                '<div class="stat maybe"><span class="n">' + s.counts.maybe + '</span><span class="l">Con cambios</span></div>' +
+                                '<div class="stat no"><span class="n">' + s.counts.no + '</span><span class="l">No por ahora</span></div>' +
+                            "</div>" +
+                            '<textarea id="summaryText" readonly></textarea>' +
+                            '<div class="summary-actions">' +
+                                '<a class="btn btn-primary" id="sendBtn" href="#">Enviar a Midaz</a>' +
+                                '<button class="btn btn-ghost" id="copyBtn" type="button">Copiar resumen</button>' +
+                                '<span class="copied-flag" id="copiedFlag">Copiado ✓</span>' +
+                                '<button class="btn btn-danger" id="resetBtn" type="button">Empezar de nuevo</button>' +
+                            "</div>" +
+                            '<div class="send-status" id="sendStatus" role="status" hidden></div>' +
+                        "</div>";
+
+                    $("summaryText").value = s.text;
+                    var mailto = "mailto:" + SUPPORT_EMAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(s.text);
+
+                    var sendBtn = $("sendBtn");
+                    sendBtn.href = mailto;
+
+                    $("backLink").addEventListener("click", function () { goTo(steps.length - 2); });
+
+                    sendBtn.addEventListener("click", function () {
+                        state.sentText = s.text;
+                        persist();
+                        var el = $("sendStatus");
+                        el.className = "send-status ok";
+                        el.innerHTML = "Se abrió tu correo con el resumen para " + SUPPORT_EMAIL + ". Solo dale enviar. Si no se abrió, copia el resumen y mándalo a ese correo.";
+                        el.hidden = false;
+                    });
+
+                    $("copyBtn").addEventListener("click", function () {
+                        var ta = $("summaryText");
+                        var flag = $("copiedFlag");
+                        function showFlag() { flag.classList.add("show"); setTimeout(function () { flag.classList.remove("show"); }, 1800); }
+                        function fallback() {
+                            ta.removeAttribute("readonly");
+                            ta.select();
+                            try { document.execCommand("copy"); showFlag(); } catch (e) {}
+                            ta.setAttribute("readonly", "");
+                        }
+                        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(showFlag).catch(fallback);
+                        else fallback();
+                    });
+
+                    $("resetBtn").addEventListener("click", function () {
+                        if (!window.confirm("¿Borrar todas las respuestas de este navegador y empezar de nuevo?")) return;
+                        state = { profile: {}, decisions: {}, step: 0 };
+                        P = state.profile;
+                        try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+                        render();
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                    });
+                }
+
+                render();
+            })();
+        </script>
+    </body>
+</html>
