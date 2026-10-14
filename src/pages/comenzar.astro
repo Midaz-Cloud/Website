@@ -1,6 +1,6 @@
 ---
-// Alta rápida: el cliente deja sus datos y elige un plan. La solicitud llega sola a soporte
-// por correo (api/alta.js) y un asesor lo contacta para el pago y la creación del usuario.
+// Alta rápida: preguntas de solo tocar sobre el negocio, plan recomendado y datos de contacto.
+// La solicitud llega sola a soporte por correo (api/alta.js) y un asesor contacta al cliente.
 import "../styles/onboarding.css";
 
 const SUPPORT_EMAIL = "soporte@midazve.com";
@@ -23,7 +23,6 @@ const PLANS = [
         period: "/año",
         description: "Ahorras el equivalente a 2 meses",
         features: ["Todo lo del Mensual", "Multiusuario y multisede", "Reportes avanzados exportables", "Soporte 24/7"],
-        recommended: true,
     },
     {
         id: "agora-emprendedor",
@@ -45,6 +44,94 @@ const PLANS = [
     },
 ];
 
+// Preguntas de solo tocar para conocer el negocio y recomendar el plan.
+// "only" limita una pregunta a ciertos tipos de negocio; "short" es la etiqueta en el correo a soporte.
+const QUESTIONS = [
+    {
+        key: "type",
+        short: "Tipo de negocio",
+        title: "¿Qué tipo de negocio tienes?",
+        options: [
+            ["retail", "Tienda o comercio", "Ropa, víveres, ferretería, tecnología…"],
+            ["food", "Restaurante o comida", "Restaurante, cafetería, comida rápida"],
+            ["pharmacy", "Farmacia"],
+            ["wholesale", "Mayorista o distribuidora", "Vendes a otros negocios"],
+            ["services", "Servicios", "Consultorio, taller, agencia, academia…"],
+            ["other", "Otro"],
+        ],
+    },
+    {
+        key: "retailKind",
+        only: ["retail"],
+        short: "Vende",
+        title: "¿Qué vendes principalmente?",
+        options: [
+            ["clothes", "Ropa y calzado"],
+            ["grocery", "Víveres o abasto"],
+            ["hardware", "Ferretería"],
+            ["tech", "Tecnología"],
+            ["beauty", "Belleza y cuidado personal"],
+            ["other", "Otra cosa"],
+        ],
+    },
+    {
+        key: "foodService",
+        only: ["food"],
+        short: "Atención",
+        title: "¿Cómo atiendes a tus clientes?",
+        options: [
+            ["tables", "En mesas"],
+            ["counter", "En mostrador o para llevar"],
+            ["delivery", "Sobre todo delivery"],
+            ["mixed", "De todo un poco"],
+        ],
+    },
+    {
+        key: "branches",
+        short: "Sedes",
+        title: "¿Cuántas sedes tienes?",
+        options: [["1", "Una"], ["2-5", "De 2 a 5"], ["6+", "Más de 5"]],
+    },
+    {
+        key: "registers",
+        short: "Cajas",
+        title: "¿Cuántas cajas cobran a la vez?",
+        hint: "Contando todas tus sedes.",
+        options: [["1", "Una"], ["2-3", "2 o 3"], ["4+", "4 o más"]],
+    },
+    {
+        key: "invoicing",
+        short: "Facturación",
+        title: "¿Cómo facturas hoy?",
+        options: [
+            ["fiscal", "Con máquina fiscal"],
+            ["digital", "Factura digital o forma libre"],
+            ["none", "Todavía no facturo"],
+        ],
+    },
+    {
+        key: "products",
+        only: ["retail", "food", "pharmacy", "wholesale", "other"],
+        short: "Productos",
+        title: "¿Cuántos productos manejas?",
+        options: [["<500", "Menos de 500"], ["500-5000", "De 500 a 5.000"], ["5000+", "Más de 5.000"]],
+    },
+    {
+        key: "goals",
+        multi: true,
+        short: "Quiere resolver",
+        title: "¿Qué quieres resolver primero?",
+        hint: "Puedes tocar varias.",
+        options: [
+            ["billing", "Facturar más rápido"],
+            ["stock", "Controlar el inventario"],
+            ["credit", "Ventas a crédito y cobranza"],
+            ["branches", "Ver todas mis sedes"],
+            ["reports", "Reportes y cierres de caja"],
+            ["payments", "Cobrar con punto o Pago Móvil"],
+        ],
+    },
+];
 ---
 
 <!doctype html>
@@ -52,7 +139,7 @@ const PLANS = [
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-        <meta name="description" content="Crea tu cuenta de Midaz en minutos: déjanos tus datos, elige tu plan y te contactamos." />
+        <meta name="description" content="Crea tu cuenta de Midaz en minutos: cuéntanos de tu negocio, te recomendamos un plan y te contactamos." />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
         <title>Empieza con Midaz | Midaz</title>
@@ -85,6 +172,24 @@ const PLANS = [
             .hint { font-size: 12.5px; color: var(--text-faint); }
             .hint a, .err a { color: var(--blue); font-weight: 600; }
             .err { font-size: 13px; color: var(--bad); }
+            .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+            @media (max-width: 560px) { .opts { grid-template-columns: 1fr; } }
+            .opt {
+                text-align: left; font-family: inherit; color: var(--text); cursor: pointer; background: var(--surface);
+                border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px 18px; min-height: 60px;
+                display: flex; flex-direction: column; justify-content: center; gap: 3px; transition: 0.15s ease; box-shadow: var(--shadow);
+            }
+            .opt b { font-size: 16px; font-weight: 600; color: var(--heading); }
+            .opt small { font-size: 13px; color: var(--text-dim); }
+            .opt:hover { border-color: var(--blue); }
+            .opt[aria-pressed="true"] { border-color: var(--blue); background: var(--blue-soft); }
+            .opt[aria-pressed="true"] b { color: var(--blue); }
+            .opt.multi { padding-left: 46px; position: relative; }
+            .opt.multi::before {
+                content: ""; position: absolute; left: 16px; top: 50%; width: 18px; height: 18px; margin-top: -9px;
+                border: 1.5px solid var(--border); border-radius: 5px; background: var(--surface);
+            }
+            .opt.multi[aria-pressed="true"]::before { content: "✓"; color: #fff; background: var(--blue); border-color: var(--blue); font-size: 13px; font-weight: 700; line-height: 18px; text-align: center; }
             .done-box { text-align: center; padding: 28px 8px; }
             .done-box .check { width: 56px; height: 56px; border-radius: 99px; background: var(--good-bg); color: var(--good); font-size: 28px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
             .done-box p { color: var(--text-dim); font-size: 14.5px; line-height: 1.55; max-width: 46ch; margin: 10px auto 0; }
@@ -112,14 +217,13 @@ const PLANS = [
             <footer class="foot">¿Prefieres que te acompañemos? Escríbenos a {SUPPORT_EMAIL}.</footer>
         </div>
 
-        <script is:inline define:vars={{ SUPPORT_EMAIL, PLANS }}>
+        <script is:inline define:vars={{ SUPPORT_EMAIL, PLANS, QUESTIONS }}>
             (function () {
                 "use strict";
 
-                var STORE_KEY = "midaz-alta-v2";
-                var STEPS = ["Tus datos", "Tu plan"];
-                var state = load() || { step: 0, data: {}, plan: null };
-                var D = state.data;
+                var STORE_KEY = "midaz-alta-v3";
+                var state = load() || { step: 0, answers: {}, plan: null, data: {} };
+                var A = state.answers, D = state.data;
                 var container = document.getElementById("stepContainer");
 
                 function load() { try { return JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) { return null; } }
@@ -130,12 +234,33 @@ const PLANS = [
                         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
                     });
                 }
-                function plan() { return PLANS.filter(function (p) { return p.id === state.plan; })[0] || null; }
                 function usd(n) { return "$" + n.toLocaleString("en-US"); }
-
                 function validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v || ""); }
                 function digits(v) { return (v || "").replace(/\D/g, ""); }
                 function validRif(v) { return /^[VEJGPC]-?\d{6,9}(-?\d)?$/i.test((v || "").trim()); }
+
+                // Algunas preguntas solo aplican según el tipo de negocio.
+                function applies(q) {
+                    if (!q.only) return true;
+                    // Sin tipo todavía, se cuenta como tienda para que el total de pasos no salte.
+                    return q.only.indexOf(A.type || "retail") !== -1;
+                }
+                function questions() { return QUESTIONS.filter(applies); }
+                // Pasos: preguntas, plan, datos. El paso siguiente al último es "Listo".
+                function steps() {
+                    return questions().map(function (q) { return { kind: "q", q: q, label: "Tu negocio" }; })
+                        .concat([{ kind: "plan", label: "Tu plan" }, { kind: "data", label: "Tus datos" }]);
+                }
+                function answered(q) { return q.multi ? (A[q.key] || []).length > 0 : !!A[q.key]; }
+                function optionLabel(q, v) { var o = q.options.filter(function (x) { return x[0] === v; })[0]; return o ? o[1] : v; }
+
+                function recommended() {
+                    var physical = ["retail", "food", "pharmacy", "wholesale"].indexOf(A.type) !== -1;
+                    var big = A.branches !== "1" || A.registers !== "1" || A.products === "500-5000" || A.products === "5000+";
+                    if (physical && A.invoicing !== "digital") return big ? "agora-empresarial" : "agora-emprendedor";
+                    return big ? "web-anual" : "web-mensual";
+                }
+                function plan() { return PLANS.filter(function (p) { return p.id === state.plan; })[0] || null; }
 
                 function missingData() {
                     var m = [];
@@ -146,40 +271,128 @@ const PLANS = [
                     if (digits(D.phone).length < 10) m.push("teléfono");
                     return m;
                 }
+
+                // Primer paso que todavía no se puede pasar.
+                function firstOpen() {
+                    var list = steps();
+                    for (var i = 0; i < list.length; i++) {
+                        var s = list[i];
+                        if (s.kind === "q" && !answered(s.q)) return i;
+                        if (s.kind === "plan" && !plan()) return i;
+                        if (s.kind === "data" && (missingData().length || !state.sentAt)) return i;
+                    }
+                    return list.length;
+                }
+
                 function goTo(i) {
-                    if (i > 0 && missingData().length) i = 0;
-                    if (i > 1 && !plan()) i = 1;
-                    state.step = i;
+                    state.step = Math.max(0, Math.min(i, firstOpen()));
                     persist();
                     render();
                     window.scrollTo({ top: 0, behavior: "smooth" });
                 }
 
                 function render() {
-                    if (state.step > 0 && missingData().length) state.step = 0;
-                    if (state.step > 1 && !plan()) state.step = 1;
-                    var done = state.step === 2;
-                    $("stepDots").innerHTML = STEPS.map(function (_, i) {
+                    var list = steps();
+                    state.step = Math.min(state.step, firstOpen());
+                    var done = state.step >= list.length;
+                    $("stepDots").innerHTML = list.map(function (_, i) {
                         return '<span class="dot' + (i < state.step ? " done" : i === state.step ? " current" : "") + '"></span>';
                     }).join("");
-                    $("stepLabel").textContent = done ? "Listo" : "Paso " + (state.step + 1) + " de " + STEPS.length + " · " + STEPS[state.step];
-                    [renderData, renderPlans, renderDone][state.step]();
+                    $("stepLabel").textContent = done ? "Listo" : "Paso " + (state.step + 1) + " de " + list.length + " · " + list[state.step].label;
+                    if (done) return renderDone();
+                    var s = list[state.step];
+                    if (s.kind === "q") renderQuestion(s.q);
+                    else if (s.kind === "plan") renderPlans();
+                    else renderData();
+                }
+
+                function backButton() { return state.step > 0 ? '<button type="button" class="btn btn-outline" id="backBtn">◀ Atrás</button>' : "<span></span>"; }
+                function bindBack() { var b = $("backBtn"); if (b) b.addEventListener("click", function () { goTo(state.step - 1); }); }
+
+                function renderQuestion(q) {
+                    var value = A[q.key];
+                    container.innerHTML =
+                        '<div class="step-intro"><h2>' + esc(q.title) + "</h2><p>" + esc(q.hint || "Toca una opción.") + "</p></div>" +
+                        '<div class="opts">' + q.options.map(function (o) {
+                            var on = q.multi ? (value || []).indexOf(o[0]) !== -1 : value === o[0];
+                            return '<button type="button" class="opt' + (q.multi ? " multi" : "") + '" data-value="' + esc(o[0]) + '" aria-pressed="' + on + '">' +
+                                "<b>" + esc(o[1]) + "</b>" + (o[2] ? "<small>" + esc(o[2]) + "</small>" : "") + "</button>";
+                        }).join("") + "</div>" +
+                        '<div class="step-nav">' + backButton() + (q.multi || value ? '<button type="button" class="btn btn-blue" id="nextBtn">Continuar ▶</button>' : "") + "</div>";
+
+                    function update() { var n = $("nextBtn"); if (n) n.disabled = !answered(q); }
+                    container.querySelectorAll(".opt").forEach(function (b) {
+                        b.addEventListener("click", function () {
+                            var v = b.dataset.value;
+                            if (q.multi) {
+                                var list = (A[q.key] || []).slice();
+                                var at = list.indexOf(v);
+                                if (at === -1) list.push(v); else list.splice(at, 1);
+                                A[q.key] = list;
+                                b.setAttribute("aria-pressed", at === -1 ? "true" : "false");
+                                persist();
+                                update();
+                                return;
+                            }
+                            A[q.key] = v;
+                            // Si cambia el tipo de negocio, se borran las respuestas que ya no aplican.
+                            QUESTIONS.forEach(function (x) { if (!applies(x)) delete A[x.key]; });
+                            if (!state.planTouched) state.plan = null;
+                            container.querySelectorAll(".opt").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+                            persist();
+                            setTimeout(function () { goTo(state.step + 1); }, 220);
+                        });
+                    });
+                    update();
+                    bindBack();
+                    var n = $("nextBtn");
+                    if (n) n.addEventListener("click", function () { goTo(state.step + 1); });
+                }
+
+                function renderPlans() {
+                    var rec = recommended();
+                    if (!state.plan) state.plan = rec;
+                    container.innerHTML =
+                        '<div class="step-intro"><h2>Este es el plan para tu negocio</h2><p>Lo elegimos con tus respuestas. Si prefieres otro, tócalo. Precios en dólares, pagas en bolívares a la tasa BCV del día.</p></div>' +
+                        // El recomendado va primero para que se vea sin bajar.
+                        '<div class="plans">' + PLANS.slice().sort(function (a, b) { return (b.id === rec) - (a.id === rec); }).map(function (p) {
+                            return '<button type="button" class="plan" data-id="' + p.id + '" aria-pressed="' + (state.plan === p.id) + '">' +
+                                (p.id === rec ? '<span class="tag">Recomendado para ti</span>' : "") +
+                                '<span class="prod">' + esc(p.product) + '</span><span class="name">' + esc(p.name) + "</span>" +
+                                '<span class="price">' + usd(p.price) + "<small>" + p.period + "</small></span>" +
+                                '<span class="desc">' + esc(p.description) + "</span>" +
+                                "<ul>" + p.features.map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul></button>";
+                        }).join("") + "</div>" +
+                        '<div class="step-nav">' + backButton() + '<button type="button" class="btn btn-blue" id="nextBtn">Continuar ▶</button></div>';
+                    persist();
+                    container.querySelectorAll(".plan").forEach(function (b) {
+                        b.addEventListener("click", function () {
+                            state.plan = b.dataset.id;
+                            state.planTouched = state.plan !== rec;
+                            container.querySelectorAll(".plan").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+                            persist();
+                        });
+                    });
+                    bindBack();
+                    $("nextBtn").addEventListener("click", function () { goTo(state.step + 1); });
                 }
 
                 function field(id, label, type, placeholder, value, extra) {
                     return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" type="' + type + '" placeholder="' + placeholder + '" value="' + esc(value) + '" ' + (extra || "") + "></div>";
                 }
 
-                function bindInputs(map, obj, update) {
-                    Object.keys(map).forEach(function (id) {
-                        var el = $(id);
-                        el.addEventListener("input", function () { obj[map[id]] = el.value; persist(); update(); });
+                function profile() {
+                    return questions().map(function (q) {
+                        var v = A[q.key];
+                        var text = q.multi ? (v || []).map(function (x) { return optionLabel(q, x); }).join(", ") : optionLabel(q, v);
+                        return q.short + ": " + text;
                     });
                 }
+                function planText() { var p = plan(); return p.product + " " + p.name + " (" + usd(p.price) + p.period + ")" + (p.id === recommended() ? "" : " · elegido por el cliente"); }
 
                 function renderData() {
                     container.innerHTML =
-                        '<div class="step-intro"><h2>Cuéntanos quién eres</h2><p>Con esto creamos tu usuario. Te toma un minuto.</p></div>' +
+                        '<div class="step-intro"><h2>¿A quién contactamos?</h2><p>Último paso. Con esto te escribimos para activar tu cuenta.</p></div>' +
                         '<div class="profile-fields">' +
                             '<div class="two">' +
                                 field("fName", "Tu nombre", "text", "Nombre y apellido", D.name, 'autocomplete="name"') +
@@ -189,44 +402,26 @@ const PLANS = [
                                 field("fRif", "RIF de la empresa", "text", "J-12345678-9", D.rif, 'autocapitalize="characters"') +
                                 field("fPhone", "Teléfono o WhatsApp", "tel", "0414 123 4567", D.phone, 'inputmode="tel" autocomplete="tel"') +
                             "</div>" +
-                            field("fEmail", "Correo para tu usuario", "email", "tu@empresa.com", D.email, 'inputmode="email" autocomplete="email"') +
+                            field("fEmail", "Correo", "email", "tu@empresa.com", D.email, 'inputmode="email" autocomplete="email"') +
                         "</div>" +
-                        '<div class="step-nav"><span class="nav-fill missing-note" id="missingNote"></span><button type="button" class="btn btn-blue" id="nextBtn">Continuar</button></div>';
+                        '<input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">' +
+                        '<div class="step-nav">' + backButton() + '<span class="nav-fill missing-note" id="missingNote"></span><span class="nav-fill err" id="sendError" role="alert" hidden></span><button type="button" class="btn btn-blue" id="nextBtn">Enviar solicitud</button></div>';
+
                     function update() {
                         var m = missingData();
                         $("nextBtn").disabled = m.length > 0;
                         $("missingNote").textContent = m.length ? "Falta: " + m.join(", ") : "";
+                        $("missingNote").hidden = !m.length;
                     }
-                    bindInputs({ fName: "name", fCompany: "company", fRif: "rif", fPhone: "phone", fEmail: "email" }, D, update);
-                    update();
-                    $("nextBtn").addEventListener("click", function () { goTo(1); });
-                }
-
-                function renderPlans() {
-                    container.innerHTML =
-                        '<div class="step-intro"><h2>Elige tu plan</h2><p>Precios en dólares. Pagas en bolívares a la tasa BCV del día.</p></div>' +
-                        '<div class="plans">' + PLANS.map(function (p) {
-                            return '<button type="button" class="plan" data-id="' + p.id + '" aria-pressed="' + (state.plan === p.id) + '">' +
-                                (p.recommended ? '<span class="tag">Recomendado</span>' : "") +
-                                '<span class="prod">' + esc(p.product) + '</span><span class="name">' + esc(p.name) + "</span>" +
-                                '<span class="price">' + usd(p.price) + "<small>" + p.period + "</small></span>" +
-                                '<span class="desc">' + esc(p.description) + "</span>" +
-                                "<ul>" + p.features.map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul></button>";
-                        }).join("") + "</div>" +
-                        '<input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">' +
-                        '<div class="step-nav"><button type="button" class="btn btn-outline" id="backBtn">◀ Atrás</button><span class="nav-fill err" id="sendError" role="alert" hidden></span><button type="button" class="btn btn-blue" id="nextBtn">Enviar solicitud</button></div>';
-                    function update() {
-                        container.querySelectorAll(".plan").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.id === state.plan ? "true" : "false"); });
-                        $("nextBtn").disabled = !plan();
-                    }
-                    container.querySelectorAll(".plan").forEach(function (b) {
-                        b.addEventListener("click", function () { state.plan = b.dataset.id; persist(); update(); });
+                    var map = { fName: "name", fCompany: "company", fRif: "rif", fPhone: "phone", fEmail: "email" };
+                    Object.keys(map).forEach(function (id) {
+                        $(id).addEventListener("input", function () { D[map[id]] = this.value; persist(); update(); });
                     });
                     update();
-                    $("backBtn").addEventListener("click", function () { goTo(0); });
+                    bindBack();
                     $("nextBtn").addEventListener("click", function () {
-                        var btn = this, p = plan();
-                        if (!p || btn.disabled) return;
+                        var btn = this;
+                        if (missingData().length || btn.disabled) return;
                         btn.disabled = true;
                         btn.textContent = "Enviando…";
                         $("sendError").hidden = true;
@@ -235,14 +430,13 @@ const PLANS = [
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
                                 name: D.name, company: D.company, rif: D.rif, email: D.email, phone: D.phone,
-                                plan: p.product + " " + p.name + " (" + usd(p.price) + p.period + ")",
-                                website: $("website").value,
+                                plan: planText(), perfil: profile(), website: $("website").value,
                             }),
                         })
                             .then(function (r) { if (!r.ok) throw new Error(r.status); })
                             .then(function () {
                                 state.sentAt = new Date().toISOString();
-                                goTo(2);
+                                goTo(state.step + 1);
                             })
                             .catch(function () {
                                 btn.disabled = false;
@@ -253,26 +447,11 @@ const PLANS = [
                     });
                 }
 
-                function summary() {
-                    var p = plan();
-                    return [
-                        "Nueva solicitud de alta en Midaz",
-                        "",
-                        "Cliente",
-                        "- Nombre: " + D.name,
-                        "- Empresa: " + D.company,
-                        "- RIF: " + D.rif,
-                        "- Correo: " + D.email,
-                        "- Teléfono: " + D.phone,
-                        "",
-                        "Plan: " + p.product + " " + p.name + " (" + usd(p.price) + p.period + ")",
-                        "",
-                        "Contactar al cliente para el pago y crear su usuario.",
-                    ].join("\n");
-                }
-
                 function mailto() {
-                    return "mailto:" + SUPPORT_EMAIL + "?subject=" + encodeURIComponent("Alta Midaz: " + D.company) + "&body=" + encodeURIComponent(summary());
+                    var body = ["Nueva solicitud de alta en Midaz", "", "Cliente",
+                        "- Nombre: " + D.name, "- Empresa: " + D.company, "- RIF: " + D.rif, "- Correo: " + D.email, "- Teléfono: " + D.phone,
+                        "", "Negocio"].concat(profile().map(function (l) { return "- " + l; }), ["", "Plan: " + planText()]).join("\n");
+                    return "mailto:" + SUPPORT_EMAIL + "?subject=" + encodeURIComponent("Alta Midaz: " + D.company) + "&body=" + encodeURIComponent(body);
                 }
 
                 function renderDone() {
@@ -283,9 +462,14 @@ const PLANS = [
                             "<h2>¡Listo! Te contactaremos</h2>" +
                             "<p>Recibimos tu solicitud del plan " + esc(p.product + " " + p.name) + ". Un asesor de Midaz te escribirá a <strong>" + esc(D.email) +
                             "</strong> o al " + esc(D.phone) + " para coordinar el pago y activar tu cuenta.</p>" +
-                            '<p><button type="button" class="edit-profile-link" id="editBtn">✎ Cambiar mis datos o plan</button></p>' +
+                            '<p><button type="button" class="edit-profile-link" id="editBtn">✎ Empezar otra solicitud</button></p>' +
                         "</div>";
-                    $("editBtn").addEventListener("click", function () { goTo(0); });
+                    $("editBtn").addEventListener("click", function () {
+                        state = { step: 0, answers: {}, plan: null, data: {} };
+                        A = state.answers; D = state.data;
+                        persist();
+                        render();
+                    });
                 }
 
                 render();

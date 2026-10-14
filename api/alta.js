@@ -33,6 +33,9 @@ export default async function handler(req, res) {
         return res.status(400).json({ ok: false, error: "datos", missing });
     }
 
+    // Respuestas de solo tocar sobre el negocio ("Pregunta: respuesta").
+    const perfil = (Array.isArray(body.perfil) ? body.perfil : []).slice(0, 12).map(clean).filter(Boolean);
+
     const user = process.env.GMAIL_USER;
     const pass = process.env.GMAIL_APP_PASSWORD;
     if (!user || !pass) return res.status(503).json({ ok: false, error: "sin-configurar" });
@@ -41,6 +44,7 @@ export default async function handler(req, res) {
         "Nueva solicitud de alta en Midaz",
         "",
         ...Object.entries(FIELDS).map(([k, label]) => `- ${label}: ${data[k]}`),
+        ...(perfil.length ? ["", "Negocio", ...perfil.map((l) => `- ${l}`)] : []),
         "",
         "Contactar al cliente para el pago y crear su usuario.",
     ].join("\n");
