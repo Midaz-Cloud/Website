@@ -236,6 +236,7 @@ const SUPPORT_EMAIL = "soporte@midazve.com";
                 border-radius: 10px; color: #f2f4fb; font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: 12.5px; line-height: 1.6; padding: 12px 13px; resize: vertical;
             }
             .summary-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+            a.btn { text-decoration: none; display: inline-block; }
             .btn-primary { background: var(--amber); color: var(--navy); border-color: var(--amber); }
             .btn-primary:hover { filter: brightness(1.06); }
             .btn-primary:disabled { opacity: 0.6; cursor: progress; filter: none; }
@@ -282,9 +283,6 @@ const SUPPORT_EMAIL = "soporte@midazve.com";
         <script is:inline define:vars={{ SUPPORT_EMAIL }}>
             (function () {
                 "use strict";
-
-                // El resumen se envía al correo de soporte con FormSubmit (sin servidor propio).
-                var ENDPOINT = "https://formsubmit.co/ajax/" + SUPPORT_EMAIL;
 
                 /* ================= catálogo ================= */
                 var STAGES = [
@@ -847,7 +845,7 @@ const SUPPORT_EMAIL = "soporte@midazve.com";
                         '<button type="button" class="back-link" id="backLink">◀ Volver a los módulos</button>' +
                         '<div class="summary-box">' +
                             "<h2>Resumen para enviar</h2>" +
-                            '<p class="lead">Se arma solo con tu perfil y lo que marcaste. Al enviarlo le llega a nuestro equipo de soporte, que crea tu usuario y te escribe a ' + esc(P.email || "tu correo") + ".</p>" +
+                            '<p class="lead">Se arma solo con tu perfil y lo que marcaste. Al enviarlo se abre tu correo con todo listo para ' + SUPPORT_EMAIL + '; soporte crea tu usuario y te escribe a ' + esc(P.email || "tu correo") + ".</p>" +
                             '<div class="summary-stats">' +
                                 '<div class="stat yes"><span class="n">' + s.counts.yes + '</span><span class="l">Lo quiero</span></div>' +
                                 '<div class="stat maybe"><span class="n">' + s.counts.maybe + '</span><span class="l">Con cambios</span></div>' +
@@ -855,7 +853,7 @@ const SUPPORT_EMAIL = "soporte@midazve.com";
                             "</div>" +
                             '<textarea id="summaryText" readonly></textarea>' +
                             '<div class="summary-actions">' +
-                                '<button class="btn btn-primary" id="sendBtn" type="button">Enviar a Midaz</button>' +
+                                '<a class="btn btn-primary" id="sendBtn" href="#">Enviar a Midaz</a>' +
                                 '<button class="btn btn-ghost" id="copyBtn" type="button">Copiar resumen</button>' +
                                 '<span class="copied-flag" id="copiedFlag">Copiado ✓</span>' +
                                 '<button class="btn btn-danger" id="resetBtn" type="button">Empezar de nuevo</button>' +
@@ -866,62 +864,18 @@ const SUPPORT_EMAIL = "soporte@midazve.com";
                     $("summaryText").value = s.text;
                     var mailto = "mailto:" + SUPPORT_EMAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(s.text);
 
-                    function showStatus(kind, html) {
-                        var el = $("sendStatus");
-                        el.className = "send-status " + kind;
-                        el.innerHTML = html;
-                        el.hidden = false;
-                    }
-                    function showSent() {
-                        $("sendBtn").textContent = "Enviado ✓";
-                        $("sendBtn").disabled = true;
-                        showStatus("ok", "Listo, recibimos tu configuración. Soporte va a crear tu usuario y te escribe a <strong>" + esc(P.email || "") + "</strong>.");
-                    }
-                    if (state.sentText === s.text) showSent();
+                    var sendBtn = $("sendBtn");
+                    sendBtn.href = mailto;
 
                     $("backLink").addEventListener("click", function () { goTo(steps.length - 2); });
 
-                    $("sendBtn").addEventListener("click", function () {
-                        var btn = $("sendBtn");
-                        btn.disabled = true;
-                        btn.textContent = "Enviando…";
-                        $("sendStatus").hidden = true;
-                        var payload = {
-                            _subject: subject,
-                            _replyto: P.email,
-                            _template: "box",
-                            _captcha: "false",
-                            Empresa: P.company,
-                            "Quién responde": P.responder,
-                            Correo: P.email,
-                            "Teléfono": P.phone,
-                            "Tipo de negocio": MODEL_LABEL[P.model] || "",
-                            "Declara IVA": P.declares === "yes" ? "Sí" : "No",
-                            "Factura con": P.declares === "yes" ? INV_LABEL[P.invoicing] || "" : "No aplica",
-                            Sedes: P.branches === "many" ? "Varias" : "Una",
-                            "Nómina": P.payroll === "yes" ? "Sí" : "No",
-                            "Lo quiero": s.chosen.join(", ") || "Ninguno",
-                            "Con cambios": s.changes.join(", ") || "Ninguno",
-                            "No por ahora": s.dropped.join(", ") || "Ninguno",
-                            Resumen: s.text,
-                        };
-                        fetch(ENDPOINT, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json", Accept: "application/json" },
-                            body: JSON.stringify(payload),
-                        })
-                            .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, data: d }; }); })
-                            .then(function (res) {
-                                if (!res.ok || String(res.data.success) !== "true") throw new Error(res.data.message || "envío fallido");
-                                state.sentText = s.text;
-                                persist();
-                                showSent();
-                            })
-                            .catch(function () {
-                                btn.disabled = false;
-                                btn.textContent = "Reintentar envío";
-                                showStatus("err", 'No pudimos enviarlo desde aquí. Reintenta o <a href="' + mailto + '">mándalo por correo a ' + SUPPORT_EMAIL + "</a>.");
-                            });
+                    sendBtn.addEventListener("click", function () {
+                        state.sentText = s.text;
+                        persist();
+                        var el = $("sendStatus");
+                        el.className = "send-status ok";
+                        el.innerHTML = "Se abrió tu correo con el resumen para " + SUPPORT_EMAIL + ". Solo dale enviar. Si no se abrió, copia el resumen y mándalo a ese correo.";
+                        el.hidden = false;
                     });
 
                     $("copyBtn").addEventListener("click", function () {
