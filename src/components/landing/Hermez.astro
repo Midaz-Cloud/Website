@@ -42,7 +42,9 @@ const tick = "h-8 w-px bg-black/55";
                     preload="metadata"
                     aria-label="Hermez, el asistente virtual de Midaz"
                 >
-                    <source src="/landing/hermez.mp4" type="video/mp4" />
+                    <!-- Safari usa HEVC con alfa; Chrome y Firefox, VP9 con alfa -->
+                    <source src="/landing/hermez.mov" type='video/mp4; codecs="hvc1"' />
+                    <source src="/landing/hermez.webm" type="video/webm" />
                 </video>
             </div>
         </div>
