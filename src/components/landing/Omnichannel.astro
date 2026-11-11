@@ -1,53 +1,21 @@
 ---
-// "La misma operación, donde ocurra la venta".
-// En ≥1024px el bloque (idéntico al Figma en reposo) queda fijo mientras se hace scroll y el
-// dispositivo central cambia de pantalla en cada paso; en móvil los pasos van uno debajo del otro.
-const card = "rounded-2xl shadow-[0_12px_30px_-8px_rgba(0,0,0,0.18)] shrink-0";
-
-const steps = [
-    {
-        title: "Factura y cobra en el mostrador, con la cuenta hecha",
-        src: "/landing/macbook-full.webp",
-        alt: "Midaz Web en una laptop: listado de facturas emitidas",
-        width: 633,
-        height: 385,
-        displayHeight: 385,
-    },
-    {
-        title: "Cobra en caja con el total en bolívares y la tasa BCV al día",
-        src: "/landing/pos.webp",
-        alt: "Punto de venta Disglobal con el carrito de Midaz y el total a cobrar",
-        width: 314,
-        height: 411,
-        displayHeight: 440,
-    },
-    {
-        title: "Tus clientes piden directo desde la mesa, sin descargar apps",
-        src: "/landing/phone.webp",
-        alt: "App de pedidos de Midaz en un iPhone, pedido desde la mesa",
-        width: 361,
-        height: 594,
-        displayHeight: 470,
-    },
-    {
-        title: "Cada producto con su precio, sus extras y sus alérgenos",
-        src: "/landing/iphone15.webp",
-        alt: "Ficha de producto en Midaz con precio, extras y alérgenos",
-        width: 196,
-        height: 391,
-        displayHeight: 430,
-    },
+// "La misma operación, donde ocurra la venta" (Figma: Laptop / Carrusel de pantallas).
+// Una laptop cuya pantalla pasa sola por los módulos de Midaz: cada vista se queda 3,5 s y la tira
+// se desliza 0,8 s hacia la siguiente. Al final se desliza a una copia de la primera y vuelve al
+// inicio sin que se note. También se puede arrastrar o deslizar con el dedo.
+const screens = [
+    { src: "/landing/pantallas/resumen.webp", alt: "Resumen de negocio de Midaz", caption: "Resumen de negocio te muestra cómo va cada sucursal hoy" },
+    { src: "/landing/pantallas/agenda.webp", alt: "Agenda de citas de Midaz", caption: "Agenda organiza tus citas por sede y profesional" },
+    { src: "/landing/pantallas/cocina.webp", alt: "Cocina KDS de Midaz", caption: "Cocina KDS lleva cada comanda del pedido al pase" },
+    { src: "/landing/pantallas/tesoreria.webp", alt: "Tesorería de Midaz", caption: "Tesorería muestra cuánto hay en cada cuenta, en su moneda" },
+    { src: "/landing/pantallas/flujo-caja.webp", alt: "Flujo de caja de Midaz", caption: "Flujo de caja proyecta tus cuentas a 8 semanas" },
 ];
+// Medidas del Figma (laptop de 856×520): pantalla en (86.44, 22.96) de 683.43×434.91.
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
 ---
 
-<section
-    id="soluciones"
-    class="relative overflow-x-clip lg:h-[calc(985px+var(--steps)*70vh)]"
-    style={`--steps:${steps.length - 1}`}
-    data-scroll-story
->
-    <!-- En escritorio el bloque mide lo mismo que en Figma (985px) y se fija cuando el texto del paso entra en pantalla -->
-    <div class="flex flex-col items-center gap-[25px] pb-24 pt-12 lg:sticky lg:top-[min(0px,calc(100vh-889px))] lg:h-[985px]" data-story-pin>
+<section id="soluciones" class="relative overflow-x-clip">
+    <div class="flex flex-col items-center gap-[25px] pb-24 pt-12 xl:h-[985px] xl:pb-0">
         <img src="/landing/icons/badge.svg" alt="" aria-hidden="true" width="69" height="69" class="-mb-[10px] -mt-[1px] h-[69px] w-[69px]" />
 
         <h2 class="px-4 text-center font-funnel text-[clamp(2.25rem,6vw,3.375rem)] font-semibold leading-none tracking-[-0.03em] text-[#030712]">
@@ -55,137 +23,142 @@ const steps = [
             <span class="block">donde ocurra la venta</span>
         </h2>
 
-        <div class="relative hidden h-[520px] w-full max-w-[1280px] shrink-0 justify-center lg:flex">
-            <!-- Tarjetas flotantes izquierda -->
-            <div aria-hidden="true" class="absolute left-[-24px] top-[167px] hidden h-[256px] items-center will-change-transform xl:flex motion-reduce:!transform-none" style="transform: translate3d(calc(var(--p, 0) * -56px), calc(var(--p, 0) * -28px), 0)">
-                <div class:list={[card, "h-[192px] w-[112px] bg-gradient-to-b from-[#872054] to-[#f43f8e] opacity-[0.85]"]}></div>
-                <div class:list={[card, "h-[240px] w-[144px] bg-landing-blue"]}></div>
-                <div class:list={[card, "h-[256px] w-[160px] bg-[#262626]"]}></div>
-            </div>
-            <!-- Tarjetas flotantes derecha -->
-            <div aria-hidden="true" class="absolute left-[68.83%] top-[167px] hidden h-[256px] items-center will-change-transform xl:flex motion-reduce:!transform-none" style="transform: translate3d(calc(var(--p, 0) * 56px), calc(var(--p, 0) * -28px), 0)">
-                <div class:list={[card, "h-[256px] w-[160px] bg-[#451a03]"]}></div>
-                <div class:list={[card, "h-[240px] w-[144px] bg-landing-blue"]}></div>
-                <div class:list={[card, "h-[192px] w-[112px] bg-[linear-gradient(120deg,#022c22_0%,#14532d_100%)] opacity-[0.85]"]}></div>
-            </div>
-
-            <!-- Una pantalla por paso; la primera es la composición de Figma -->
-            <div class="relative h-full w-full max-w-[633px]">
-                {
-                    steps.map((step, i) => (
-                        <div
-                            class:list={[
-                                "absolute inset-0 flex items-center justify-center transition-[opacity,transform,filter] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
-                                i === 0 ? "opacity-100" : "translate-y-16 scale-90 opacity-0 blur-md",
-                            ]}
-                            data-story-item={i}
-                            aria-hidden={i === 0 ? "false" : "true"}
-                        >
-                            <img
-                                src={step.src}
-                                alt={step.alt}
-                                width={step.width}
-                                height={step.height}
-                                class="w-auto max-w-full object-contain will-change-transform motion-reduce:!transform-none"
-                                style={`height:${step.displayHeight}px;transform:translate3d(0,calc(var(--s, 0) * -24px),0) scale(calc(1 + var(--s, 0) * 0.04))`}
-                                loading={i === 0 ? "eager" : "lazy"}
-                            />
-                        </div>
-                    ))
-                }
+        <div class="w-full px-4" data-laptop>
+            <div class="relative mx-auto aspect-[856/520] w-full max-w-[856px] select-none">
+                <img src="/landing/macbook-carrusel.webp" alt="" aria-hidden="true" width="856" height="520" class="absolute inset-0 size-full" draggable="false" />
+                <div
+                    class="absolute touch-pan-y overflow-hidden bg-white"
+                    style={`left:${pct(86.44, 856)};top:${pct(22.96, 520)};width:${pct(683.43, 856)};height:${pct(434.91, 520)}`}
+                    role="region"
+                    aria-roledescription="carrusel"
+                    aria-label="Pantallas de Midaz"
+                    data-laptop-screen
+                >
+                    <div class="flex h-full will-change-transform" data-laptop-strip>
+                        {
+                            [...screens, screens[0]].map((s, i) => (
+                                <img
+                                    src={s.src}
+                                    alt={i < screens.length ? s.alt : ""}
+                                    aria-hidden={i < screens.length ? undefined : "true"}
+                                    width="684"
+                                    height="435"
+                                    class="h-full w-full shrink-0 object-cover"
+                                    loading={i === 0 ? "eager" : "lazy"}
+                                    draggable="false"
+                                />
+                            ))
+                        }
+                    </div>
+                    <!-- Reflejo del vidrio -->
+                    <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0)_45%)]"></div>
+                </div>
+                <!-- Muesca de la cámara -->
+                <div
+                    aria-hidden="true"
+                    class="absolute rounded-b-[8.1px] bg-[#0d0d0f]"
+                    style={`left:${pct(386.29, 856)};top:${pct(22.96, 520)};width:${pct(83.74, 856)};height:${pct(16.21, 520)}`}
+                ></div>
+                <div
+                    aria-hidden="true"
+                    class="absolute aspect-square rounded-full bg-[#383d4d]"
+                    style={`left:${pct(425.45, 856)};top:${pct(28.36, 520)};width:${pct(5.4, 856)}`}
+                ></div>
             </div>
         </div>
 
-        <div class="hidden w-[min(640px,90vw)] place-items-center px-4 lg:grid">
+        <div class="grid w-full max-w-[600px] px-4 sm:px-0" aria-live="polite">
             {
-                steps.map((step, i) => (
+                screens.map((s, i) => (
                     <h3
                         class:list={[
-                            "col-start-1 row-start-1 max-w-[599px] text-center font-poppins text-[34px] font-bold leading-10 tracking-[-0.85px] text-landing-blue transition-[opacity,transform,filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
-                            i === 0 ? "opacity-100" : "translate-y-6 opacity-0 blur-sm",
+                            "col-start-1 row-start-1 text-center font-poppins text-[clamp(1.5rem,4vw,2.125rem)] font-semibold leading-[1.18] tracking-[-0.85px] text-landing-blue transition-opacity duration-[800ms] ease-in-out motion-reduce:transition-none xl:leading-10",
+                            i === 0 ? "opacity-100" : "opacity-0",
                         ]}
-                        data-story-caption={i}
                         aria-hidden={i === 0 ? "false" : "true"}
+                        data-laptop-caption
                     >
-                        {step.title}
+                        {s.caption}
                     </h3>
                 ))
             }
         </div>
-
-        <!-- Móvil y tablet: pasos apilados -->
-        <ul class="flex w-full flex-col items-center gap-14 px-4 lg:hidden">
-            {
-                steps.map((step) => (
-                    <li class="flex w-full max-w-[633px] flex-col items-center gap-4 text-center">
-                        <img src={step.src} alt={step.alt} width={step.width} height={step.height} class="h-auto max-h-[420px] w-auto max-w-full" loading="lazy" />
-                        <h3 class="max-w-[599px] font-poppins text-[clamp(1.5rem,4vw,2.125rem)] font-bold leading-[1.18] tracking-[-0.85px] text-landing-blue">{step.title}</h3>
-                    </li>
-                ))
-            }
-        </ul>
     </div>
 </section>
 
 <script>
-    // Escenario con scroll: la pantalla activa depende del avance dentro de la sección. Además,
-    // --p (avance total) mueve las tarjetas laterales y --s (avance dentro del paso) desplaza el
-    // dispositivo, así todo acompaña el scroll en vez de cambiar de golpe.
-    const story = document.querySelector<HTMLElement>("[data-scroll-story]");
-    if (story) {
-        const items = Array.from(story.querySelectorAll<HTMLElement>("[data-story-item]"));
-        const captions = Array.from(story.querySelectorAll<HTMLElement>("[data-story-caption]"));
-        const pin = story.querySelector<HTMLElement>("[data-story-pin]")!;
-        const count = items.length;
-        const desktop = window.matchMedia("(min-width: 1024px)");
-        const hidden = { item: ["translate-y-16", "-translate-y-16", "scale-90", "opacity-0", "blur-md"], caption: ["translate-y-6", "-translate-y-6", "opacity-0", "blur-sm"] };
-        let active = 0;
+    const root = document.querySelector<HTMLElement>("[data-laptop]");
+    const strip = root?.querySelector<HTMLElement>("[data-laptop-strip]");
+    const screen = root?.querySelector<HTMLElement>("[data-laptop-screen]");
+    const captions = Array.from(document.querySelectorAll<HTMLElement>("[data-laptop-caption]"));
+    if (root && strip && screen) {
+        const count = captions.length;
+        const HOLD = 3500;
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+        let index = 0;
+        let timer = 0;
+        let visible = false;
 
-        const setActive = (index: number) => {
-            if (index === active) return;
-            active = index;
-            const apply = (el: HTMLElement, i: number, kind: "item" | "caption") => {
-                const on = i === index;
-                el.classList.remove(...hidden[kind], "opacity-100");
-                if (on) el.classList.add("opacity-100");
-                else {
-                    // Las anteriores salen hacia arriba; las siguientes esperan abajo.
-                    const shift = kind === "item" ? "translate-y-16" : "translate-y-6";
-                    el.classList.add(i < index ? `-${shift}` : shift, ...hidden[kind].filter((c) => !c.includes("translate")));
-                }
+        const caption = (i: number) => {
+            captions.forEach((el, n) => {
+                const on = n === i % count;
+                el.classList.toggle("opacity-100", on);
+                el.classList.toggle("opacity-0", !on);
                 el.setAttribute("aria-hidden", String(!on));
-            };
-            items.forEach((el, i) => apply(el, i, "item"));
-            captions.forEach((el, i) => apply(el, i, "caption"));
+            });
         };
 
-        const update = () => {
-            if (!desktop.matches) return;
-            // El bloque queda fijo (en su `top` de CSS) hasta que la sección termina.
-            const start = -parseFloat(getComputedStyle(pin).top) || 0;
-            const travel = story.offsetHeight - pin.offsetHeight;
-            const scrolled = -story.getBoundingClientRect().top - start;
-            const progress = travel > 0 ? Math.min(1, Math.max(0, scrolled / travel)) : 0;
-            const position = Math.min(count - 0.0001, progress * count);
-            story.style.setProperty("--p", progress.toFixed(4));
-            story.style.setProperty("--s", (position % 1).toFixed(4));
-            setActive(Math.floor(position));
+        // Figma: cambio automático 0,8 s ease-in-out; al arrastrar, 0,6 s ease-out.
+        const go = (next: number, drag = false) => {
+            const animate = !reduce.matches;
+            strip.style.transition = animate ? `transform ${drag ? "600ms cubic-bezier(0,0,0.58,1)" : "800ms cubic-bezier(0.42,0,0.58,1)"}` : "none";
+            if (next < 0) {
+                // Hacia atrás desde la primera: saltar a la copia del final y deslizar.
+                strip.style.transition = "none";
+                strip.style.transform = `translate3d(-${count * 100}%,0,0)`;
+                strip.getBoundingClientRect();
+                strip.style.transition = animate ? "transform 600ms cubic-bezier(0,0,0.58,1)" : "none";
+                next = count - 1;
+            }
+            index = next;
+            strip.style.transform = `translate3d(-${index * 100}%,0,0)`;
+            caption(index);
+            if (index === count && !animate) reset();
+        };
+        const reset = () => {
+            strip.style.transition = "none";
+            index = 0;
+            strip.style.transform = "translate3d(0,0,0)";
+        };
+        strip.addEventListener("transitionend", () => {
+            if (index === count) reset();
+        });
+
+        const schedule = () => {
+            clearTimeout(timer);
+            if (visible && !reduce.matches) timer = window.setTimeout(() => (go(index + 1), schedule()), HOLD);
         };
 
-        let ticking = false;
-        window.addEventListener(
-            "scroll",
-            () => {
-                if (ticking) return;
-                ticking = true;
-                requestAnimationFrame(() => {
-                    update();
-                    ticking = false;
-                });
-            },
-            { passive: true },
-        );
-        desktop.addEventListener("change", update);
-        update();
+        new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting;
+            schedule();
+        }).observe(root);
+
+        // Arrastre / deslizamiento
+        let startX = 0;
+        let dragging = false;
+        screen.addEventListener("pointerdown", (e) => {
+            dragging = true;
+            startX = e.clientX;
+        });
+        window.addEventListener("pointerup", (e) => {
+            if (!dragging) return;
+            dragging = false;
+            const dx = e.clientX - startX;
+            if (Math.abs(dx) < 30) return;
+            if (index === count) reset();
+            go(dx < 0 ? index + 1 : index - 1, true);
+            schedule();
+        });
     }
 </script>

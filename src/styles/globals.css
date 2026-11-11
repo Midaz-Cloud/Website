@@ -359,3 +359,19 @@ html {
     100% { background-position: 200% center; }
   }
 }
+/* Intro del hero: estado del primer cuadro ("Carga 0") antes de que corra el script. */
+html.intro [data-intro-hide] {
+  opacity: 0;
+}
+html.intro [data-intro-phone] {
+  transform: translate(17.5px, -229.5px) scale(0.1607);
+}
+html.intro [data-intro-word] {
+  transform: scaleY(0.047);
+}
+html.intro [data-intro-pct] {
+  display: block;
+}
+html.intro body {
+  overflow-x: hidden;
+}
