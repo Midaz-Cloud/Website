@@ -35,16 +35,16 @@ const stats = [
                 href="#contacto"
                 data-intro-hide
                 data-intro-pill
-                class="flex h-[41px] items-center justify-center gap-[10px] rounded-2xl border border-[rgba(152,171,204,0.3)] bg-white/80 px-[15px] xl:justify-start xl:gap-[9px] xl:pl-[21px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] backdrop-blur-[2px] transition-transform hover:-translate-y-0.5 xl:absolute xl:left-[80px] xl:top-[180px] xl:w-[214px]"
+                class="flex h-[41px] items-center justify-center gap-[10px] rounded-2xl border border-[rgba(152,171,204,0.3)] bg-white/80 px-[15px] xl:justify-start xl:gap-[9px] xl:pl-[20px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] backdrop-blur-[2px] transition-transform hover:-translate-y-0.5 xl:absolute xl:left-[80px] xl:top-[180px] xl:w-[214px]"
             >
                 <img src="/landing/icons/call.svg" alt="" width="21" height="21" class="size-[21px]" />
-                <span class="text-base font-semibold leading-[11.25px] text-landing-navy">Contacto directo</span>
+                <span class="text-base font-semibold leading-[11.25px] text-landing-navy">&nbsp;Contacto directo</span>
             </a>
             <a
                 href="/comenzar"
                 data-intro-hide
                 data-intro-pill
-                class="flex h-[41px] items-center justify-center gap-[10px] rounded-2xl border border-[rgba(152,171,204,0.3)] bg-white/80 px-[13px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] backdrop-blur-[2px] transition-transform hover:-translate-y-0.5 xl:absolute xl:right-[80px] xl:top-[180px] xl:w-[176px]"
+                class="flex h-[41px] items-center justify-center gap-[10px] rounded-2xl border border-[rgba(152,171,204,0.3)] bg-white/80 px-[13px] xl:pl-[12px] xl:pr-[14px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] backdrop-blur-[2px] transition-transform hover:-translate-y-0.5 xl:absolute xl:right-[80px] xl:top-[180px] xl:w-[176px]"
             >
                 <img src="/landing/icons/fast-forward.svg" alt="" width="21" height="21" class="size-[21px]" />
                 <span class="text-base font-semibold leading-[15px] tracking-[-0.25px] text-landing-navy">Solicitar Demo</span>
@@ -53,10 +53,10 @@ const stats = [
 
         <!-- Titular -->
         <h1
-            class="relative z-0 order-2 mt-10 text-center font-funnel text-[clamp(3rem,10vw,5.625rem)] font-bold leading-[0.84] tracking-[-0.021em] text-landing-navy xl:absolute xl:left-[423px] xl:top-[153px] xl:w-[495px] xl:mt-0 xl:text-[90px] xl:leading-[75px] xl:tracking-[-1.8885px]"
+            class="relative z-0 order-2 mt-10 text-center font-funnel text-[clamp(3rem,10vw,5.625rem)] font-bold leading-[0.84] tracking-[-0.021em] text-landing-navy xl:absolute xl:left-[422px] xl:top-[153px] xl:w-[495px] xl:mt-0 xl:text-[90px] xl:leading-[75px] xl:tracking-[-1.8885px]"
         >
             <span class="block"><span class="inline-block origin-bottom" data-intro-hide data-intro-word>Midaz.</span></span>
-            <span class="block text-landing-amber"><span class="inline-block origin-bottom" data-intro-hide data-intro-word>Sin</span> <span class="inline-block origin-bottom" data-intro-hide data-intro-word>errores.</span></span>
+            <span class="block text-landing-amber"><span class="inline-block origin-bottom" data-intro-hide data-intro-word>Sin</span> <span class="inline-block origin-bottom" data-intro-hide data-intro-word>errores.</span>&nbsp;</span>
             <span class="block"><span class="inline-block origin-bottom" data-intro-hide data-intro-word>Sin</span> <span class="inline-block origin-bottom" data-intro-hide data-intro-word>multas.</span></span>
         </h1>
 
@@ -65,14 +65,14 @@ const stats = [
         <div aria-hidden="true" class="pointer-events-none absolute left-[443px] top-[345px] hidden w-[361px] xl:block">
             {
                 [0, 1, 2, 3].map(() => (
-                    <img src="/landing/phone.webp" alt="" width="361" height="594" class="absolute left-0 top-0 w-full" data-intro-hide data-intro-sat />
+                    <img src="/landing/phone.webp" alt="" width="361" height="594" class="absolute left-0 top-0 w-full opacity-0" data-intro-sat />
                 ))
             }
         </div>
         <!-- Intro: porcentaje de carga -->
         <p aria-hidden="true" class="absolute left-[600px] top-[332px] hidden w-20 text-center font-funnel text-[15px] font-bold text-landing-navy" data-intro-pct>0%</p>
 
-        <div data-intro-phone class="relative z-0 order-3 mt-4 w-[min(361px,80vw)] xl:absolute xl:left-[443px] xl:top-[345px] xl:mt-0 xl:w-[361px]">
+        <div data-intro-phone class="relative z-0 order-3 mt-4 w-[min(361px,80vw)] xl:absolute xl:left-[443px] xl:top-[345px] xl:mt-0 xl:w-[344px]">
             <img
                 src="/landing/phone.webp"
                 alt="App de pedidos de Midaz en un iPhone"
@@ -114,7 +114,7 @@ const stats = [
         <div class="relative z-10 order-5 mt-10 grid w-full max-w-[560px] grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 xl:contents">
             <div data-intro-hide data-intro-stat="0" class="col-span-2 sm:col-span-4 xl:absolute xl:left-[121px] xl:top-[507px] xl:w-[300px]">
                 <p class="flex items-end font-light xl:mt-1 xl:-mb-1 leading-[72px] text-landing-navy">
-                    <span class="whitespace-pre text-[clamp(3rem,12vw,4rem)] tracking-[-3.6px]" data-intro-scramble>8 · 16 · 31</span>
+                    <span class="whitespace-pre text-[clamp(3rem,12vw,4rem)] tracking-[-3.6px] [word-spacing:-2.5px]" data-intro-scramble>8 · 16 · 31</span>
                     <span class="mb-3 ml-2 text-sm font-semibold uppercase tracking-[0.7px] xl:mb-[7px] xl:ml-[5px]">%</span>
                 </p>
                 <p class="mt-1 text-xs leading-[13.5px] tracking-[0.225px] text-landing-navy xl:ml-1" data-intro-label>Alícuotas de IVA calculadas automáticamente</p>
