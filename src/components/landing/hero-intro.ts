@@ -48,6 +48,8 @@ function bezier(x1: number, y1: number, x2: number, y2: number) {
 const easeLoad = bezier(0.2, 0, 0.2, 1);
 
 const GLYPHS = "0123456789%#&$@*+=?";
+// Texto de las métricas en el cuadro "Titular" del Figma (IVA, IGTF, cumplimiento, BCV).
+const FIGMA_SCRAMBLE = ["4 · 07 · 9&", "7", "4%7", "B#7"];
 
 export async function runIntro() {
     const root = document.documentElement;
@@ -99,26 +101,24 @@ export async function runIntro() {
 
     // Teléfono central: diminuto mientras carga, mediano en el estallido y a tamaño real después.
     play(q("[data-intro-phone]")[0], [
-        ...rep<State>([{ transform: "translate(17.5px,-229.5px) scale(0.1607)" }, 3]),
-        { transform: "translate(7px,-123px) scale(0.601)" },
+        ...rep<State>([{ transform: "translate(25.5px,-216.9px) scale(0.16)" }, 3]),
+        { transform: "translate(10.2px,-117px) scale(0.5999)" },
         ...rep<State>([{ transform: "translate(0px,0px) scale(1)" }, 4]),
     ]);
     play(q("[data-intro-shadow]")[0], rep<State>([{ opacity: 0 }, 4], [{ opacity: 1 }, 4]));
 
-    // Teléfonos satélite: [desplazamiento en carga, en estallido, al salir] y giro (Figma gira al revés que CSS).
-    const sats: [number, number, number, number, number, number, number][] = [
-        [18.3, -229.3, -312.1, -225.4, -642.8, -221.4, 5],
-        [17.5, -229.7, -135.8, -171, -288.7, -111, -4],
-        [17.5, -229.7, 158.2, -50, 298.3, 130, 4],
-        [18, -229, 335.5, 5, 654, 240, -6],
+    // Teléfonos satélite (centro, escala y giro sacados de la matriz de cada capa en Figma; Figma gira al revés que CSS).
+    // Por cuadro: [dx, dy, escala] en carga, estallido y salida, relativos a la caja de 361×594 del teléfono.
+    const sats: { rot: number; at: [number, number, number][] }[] = [
+        { rot: 5, at: [[16.4, -231.4, 0.143], [-318.1, -234.1, 0.5242], [-652.7, -236.4, 0.9529]] },
+        { rot: -4, at: [[16.5, -231.5, 0.143], [-140.9, -178.8, 0.5242], [-298.3, -126, 0.9529]] },
+        { rot: 4, at: [[16.5, -231.5, 0.143], [152.8, -58.2, 0.5242], [289.2, 115.2, 0.9529]] },
+        { rot: -6, at: [[16.6, -231.4, 0.143], [330.4, -3.3, 0.5242], [644.1, 225, 0.9529]] },
     ];
     q("[data-intro-sat]").forEach((el, i) => {
-        const [x1, y1, x4, y4, x5, y5, rot] = sats[i];
-        play(el, [
-            ...rep<State>([{ transform: `translate(${x1}px,${y1}px) rotate(${rot}deg) scale(0.1496)`, opacity: 0 }, 3]),
-            { transform: `translate(${x4}px,${y4}px) rotate(${rot}deg) scale(0.551)`, opacity: 0.9 },
-            ...rep<State>([{ transform: `translate(${x5}px,${y5}px) rotate(${rot}deg) scale(1)`, opacity: 0 }, 4]),
-        ]);
+        const { rot, at } = sats[i];
+        const tf = ([x, y, k]: [number, number, number]) => `translate(${x}px,${y}px) rotate(${rot}deg) scale(${k})`;
+        play(el, [...rep<State>([{ transform: tf(at[0]), opacity: 0 }, 3]), { transform: tf(at[1]), opacity: 0.9 }, ...rep<State>([{ transform: tf(at[2]), opacity: 0 }, 4])]);
     });
 
     // Titular: cada palabra crece desde su base; en "Titular" van escalonadas.
@@ -160,7 +160,10 @@ export async function runIntro() {
             const v = t < 200 ? 0 : t < 750 ? ((t - 200) / 550) * 50 : t < 1550 ? 50 : t < 2050 ? 50 + easeLoad((t - 1550) / 500) * 50 : 100;
             pct.textContent = `${Math.round(v)}%`;
         }
-        if (t >= 4730 && t < 6410 && now - lastShuffle > 55) {
+        if (t >= 5110 && t < 5910) {
+            // Cuadro "Titular" en reposo: los mismos dígitos revueltos del Figma.
+            scramble.forEach(({ el }, i) => (el.textContent = FIGMA_SCRAMBLE[i] ?? el.textContent));
+        } else if (t >= 4730 && t < 6410 && now - lastShuffle > 55) {
             lastShuffle = now;
             // Se van fijando de izquierda a derecha durante la transición al hero.
             const settled = t < 5910 ? 0 : (t - 5910) / 500;

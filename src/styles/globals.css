@@ -364,7 +364,7 @@ html.intro [data-intro-hide] {
   opacity: 0;
 }
 html.intro [data-intro-phone] {
-  transform: translate(17.5px, -229.5px) scale(0.1607);
+  transform: translate(25.5px, -216.9px) scale(0.16);
 }
 html.intro [data-intro-word] {
   transform: scaleY(0.047);
