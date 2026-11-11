@@ -75,6 +75,28 @@ const jsonLd = {
         />
 
         <title>{title}</title>
+
+        <!-- Intro del hero (Figma "Intro · Hero Midaz"): se decide antes de pintar para que no parpadee el hero final.
+             Solo en escritorio ancho, una vez por sesión, arriba de la página y sin "reducir movimiento". -->
+        <script is:inline>
+            (function () {
+                try {
+                    var d = document.documentElement;
+                    if (
+                        matchMedia("(min-width: 1280px)").matches &&
+                        !matchMedia("(prefers-reduced-motion: reduce)").matches &&
+                        !location.hash &&
+                        !sessionStorage.getItem("midaz-intro")
+                    ) {
+                        d.classList.add("intro");
+                        // Red de seguridad: si el script de la intro no corre, el hero aparece igual.
+                        setTimeout(function () {
+                            if (!d.hasAttribute("data-intro-running")) d.classList.remove("intro");
+                        }, 2500);
+                    }
+                } catch (e) {}
+            })();
+        </script>
     </head>
     <body class="bg-landing-bg font-poppins text-landing-navy antialiased">
         <slot />

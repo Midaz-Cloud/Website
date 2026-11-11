@@ -14,6 +14,8 @@ const links = [
         class="relative mx-auto flex max-w-[1200px] items-center justify-between rounded-full border border-[rgba(0,75,224,0.35)] bg-[rgba(0,75,224,0.12)] max-lg:bg-[rgba(238,243,253,0.88)] px-5 transition-colors duration-300 data-[on-blue]:border-white/60 data-[on-blue]:bg-[rgba(238,243,253,0.92)] py-[11px] shadow-[8px_20px_18px_-18px_rgba(0,0,0,0.35),0_0_15px_0_rgba(255,255,255,0.05)] backdrop-blur-[25px] lg:px-[25px]"
         aria-label="Principal"
         data-nav
+        data-intro-hide
+        data-intro-nav
     >
         <!-- Línea de brillo superior -->
         <span
@@ -25,10 +27,10 @@ const links = [
             <img src="/landing/icons/logo.svg" alt="Midaz" width="128" height="30" class="h-[29.5px] w-32" />
         </a>
 
-        <ul class="hidden items-center gap-6 lg:flex">
+        <ul class="hidden items-center gap-6 lg:flex" data-intro-links>
             {
                 links.map((link) => (
-                    <li>
+                    <li data-intro-link>
                         <a
                             href={link.href}
                             class:list={[
@@ -46,7 +48,7 @@ const links = [
             }
         </ul>
 
-        <div class="flex items-center gap-3 lg:gap-4">
+        <div class="flex items-center gap-3 lg:gap-4" data-intro-right>
             <button
                 type="button"
                 class="relative hidden h-7 w-12 items-center rounded-full border border-[rgba(0,75,224,0.2)] bg-landing-navy py-[3px] pl-[1px] backdrop-blur-[2px] sm:flex"
