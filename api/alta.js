@@ -1,7 +1,10 @@
 // Función de Vercel: recibe la solicitud de alta de /comenzar y la envía por correo a soporte desde una cuenta de Gmail.
 // Variables en Vercel: GMAIL_USER y GMAIL_APP_PASSWORD (contraseña de aplicación de Google, no la normal),
 // y ALTA_TO (destinatario, por defecto soporte@midazve.com).
+// Opcional: EVIDENCIA_URL (y EVIDENCIA_TOKEN) para enviar la evidencia de aceptación al registro inalterable de Midaz
+// cuando exista. Mientras no esté definida, la evidencia viaja solo en el correo (Guía de Implementación, secciones 3 y 4).
 import nodemailer from "nodemailer";
+import { acceptedDocuments } from "../src/data/legal.mjs";
 
 const FIELDS = {
     name: "Nombre",
@@ -33,6 +36,29 @@ export default async function handler(req, res) {
         return res.status(400).json({ ok: false, error: "datos", missing });
     }
 
+    // Aceptación de los documentos legales: obligatoria, no basta con la validación del navegador.
+    const aceptacion = body.aceptacion && typeof body.aceptacion === "object" ? body.aceptacion : {};
+    if (aceptacion.acepta !== true) {
+        return res.status(400).json({ ok: false, error: "aceptacion" });
+    }
+    const documentos = acceptedDocuments();
+    // Si el navegador mostró otras versiones (página vieja en caché), se pide recargar para aceptar las vigentes.
+    if (Array.isArray(aceptacion.documentos)) {
+        const vistas = new Map(aceptacion.documentos.map((d) => [clean(d && d.doc), clean(d && d.version)]));
+        if (documentos.some((d) => vistas.get(d.doc) !== d.version)) {
+            return res.status(409).json({ ok: false, error: "versiones" });
+        }
+    }
+    // Todo lo demás lo toma el servidor: fecha y hora en UTC, IP y navegador.
+    const evidencia = {
+        documentos: documentos.map(({ doc, version, sha256, url }) => ({ doc, version, sha256, url })),
+        fecha: new Date().toISOString(),
+        ip: clientIp(req),
+        navegador: clean(req.headers["user-agent"]).slice(0, 200) || "(sin user-agent)",
+        canal: "web",
+        comercial: aceptacion.comercial === true,
+    };
+
     // Respuestas de solo tocar sobre el negocio ("Pregunta: respuesta").
     const perfil = (Array.isArray(body.perfil) ? body.perfil : []).slice(0, 12).map(clean).filter(Boolean);
 
@@ -40,11 +66,39 @@ export default async function handler(req, res) {
     const pass = process.env.GMAIL_APP_PASSWORD;
     if (!user || !pass) return res.status(503).json({ ok: false, error: "sin-configurar" });
 
+    // Registro inalterable de evidencias (cuando Midaz lo tenga): recibe los mismos datos que el correo.
+    let registro = "";
+    if (process.env.EVIDENCIA_URL) {
+        try {
+            const r = await fetch(process.env.EVIDENCIA_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(process.env.EVIDENCIA_TOKEN && { Authorization: `Bearer ${process.env.EVIDENCIA_TOKEN}` }),
+                },
+                body: JSON.stringify({ cliente: data, ...evidencia }),
+            });
+            registro = r.ok ? "guardada en el registro de evidencias" : `el registro de evidencias respondió ${r.status}`;
+        } catch (e) {
+            console.error("Registro de evidencias falló", e && e.message);
+            registro = "no se pudo guardar en el registro de evidencias";
+        }
+    }
+
     const text = [
         "Nueva solicitud de alta en Midaz",
         "",
         ...Object.entries(FIELDS).map(([k, label]) => `- ${label}: ${data[k]}`),
         ...(perfil.length ? ["", "Negocio", ...perfil.map((l) => `- ${l}`)] : []),
+        "",
+        "Aceptación",
+        ...evidencia.documentos.map((d) => `- ${d.doc} ${d.version} · SHA-256 ${d.sha256}`),
+        `- Fecha y hora (servidor, UTC): ${evidencia.fecha}`,
+        `- IP: ${evidencia.ip}`,
+        `- Navegador: ${evidencia.navegador}`,
+        `- Canal: ${evidencia.canal}`,
+        `- Consentimiento comercial: ${evidencia.comercial ? "sí" : "no"}`,
+        ...(registro ? [`- Evidencia: ${registro}`] : []),
         "",
         "Contactar al cliente para el pago y crear su usuario.",
     ].join("\n");
@@ -63,6 +117,12 @@ export default async function handler(req, res) {
         return res.status(502).json({ ok: false, error: "envio" });
     }
     return res.status(200).json({ ok: true });
+}
+
+// IP del cliente según los encabezados de Vercel: el primer valor de x-forwarded-for es el cliente.
+function clientIp(req) {
+    const fwd = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+    return clean(fwd || req.headers["x-real-ip"] || (req.socket && req.socket.remoteAddress) || "(desconocida)");
 }
 
 function safeJson(s) {

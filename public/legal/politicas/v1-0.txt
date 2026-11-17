@@ -1,0 +1,121 @@
++-----------------------------------------------------------------------+
+| Midaz MIDAZ LATAM, C.A.                                               |
+|                                                                       |
+| Políticas de Servicio Midaz                                           |
+|                                                                       |
+| Parámetros operativos de los planes Esencial y Negocio                |
++=======================================================================+
++-----------------------------------------------------------------------+
+
+Versión: 1.0
+
+Fecha de entrada en vigor: 16 de noviembre de 2026
+
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| QUÉ ES ESTE DOCUMENTO.                                                                                                                                                                                                                                                 |
+|                                                                                                                                                                                                                                                                        |
+| Estas Políticas contienen los parámetros operativos del Servicio Midaz: horarios de atención, tiempos de respuesta, avisos, escalonamiento por falta de pago y plazos de conservación de información.                                                                  |
+|                                                                                                                                                                                                                                                                        |
+| Se publican por separado de los Términos y Condiciones para que Midaz pueda actualizarlas conforme crece la operación, sin modificar el contrato y sin reducir de forma sustancial los derechos que los Términos reconocen al Cliente (Cláusula 15.3 de los Términos). |
+|                                                                                                                                                                                                                                                                        |
+| Los cambios se publican en esta página con su número de versión y fecha. Los Términos y Condiciones prevalecen sobre estas Políticas en caso de contradicción.                                                                                                         |
++========================================================================================================================================================================================================================================================================+
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+SECCIÓN 1
+
+SOPORTE
+
+1.1 Horario de atención: lunes a viernes, de 8:00 a.m. a 5:00 p.m., hora legal de Venezuela, excluidos los días feriados nacionales.
+
+1.2 Canales oficiales: WhatsApp +58 422-043-05-96 y correo electrónico admin@midazve.com. Ningún otro canal se considera oficial.
+
+1.3 Tiempos de primera respuesta de referencia. Son objetivos de servicio y no obligaciones de resultado:
+
+  ---------------------------------------------------------------------------------------------
+  Plan                    Primera respuesta       Mesa de ayuda
+  ----------------------- ----------------------- ---------------------------------------------
+  Esencial                8 horas hábiles         WhatsApp en horario de atención
+
+  Negocio                 4 horas hábiles         Atención prioritaria en horario de atención
+  ---------------------------------------------------------------------------------------------
+
+1.4 Qué comprende el soporte: consultas de uso de la Plataforma y reporte de fallas. Qué no comprende: capacitación extendida, configuración fiscal a medida, asesoría contable o tributaria, y soporte de equipos físicos o de sistemas de terceros, incluido el proveedor de emisión del Cliente.
+
+SECCIÓN 2
+
+MANTENIMIENTOS Y DISPONIBILIDAD
+
+2.1 Los mantenimientos programados se realizan, en lo posible, fuera del horario comercial, y se avisan con al menos veinticuatro (24) horas de anticipación por los canales oficiales o mediante aviso en la Plataforma.
+
+2.2 Los mantenimientos de emergencia necesarios para la seguridad o la estabilidad de la Plataforma pueden ejecutarse sin aviso previo. Midaz informará lo antes posible.
+
+2.3 Los planes Esencial y Negocio no incluyen un porcentaje garantizado de disponibilidad ni créditos por indisponibilidad.
+
+SECCIÓN 3
+
+AVISOS DE RENOVACIÓN
+
+3.1 La suscripción se renueva automáticamente. Midaz avisa de cada renovación con la siguiente anticipación:
+
+  -----------------------------------------------------------------------
+  Periodicidad del Plan               Anticipación del aviso
+  ----------------------------------- -----------------------------------
+  Mensual                             7 días continuos
+
+  Anual                               30 días continuos
+  -----------------------------------------------------------------------
+
+3.2 El aviso se envía al correo electrónico registrado y se muestra en la Plataforma. El Cliente puede cancelar en cualquier momento desde el panel de administración o por los canales oficiales; la cancelación surte efecto al final del período ya pagado.
+
+SECCIÓN 4
+
+FALTA DE PAGO
+
+4.1 Vencida la fecha de pago, Midaz notifica el atraso y aplica de forma escalonada las medidas siguientes. En todas las etapas se mantienen disponibles las funciones de consulta y exportación de datos.
+
+  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Días de atraso                      Qué ocurre
+  ----------------------------------- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  1 a 10                              Avisos de cobro. El Servicio continúa con normalidad.
+
+  Desde el día 11                     Se suspenden las altas de nuevos usuarios, sucursales y cajas, las actualizaciones no críticas y las funcionalidades no esenciales. Se mantienen venta, consulta y exportación.
+
+  Desde el día 30                     La cuenta pasa a modo de consulta y exportación, previo aviso con al menos cinco (5) días de anticipación, para que el Cliente pueda migrar su emisión a otro sistema.
+
+  Desde el día 45                     Midaz podrá dar por terminado el contrato. Aplica el régimen de exportación y eliminación de la Sección 5.
+  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+4.2 La reactivación de la cuenta requiere el pago de la totalidad de lo adeudado. A la fecha de esta versión, Midaz no cobra cargo de reactivación.
+
+SECCIÓN 5
+
+CONSERVACIÓN, EXPORTACIÓN Y ELIMINACIÓN DE DATOS
+
+5.1 Mientras la cuenta exista, el Contenido del Cliente permanece accesible. Si el Cliente baja de Plan, las funcionalidades no incluidas dejan de estar disponibles, pero la información asociada permanece accesible en modo de consulta.
+
+5.2 Terminado el contrato por cualquier causa, el Cliente dispone de treinta (30) días continuos, contados desde la terminación, para exportar su Contenido en los formatos disponibles en la Plataforma.
+
+5.3 Eliminación. Midaz solo elimina el Contenido del Cliente una vez vencido el plazo de exportación y previo aviso al correo registrado. Lo anterior no aplica a las copias de respaldo, que se eliminan en su ciclo normal, ni a la información que Midaz deba conservar por obligación legal.
+
+5.4 El Cliente es responsable de exportar y conservar periódicamente la información que esté obligado a llevar por ley. Las copias de respaldo de Midaz tienen por finalidad la recuperación ante desastres y no sustituyen los respaldos del Cliente.
+
+SECCIÓN 6
+
+PRUEBAS, PROMOCIONES Y CONDICIONES ESPECIALES
+
+6.1 A la fecha de esta versión, Midaz no ofrece período de prueba gratuita.
+
+6.2 Midaz podrá ofrecer períodos de prueba, promociones o condiciones especiales cuando lo decida. Cuando existan, se publicarán en esta sección con su alcance, duración y condiciones, y no modificarán los Términos y Condiciones.
+
+6.3 Las condiciones especiales pactadas individualmente con un Cliente constan en el contrato o en la orden de servicio correspondiente y prevalecen sobre esta sección respecto de ese Cliente.
+
+SECCIÓN 7
+
+VIGENCIA Y CONTROL DE VERSIONES
+
+7.1 Estas Políticas rigen desde su fecha de entrada en vigor y sustituyen cualquier versión anterior. Cada versión se identifica por su número y fecha.
+
+7.2 Midaz publicará los cambios en esta página. Cuando un cambio reduzca de forma sustancial un parámetro en perjuicio del Cliente, Midaz lo notificará con al menos treinta (30) días de anticipación, conforme a la Cláusula 15 de los Términos y Condiciones.
+
+MIDAZ LATAM, C.A. — RIF J-50863327-0 — Políticas de Servicio, Versión 1.0 — 16 de noviembre de 2026

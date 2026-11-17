@@ -2,8 +2,13 @@
 // Alta rápida: preguntas de solo tocar sobre el negocio, plan recomendado y datos de contacto.
 // La solicitud llega sola a soporte por correo (api/alta.js) y un asesor contacta al cliente.
 import "../styles/onboarding.css";
+import { acceptedDocuments } from "../data/legal.mjs";
+import { CONTACT } from "../data/contacto.mjs";
 
-const SUPPORT_EMAIL = "soporte@midazve.com";
+// Canal oficial (Términos y Condiciones, cláusula 1.3).
+const SUPPORT_EMAIL = CONTACT.email;
+// Documentos que el cliente acepta al enviar: versión vigente de cada uno, con su URL fija.
+const LEGAL = acceptedDocuments().map(({ doc, title, version, url }) => ({ doc, title, version, url }));
 
 const PLANS = [
     {
@@ -13,7 +18,7 @@ const PLANS = [
         price: 29,
         period: "/mes",
         description: "Pago flexible, sin compromiso",
-        features: ["Sistema web desde cualquier PC o tablet", "Conexión a impresoras fiscales", "Tasa BCV automática", "Soporte 24/7"],
+        features: ["Sistema web desde cualquier PC o tablet", "Conexión a impresoras fiscales", "Tasa BCV automática", "Soporte en horario de atención"],
     },
     {
         id: "web-anual",
@@ -22,7 +27,7 @@ const PLANS = [
         price: 290,
         period: "/año",
         description: "Ahorras el equivalente a 2 meses",
-        features: ["Todo lo del Mensual", "Multiusuario y multisede", "Reportes avanzados exportables", "Soporte 24/7"],
+        features: ["Todo lo del Mensual", "Multiusuario y multisede", "Reportes avanzados exportables", "Soporte en horario de atención"],
     },
     {
         id: "agora-emprendedor",
@@ -31,7 +36,7 @@ const PLANS = [
         price: 49,
         period: "/mes",
         description: "Para un local y una caja",
-        features: ["Terminal fiscal incluido", "App Android y panel web", "Inventario hasta 500 productos", "Soporte 24/7"],
+        features: ["Terminal fiscal incluido", "App Android y panel web", "Inventario hasta 500 productos", "Soporte en horario de atención"],
     },
     {
         id: "agora-empresarial",
@@ -190,6 +195,11 @@ const QUESTIONS = [
                 border: 1.5px solid var(--border); border-radius: 5px; background: var(--surface);
             }
             .opt.multi[aria-pressed="true"]::before { content: "✓"; color: #fff; background: var(--blue); border-color: var(--blue); font-size: 13px; font-weight: 700; line-height: 18px; text-align: center; }
+            .consent { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
+            .check-row { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text); cursor: pointer; }
+            .check-row input { flex: none; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--blue); cursor: pointer; }
+            .check-row a { color: var(--blue); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+            .check-row.optional { color: var(--text-dim); font-size: 13.5px; }
             .done-box { text-align: center; padding: 28px 8px; }
             .done-box .check { width: 56px; height: 56px; border-radius: 99px; background: var(--good-bg); color: var(--good); font-size: 28px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
             .done-box p { color: var(--text-dim); font-size: 14.5px; line-height: 1.55; max-width: 46ch; margin: 10px auto 0; }
@@ -217,7 +227,7 @@ const QUESTIONS = [
             <footer class="foot">¿Prefieres que te acompañemos? Escríbenos a {SUPPORT_EMAIL}.</footer>
         </div>
 
-        <script is:inline define:vars={{ SUPPORT_EMAIL, PLANS, QUESTIONS }}>
+        <script is:inline define:vars={{ SUPPORT_EMAIL, PLANS, QUESTIONS, LEGAL }}>
             (function () {
                 "use strict";
 
@@ -261,6 +271,13 @@ const QUESTIONS = [
                     return big ? "web-anual" : "web-mensual";
                 }
                 function plan() { return PLANS.filter(function (p) { return p.id === state.plan; })[0] || null; }
+
+                function legalLink(doc) {
+                    var d = LEGAL.filter(function (x) { return x.doc === doc; })[0];
+                    return '<a href="' + d.url + '" target="_blank" rel="noopener">' + esc(d.title) + "</a>";
+                }
+                // La aceptación no se guarda: la casilla empieza desmarcada cada vez que se muestra el paso.
+                var consent = { accepted: false, marketing: false };
 
                 function missingData() {
                     var m = [];
@@ -404,11 +421,18 @@ const QUESTIONS = [
                             "</div>" +
                             field("fEmail", "Correo", "email", "tu@empresa.com", D.email, 'inputmode="email" autocomplete="email"') +
                         "</div>" +
+                        '<div class="consent">' +
+                            '<label class="check-row"><input type="checkbox" id="fAccept" required> <span>He leído y acepto los ' + legalLink("terminos") +
+                                " y las " + legalLink("politicas") + ", y he leído la " + legalLink("privacidad") + " de Midaz.</span></label>" +
+                            '<label class="check-row optional"><input type="checkbox" id="fMarketing"> <span>Quiero recibir novedades y promociones de Midaz por correo y WhatsApp.</span></label>' +
+                        "</div>" +
                         '<input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">' +
                         '<div class="step-nav">' + backButton() + '<span class="nav-fill missing-note" id="missingNote"></span><span class="nav-fill err" id="sendError" role="alert" hidden></span><button type="button" class="btn btn-blue" id="nextBtn">Enviar solicitud</button></div>';
 
+                    consent = { accepted: false, marketing: false };
                     function update() {
                         var m = missingData();
+                        if (!consent.accepted) m.push("aceptar los Términos y Condiciones");
                         $("nextBtn").disabled = m.length > 0;
                         $("missingNote").textContent = m.length ? "Falta: " + m.join(", ") : "";
                         $("missingNote").hidden = !m.length;
@@ -417,11 +441,13 @@ const QUESTIONS = [
                     Object.keys(map).forEach(function (id) {
                         $(id).addEventListener("input", function () { D[map[id]] = this.value; persist(); update(); });
                     });
+                    $("fAccept").addEventListener("change", function () { consent.accepted = this.checked; update(); });
+                    $("fMarketing").addEventListener("change", function () { consent.marketing = this.checked; });
                     update();
                     bindBack();
                     $("nextBtn").addEventListener("click", function () {
                         var btn = this;
-                        if (missingData().length || btn.disabled) return;
+                        if (missingData().length || !consent.accepted || btn.disabled) return;
                         btn.disabled = true;
                         btn.textContent = "Enviando…";
                         $("sendError").hidden = true;
@@ -431,9 +457,18 @@ const QUESTIONS = [
                             body: JSON.stringify({
                                 name: D.name, company: D.company, rif: D.rif, email: D.email, phone: D.phone,
                                 plan: planText(), perfil: profile(), website: $("website").value,
+                                // La hora, la IP y el navegador los toma el servidor; aquí solo va qué se aceptó.
+                                aceptacion: {
+                                    acepta: consent.accepted,
+                                    documentos: LEGAL.map(function (d) { return { doc: d.doc, version: d.version }; }),
+                                    comercial: consent.marketing,
+                                },
                             }),
                         })
-                            .then(function (r) { if (!r.ok) throw new Error(r.status); })
+                            .then(function (r) {
+                                if (r.status === 409) { location.reload(); throw new Error("versiones"); }
+                                if (!r.ok) throw new Error(r.status);
+                            })
                             .then(function () {
                                 state.sentAt = new Date().toISOString();
                                 goTo(state.step + 1);
@@ -450,7 +485,9 @@ const QUESTIONS = [
                 function mailto() {
                     var body = ["Nueva solicitud de alta en Midaz", "", "Cliente",
                         "- Nombre: " + D.name, "- Empresa: " + D.company, "- RIF: " + D.rif, "- Correo: " + D.email, "- Teléfono: " + D.phone,
-                        "", "Negocio"].concat(profile().map(function (l) { return "- " + l; }), ["", "Plan: " + planText()]).join("\n");
+                        "", "Negocio"].concat(profile().map(function (l) { return "- " + l; }), ["", "Plan: " + planText(), "",
+                        "Aceptación: " + LEGAL.map(function (d) { return d.title + " " + d.version; }).join(", "),
+                        "Novedades y promociones: " + (consent.marketing ? "sí" : "no")]).join("\n");
                     return "mailto:" + SUPPORT_EMAIL + "?subject=" + encodeURIComponent("Alta Midaz: " + D.company) + "&body=" + encodeURIComponent(body);
                 }
 

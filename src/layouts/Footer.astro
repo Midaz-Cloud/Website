@@ -1,4 +1,7 @@
 ---
+import { LEGAL_DOCS, LEGAL_ORDER } from "../data/legal.mjs";
+import { CONTACT } from "../data/contacto.mjs";
+
 const currentYear = new Date().getFullYear();
 ---
 
@@ -25,13 +28,13 @@ const currentYear = new Date().getFullYear();
                 </ul>
             </div>
 
-            <!-- Empresa -->
+            <!-- Contacto -->
             <div class="footer-col">
-                <h4 class="footer-col-title">Empresa</h4>
+                <h4 class="footer-col-title">Contacto</h4>
                 <ul class="footer-links">
-                    <li><a href="#">Nosotros</a></li>
-                    <li><a href="#">Misión</a></li>
-                    <li><a href="/#contacto">Contacto</a></li>
+                    <li><a href={CONTACT.whatsappUrl} target="_blank" rel="noopener">WhatsApp {CONTACT.whatsappText}</a></li>
+                    <li><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
+                    <li class="footer-hours">{CONTACT.hours}</li>
                 </ul>
             </div>
 
@@ -49,8 +52,7 @@ const currentYear = new Date().getFullYear();
             <div class="footer-col">
                 <h4 class="footer-col-title">Legal</h4>
                 <ul class="footer-links">
-                    <li><a href="/terminos">Términos de uso</a></li>
-                    <li><a href="/privacidad">Privacidad</a></li>
+                    {LEGAL_ORDER.map((doc) => <li><a href={`/legal/${doc}`}>{LEGAL_DOCS[doc].title}</a></li>)}
                 </ul>
             </div>
         </div>
@@ -60,7 +62,7 @@ const currentYear = new Date().getFullYear();
 
         <!-- Bottom bar -->
         <div class="footer-bottom">
-            <p>&copy; {currentYear} Midaz. Todos los derechos reservados.</p>
+            <p>&copy; {currentYear} {CONTACT.legalLine}. Todos los derechos reservados.</p>
             <p>Hecho en Venezuela 🇻🇪</p>
         </div>
     </div>
@@ -122,6 +124,11 @@ const currentYear = new Date().getFullYear();
         transition: color 0.2s ease;
     }
     .footer-links a:hover { color: #ffffff; }
+    .footer-hours {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        color: rgba(169, 204, 255, 0.7);
+    }
     .footer-divider {
         height: 1px;
         background: rgba(0, 75, 224, 0.2);

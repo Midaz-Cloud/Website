@@ -1,12 +1,15 @@
 ---
+// En la portada los enlaces son anclas de la misma página; en las demás páginas (p. ej. /legal) llevan a la portada.
+const { home = true } = Astro.props;
+const base = home ? "" : "/";
 const links = [
-    { label: "Home", href: "#inicio", active: true },
+    { label: "Home", href: "#inicio", active: home },
     { label: "Soluciones", href: "#soluciones" },
     { label: "Nuestros productos", href: "#productos" },
-    { label: "Cero multas", href: "#cero-multas" },
+    { label: "Plataforma", href: "#plataforma" },
     { label: "Dudas", href: "#dudas" },
     { label: "Hermez", href: "#hermez" },
-];
+].map((l) => ({ ...l, href: base + l.href }));
 ---
 
 <header class="sticky top-0 z-50 px-4 pt-4 sm:px-6 lg:px-10 lg:pt-[32px]">
@@ -21,7 +24,7 @@ const links = [
             class="pointer-events-none absolute inset-x-[10%] top-0 h-px rounded-full bg-gradient-to-r from-[rgba(0,75,224,0)] via-[rgba(0,75,224,0.7)] to-[rgba(0,75,224,0)]"
         ></span>
 
-        <a href="#inicio" class="relative flex shrink-0 items-center pt-[2px]" aria-label="Midaz, inicio">
+        <a href={home ? "#inicio" : "/"} class="relative flex shrink-0 items-center pt-[2px]" aria-label="Midaz, inicio">
             <img src="/landing/icons/logo.svg" alt="Midaz" width="128" height="30" class="h-[29.5px] w-32" />
         </a>
 

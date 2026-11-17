@@ -352,7 +352,7 @@ export default function BentoSection() {
           </div>
         }
         Icon={FileTextIcon}
-        description="Cumplimiento fiscal completo. Facturas legales, notas de crédito, Reporte Z y auditoría SENIAT listos desde el primer día."
+        description="Te ayuda a cumplir con el SENIAT: emite tus facturas a través de tu proveedor de emisión autorizado, con notas de crédito y Reporte Z desde el primer día."
         href="/comenzar"
         cta="Ver documentación"
       />

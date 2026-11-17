@@ -1,4 +1,10 @@
 ---
+import { LEGAL_DOCS, LEGAL_ORDER } from "../../data/legal.mjs";
+import { CONTACT } from "../../data/contacto.mjs";
+
+// En la portada los enlaces son anclas de la misma página; en las demás páginas llevan a la portada.
+const { home = true } = Astro.props;
+const base = home ? "" : "/";
 const socials = [
     { name: "Facebook", href: "#", src: "/landing/icons/facebook.svg", w: 11, h: 22, box: 22, ml: 0 },
     { name: "LinkedIn", href: "#", src: "/landing/icons/linkedin.svg", w: 22, h: 22, box: 22, ml: 20 },
@@ -10,12 +16,12 @@ const ecosystem = [
     ["MidazPay", "Midaz App", "Midaz Marketplace", "Hermez - Asistente IA"],
 ];
 const support = [
-    { label: "Dudas frecuentes", href: "#dudas" },
+    { label: "Dudas frecuentes", href: base + "#dudas" },
     { label: "Centro de ayuda", href: "#" },
-    { label: "Contacto y soporte", href: "#contacto" },
+    { label: "Contacto y soporte", href: base + "#contacto" },
     { label: "Solicitud de Demo", href: "/comenzar" },
 ];
-const legal = ["Términos y condiciones", "Política de privacidad"];
+const legal = LEGAL_ORDER.map((doc) => ({ label: LEGAL_DOCS[doc].title, href: `/legal/${doc}` }));
 const heading = "font-poppins text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.55px] text-white/70";
 const link = "text-sm font-semibold leading-5 text-white hover:underline";
 ---
@@ -44,7 +50,7 @@ const link = "text-sm font-semibold leading-5 text-white hover:underline";
             </button>
         </form>
         <p class="pt-[14px] text-center text-sm font-medium leading-5 tracking-[-0.35px] text-white/90">
-            Tu cerebro operativo y fiscal. Factura, cobra y cumple con el SENIAT desde un solo sistema.
+            Tu cerebro operativo y fiscal. Factura, cobra y te ayuda a cumplir con el SENIAT desde un solo sistema.
         </p>
         <nav aria-label="Redes sociales" class="flex w-[170px] items-start pb-12 pt-10">
             {
@@ -71,7 +77,7 @@ const link = "text-sm font-semibold leading-5 text-white hover:underline";
                             <ul class:list={["flex flex-col gap-2 leading-5", i === 0 ? "w-[120px]" : "flex-1"]}>
                                 {col.map((item) => (
                                     <li class="whitespace-nowrap">
-                                        <a href="#productos" class={link}>{item}</a>
+                                        <a href={base + "#productos"} class={link}>{item}</a>
                                     </li>
                                 ))}
                             </ul>
@@ -88,9 +94,18 @@ const link = "text-sm font-semibold leading-5 text-white hover:underline";
             <div class="flex flex-col gap-3 border-t border-white/30 pt-3 md:w-[172px]">
                 <h2 class={heading}>Legal</h2>
                 <ul class="flex flex-col gap-2 leading-5">
-                    {legal.map((l) => <li><a href="#" class={link}>{l}</a></li>)}
+                    {legal.map((l) => <li><a href={l.href} class={link}>{l.label}</a></li>)}
+                </ul>
+            </div>
+            <div class="flex flex-col gap-3 border-t border-white/30 pt-3 md:w-[220px]">
+                <h2 class={heading}>Contacto</h2>
+                <ul class="flex flex-col gap-2 leading-5">
+                    <li><a href={CONTACT.whatsappUrl} target="_blank" rel="noopener" class={link}>WhatsApp <span class="whitespace-nowrap">{CONTACT.whatsappText}</span></a></li>
+                    <li><a href={`mailto:${CONTACT.email}`} class={link}>{CONTACT.email}</a></li>
+                    <li class="text-sm leading-5 text-white/80">{CONTACT.hours}</li>
                 </ul>
             </div>
         </div>
+        <p class="mt-10 border-t border-white/30 pt-4 text-xs font-medium leading-5 tracking-[0.2px] text-white/70">{CONTACT.legalLine}</p>
     </div>
 </footer>

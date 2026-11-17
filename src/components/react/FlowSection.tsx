@@ -5,7 +5,7 @@ const steps = [
   { n: "02", title: "Agrega productos", desc: "Por nombre, SKU o código de barras. Stock en tiempo real." },
   { n: "03", title: "Selecciona el pago", desc: "Efectivo, transferencia, punto, dólares, Zelle, Binance." },
   { n: "04", title: "IGTF automático", desc: "Si paga en divisas, el 3% se aplica sin calcular nada." },
-  { n: "05", title: "Factura impresa", desc: "Comprobante legal directo de la impresora fiscal. 100% válido." },
+  { n: "05", title: "Factura impresa", desc: "Comprobante desde la impresora fiscal de tu negocio." },
   { n: "06", title: "Backoffice actualizado", desc: "La venta aparece al instante en el panel del dueño." },
   { n: "07", title: "Cierre de turno", desc: "Reporte Z con un toque. Cuadre enviado al backoffice." },
 ];

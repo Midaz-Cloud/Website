@@ -1,0 +1,12 @@
+---
+// /legal/terminos, /legal/politicas, /legal/privacidad: la versión vigente y la lista de las anteriores.
+import LegalPage from "../../../components/legal/LegalPage.astro";
+import { LEGAL_ORDER, currentVersion } from "../../../data/legal.mjs";
+
+export function getStaticPaths() {
+    return LEGAL_ORDER.map((doc) => ({ params: { doc } }));
+}
+const { doc } = Astro.params as { doc: "terminos" | "politicas" | "privacidad" };
+---
+
+<LegalPage doc={doc} slug={currentVersion(doc).slug} latest />
