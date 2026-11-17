@@ -69,6 +69,7 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
                                         {String(i + 1).padStart(2, "0")}.
                                     </span>
                                     <div class="faq-icon overflow-hidden">
+                                        {/* Íconos 03–06: en Figma van en modo Multiply sobre fondo blanco; los .webp ya traen ese blanco convertido en transparencia. */}
                                         <img src={`/landing/faq/${faq.icon}.webp`} alt="" width="159" height="160" class="h-[160px] w-[159px] max-w-none object-contain" loading="lazy" />
                                     </div>
                                 </div>
@@ -180,6 +181,10 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
         margin-top: 22px;
         opacity: 1;
     }
+    [data-faq] {
+        translate: var(--faq-shift, 0px) 0;
+        transition: translate 450ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
     @media (min-width: 1280px) {
         /* Recorrido horizontal: la sección mide 900 px más lo que la fila tiene que desplazarse. */
         .faq {
@@ -207,14 +212,95 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
         const cards = Array.from(list.querySelectorAll<HTMLElement>("[data-faq-card]"));
         const desktop = window.matchMedia("(min-width: 1280px)");
         const hover = window.matchMedia("(hover: hover)");
-        const set = (card: HTMLElement | null) => cards.forEach((c) => (c.dataset.active = String(c === card)));
+        // Desplazamiento extra para que una tarjeta abierta cerca del borde derecho (p. ej. la 06) no quede cortada.
+        let shift = 0;
+        const applyShift = (card: HTMLElement | null) => {
+            let next = 0;
+            if (card && desktop.matches) {
+                const i = cards.indexOf(card);
+                const rowLeft = list.getBoundingClientRect().left - shift;
+                const right = rowLeft + 40 + i * 275 + 395;
+                next = Math.min(0, Math.round(document.documentElement.clientWidth - 40 - right));
+            }
+            if (next !== shift) {
+                shift = next;
+                list.style.setProperty("--faq-shift", `${shift}px`);
+            }
+        };
+        const active = () => cards.find((c) => c.dataset.active === "true") ?? null;
+        const set = (card: HTMLElement | null) => {
+            cards.forEach((c) => (c.dataset.active = String(c === card)));
+            applyShift(card);
+        };
+
+        if (hover.matches) {
+            // Hover con el puntero real (Figma: entrar con 60 ms de espera, salir sin espera).
+            // Se decide con la posición del cursor y no con mouseenter, porque al girar la rueda la fila
+            // se mueve bajo un cursor quieto: mientras se desplaza no se abre nada, y al detenerse se
+            // abre la tarjeta que quedó bajo el cursor.
+            let px = -1;
+            let py = -1;
+            let enterTimer = 0;
+            let settleTimer = 0;
+            let relookTimer = 0;
+            let scrolling = false;
+            const cardAt = () => {
+                if (px < 0) return null;
+                const el = document.elementFromPoint(px, py);
+                return (el?.closest("[data-faq-card]") as HTMLElement | null) ?? null;
+            };
+            const evaluate = () => {
+                clearTimeout(enterTimer);
+                if (scrolling) return;
+                const target = cardAt();
+                const cur = active();
+                if (target === cur) return applyShift(cur);
+                if (!target) {
+                    if (cur && cur.matches(":focus-visible")) return;
+                    set(null);
+                    // Al cerrarse, la fila se reacomoda: revisar qué quedó bajo el cursor.
+                    clearTimeout(relookTimer);
+                    relookTimer = window.setTimeout(evaluate, 360);
+                    return;
+                }
+                enterTimer = window.setTimeout(() => {
+                    if (!scrolling && cardAt() === target) set(target);
+                }, 60);
+            };
+            document.addEventListener(
+                "pointermove",
+                (e) => {
+                    if (e.pointerType !== "mouse") return;
+                    if (e.clientX === px && e.clientY === py) return; // movimiento sintético tras un scroll
+                    px = e.clientX;
+                    py = e.clientY;
+                    evaluate();
+                },
+                { passive: true },
+            );
+            document.documentElement.addEventListener("pointerleave", () => {
+                px = py = -1;
+                evaluate();
+            });
+            window.addEventListener(
+                "scroll",
+                () => {
+                    scrolling = true;
+                    clearTimeout(enterTimer);
+                    clearTimeout(settleTimer);
+                    settleTimer = window.setTimeout(() => {
+                        scrolling = false;
+                        evaluate();
+                    }, 140);
+                },
+                { passive: true },
+            );
+        }
 
         cards.forEach((card) => {
-            card.addEventListener("mouseenter", () => hover.matches && set(card));
-            card.addEventListener("mouseleave", () => hover.matches && card.dataset.active === "true" && set(null));
             // Solo el foco con teclado abre la tarjeta; un toque ya pasa por "click".
             card.addEventListener("focus", () => card.matches(":focus-visible") && set(card));
-            card.addEventListener("blur", () => hover.matches && card.dataset.active === "true" && set(null));
+            card.addEventListener("blur", () => card.dataset.active === "true" && set(null));
             card.addEventListener("click", () => {
                 if (!hover.matches) set(card.dataset.active === "true" ? null : card);
             });
