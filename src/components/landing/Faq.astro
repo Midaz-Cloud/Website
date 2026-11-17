@@ -70,7 +70,7 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
                                     </span>
                                     <div class="faq-icon overflow-hidden">
                                         {/* Íconos 03–06: en Figma van en modo Multiply sobre fondo blanco; los .webp ya traen ese blanco convertido en transparencia. */}
-                                        <img src={`/landing/faq/${faq.icon}.webp`} alt="" width="159" height="160" class="h-[160px] w-[159px] max-w-none object-contain" loading="lazy" />
+                                        <img src={`/landing/faq/${faq.icon}.webp`} alt="" width="159" height="160" class="h-[160px] w-[159px] max-w-none object-contain" loading="eager" decoding="sync" />
                                     </div>
                                 </div>
                                 <div class="flex flex-col">
@@ -212,6 +212,8 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
         const cards = Array.from(list.querySelectorAll<HTMLElement>("[data-faq-card]"));
         const desktop = window.matchMedia("(min-width: 1280px)");
         const hover = window.matchMedia("(hover: hover)");
+        let rowMovedAt = 0;
+        let lastP = -1;
         // Desplazamiento extra para que una tarjeta abierta cerca del borde derecho (p. ej. la 06) no quede cortada.
         let shift = 0;
         const applyShift = (card: HTMLElement | null) => {
@@ -284,15 +286,18 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
             });
             window.addEventListener(
                 "scroll",
-                () => {
-                    scrolling = true;
-                    clearTimeout(enterTimer);
-                    clearTimeout(settleTimer);
-                    settleTimer = window.setTimeout(() => {
-                        scrolling = false;
-                        evaluate();
-                    }, 140);
-                },
+                () =>
+                    requestAnimationFrame(() => {
+                        // Solo se espera si la rueda está moviendo la fila; si la página baja normal, se revisa enseguida.
+                        if (performance.now() - rowMovedAt > 50) return evaluate();
+                        scrolling = true;
+                        clearTimeout(enterTimer);
+                        clearTimeout(settleTimer);
+                        settleTimer = window.setTimeout(() => {
+                            scrolling = false;
+                            evaluate();
+                        }, 90);
+                    }),
                 { passive: true },
             );
         }
@@ -325,6 +330,10 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
             if (!desktop.matches) return;
             const pinned = Math.min(0, window.innerHeight - 900);
             const p = dist ? Math.min(1, Math.max(0, (pinned - section.getBoundingClientRect().top) / dist)) : 0;
+            if (p !== lastP) {
+                lastP = p;
+                rowMovedAt = performance.now();
+            }
             list.style.transform = `translate3d(${-p * dist}px,0,0)`;
         };
         let frame = 0;
