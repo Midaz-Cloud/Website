@@ -236,7 +236,7 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
         };
 
         if (hover.matches) {
-            // Hover con el puntero real (Figma: entrar con 60 ms de espera, salir sin espera).
+            // Hover con el puntero real: abre al instante y cierra sin espera (Keiv pidió más sensibilidad que el Figma).
             // Se decide con la posición del cursor y no con mouseenter, porque al girar la rueda la fila
             // se mueve bajo un cursor quieto: mientras se desplaza no se abre nada, y al detenerse se
             // abre la tarjeta que quedó bajo el cursor.
@@ -262,12 +262,15 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
                     set(null);
                     // Al cerrarse, la fila se reacomoda: revisar qué quedó bajo el cursor.
                     clearTimeout(relookTimer);
-                    relookTimer = window.setTimeout(evaluate, 360);
+                    relookTimer = window.setTimeout(evaluate, 200);
                     return;
                 }
+                // Sin tarjeta abierta se abre enseguida; para cambiar de una a otra se espera un poco
+                // (evita que se abran las que el cursor cruza de paso).
+                if (!cur) return set(target);
                 enterTimer = window.setTimeout(() => {
                     if (!scrolling && cardAt() === target) set(target);
-                }, 60);
+                }, 40);
             };
             document.addEventListener(
                 "pointermove",
@@ -290,13 +293,17 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
                     requestAnimationFrame(() => {
                         // Solo se espera si la rueda está moviendo la fila; si la página baja normal, se revisa enseguida.
                         if (performance.now() - rowMovedAt > 50) return evaluate();
+                        // La fila se está moviendo bajo el cursor: se cierra lo que ya no está debajo
+                        // y se abre lo que quede al detenerse (40 ms).
                         scrolling = true;
                         clearTimeout(enterTimer);
                         clearTimeout(settleTimer);
+                        const cur = active();
+                        if (cur && cardAt() !== cur && !cur.matches(":focus-visible")) set(null);
                         settleTimer = window.setTimeout(() => {
                             scrolling = false;
                             evaluate();
-                        }, 90);
+                        }, 40);
                     }),
                 { passive: true },
             );
