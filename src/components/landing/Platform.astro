@@ -2,17 +2,17 @@
 const features = [
     {
         title: ["Automatización", "Fiscal"],
-        icon: { src: "/landing/icons/shield-card.svg", width: 123, height: 123 },
+        icon: { src: "/landing/icons/shield-card.svg", azul: "/landing/icons/shield-card-azul.svg", width: 123, height: 123 },
         text: "Emisión automática de facturas digitales e impresas, reporte X y Z.",
     },
     {
         title: ["Tasa BCV", "en vivo"],
-        icon: { src: "/landing/icons/account-balance.svg", width: 113, height: 113 },
+        icon: { src: "/landing/icons/account-balance.svg", azul: "/landing/icons/account-balance-azul.svg", width: 113, height: 113 },
         text: "Sincronización automática de divisas y múltiples medios de pago.",
     },
     {
         title: ["Modo", "Offline"],
-        icon: { src: "/landing/icons/wifi-off.svg", width: 114, height: 114 },
+        icon: { src: "/landing/icons/wifi-off.svg", azul: "/landing/icons/wifi-off-azul.svg", width: 114, height: 114 },
         text: "Sigue vendiendo en tu local aunque\u00a0se\u00a0vaya\u00a0el\u00a0internet.",
     },
 ];
@@ -45,15 +45,23 @@ const features = [
         <ul class="mt-16 grid w-full max-w-[1024px] gap-7 pb-4 md:grid-cols-3 xl:pb-0 xl:mt-[67px]">
             {
                 features.map((f) => (
-                    <li class="relative flex min-h-[425px] flex-col items-center justify-between rounded-[26px] border border-[rgba(152,171,204,0.6)] bg-[linear-gradient(180deg,rgba(152,171,204,0.14)_0%,rgba(152,171,204,0.08)_50%,rgba(152,171,204,0.17)_100%)] p-[37px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.04),inset_0_0_1px_2px_rgba(255,255,255,0.7)] backdrop-blur-[14px]">
+                    <li data-plat-card class="relative flex min-h-[425px] flex-col items-center justify-between rounded-[26px] border border-[rgba(152,171,204,0.6)] bg-[linear-gradient(180deg,rgba(152,171,204,0.14)_0%,rgba(152,171,204,0.08)_50%,rgba(152,171,204,0.17)_100%)] p-[37px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.04),inset_0_0_1px_2px_rgba(255,255,255,0.7)] backdrop-blur-[14px]">
                         <h3 class="text-center font-poppins text-[14.5px] font-extrabold uppercase leading-[19.94px] tracking-[0.725px] text-landing-navy">
                             {f.title[0]}
                             <br />
                             {f.title[1]}
                         </h3>
                         <div class="flex flex-1 items-center justify-center py-8">
-                            <img src={f.icon.src} alt="" width={f.icon.width} height={f.icon.height} loading="lazy" />
+                            <div class="relative">
+                                <img src={f.icon.src} alt="" width={f.icon.width} height={f.icon.height} loading="lazy" />
+                                <!-- Ícono azul que se rellena de izquierda a derecha al pasar el mouse (Figma 77:171, capa "Ícono azul (relleno)") -->
+                                <img data-plat-azul src={f.icon.azul} alt="" width={f.icon.width} height={f.icon.height} loading="lazy" class="absolute left-0 top-0 [clip-path:inset(0_100%_0_0)]" />
+                            </div>
                         </div>
+                        <!-- Trazo azul que recorre el borde en sentido horario (Figma 77:171, capa "Trazo") -->
+                        <svg data-plat-trazo aria-hidden="true" class="pointer-events-none absolute -inset-px h-[calc(100%+2px)] w-[calc(100%+2px)] overflow-visible">
+                            <path fill="none" stroke="#004BE0" stroke-width="2.5" opacity="0" />
+                        </svg>
                         <p class="max-w-[239px] text-center text-xs font-semibold leading-4 tracking-[0.3px] text-[rgba(48,52,43,0.8)]">{f.text}</p>
                     </li>
                 ))
@@ -61,3 +69,98 @@ const features = [
         </ul>
     </div>
 </section>
+
+<script>
+    // Hover de las cards (Figma 77:171 / 77:337 / 77:493): Default → Trazo 1..4 → Activo.
+    // Cada paso dibuja un lado + su esquina en sentido horario desde la esquina sup. izq.:
+    // 160 ms lineal (×3, con 10 ms de espera entre estados) y el último 300 ms ease-out.
+    // Al salir, todo vuelve a Default en 250 ms ease-out.
+    const R = 24.75; // radio 26 menos la mitad del trazo de 2.5
+    const QA = (Math.PI / 2) * R;
+    const STEPS = [0, 170, 340, 510, 820];
+    document.querySelectorAll<HTMLElement>("[data-plat-card]").forEach((card) => {
+        const svg = card.querySelector<SVGSVGElement>("[data-plat-trazo]")!;
+        const path = svg.querySelector("path")!;
+        const azul = card.querySelector<HTMLElement>("[data-plat-azul]")!;
+        let anims: Animation[] = [];
+        let total = 0;
+
+        const build = () => {
+            const w = card.offsetWidth;
+            const h = card.offsetHeight;
+            const a = 1.25;
+            path.setAttribute(
+                "d",
+                `M26 ${a}H${w - 26}A${R} ${R} 0 0 1 ${w - a} 26V${h - 26}A${R} ${R} 0 0 1 ${w - 26} ${h - a}H26A${R} ${R} 0 0 1 ${a} ${h - 26}V26A${R} ${R} 0 0 1 26 ${a}Z`,
+            );
+            const top = w - 52 + QA;
+            const side = h - 52 + QA;
+            total = 2 * top + 2 * side;
+            return [0, top, top + side, 2 * top + side, total];
+        };
+
+        const current = () => {
+            const cs = getComputedStyle(path);
+            const clip = getComputedStyle(azul).clipPath;
+            return { off: parseFloat(cs.strokeDashoffset) || 0, op: parseFloat(cs.opacity) || 0, clip };
+        };
+
+        const stop = () => {
+            const now = current();
+            anims.forEach((x) => x.cancel());
+            anims = [];
+            return now;
+        };
+
+        card.addEventListener("pointerenter", () => {
+            if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+            stop();
+            const cum = build();
+            path.style.strokeDasharray = `${total} ${total}`;
+            const dur = STEPS[4];
+            const offs = STEPS.map((t) => t / dur);
+            const linear = "linear";
+            anims.push(
+                path.animate(
+                    [
+                        { strokeDashoffset: total - cum[0], opacity: 1, offset: offs[0], easing: linear },
+                        { strokeDashoffset: total - cum[1], opacity: 1, offset: offs[1], easing: linear },
+                        { strokeDashoffset: total - cum[2], opacity: 1, offset: offs[2], easing: linear },
+                        { strokeDashoffset: total - cum[3], opacity: 1, offset: offs[3], easing: "ease-out" },
+                        { strokeDashoffset: 0, opacity: 1, offset: 1 },
+                    ],
+                    { duration: dur, fill: "forwards" },
+                ),
+                azul.animate(
+                    [
+                        { clipPath: "inset(0 100% 0 0)", offset: offs[0], easing: linear },
+                        { clipPath: "inset(0 75% 0 0)", offset: offs[1], easing: linear },
+                        { clipPath: "inset(0 50% 0 0)", offset: offs[2], easing: linear },
+                        { clipPath: "inset(0 25% 0 0)", offset: offs[3], easing: "ease-out" },
+                        { clipPath: "inset(0 0% 0 0)", offset: 1 },
+                    ],
+                    { duration: dur, fill: "forwards" },
+                ),
+            );
+        });
+
+        card.addEventListener("pointerleave", () => {
+            if (!anims.length) return;
+            const now = stop();
+            anims.push(
+                path.animate(
+                    [
+                        { strokeDashoffset: now.off, opacity: now.op },
+                        { strokeDashoffset: total, opacity: 0 },
+                    ],
+                    { duration: 250, easing: "ease-out", fill: "forwards" },
+                ),
+                azul.animate([{ clipPath: now.clip }, { clipPath: "inset(0 100% 0 0)" }], {
+                    duration: 250,
+                    easing: "ease-out",
+                    fill: "forwards",
+                }),
+            );
+        });
+    });
+</script>
