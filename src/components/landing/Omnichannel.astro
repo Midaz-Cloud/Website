@@ -105,6 +105,30 @@ const screens = [
             schedule();
         }).observe(root);
 
+        // Deslizamiento horizontal con dos dedos en el trackpad (o rueda lateral): cambia de pantalla.
+        // Se acumula el gesto y, al pasar 40 px, cambia una vez; luego espera a que el gesto termine.
+        let wheelX = 0;
+        let wheelLock = 0;
+        let wheelIdle = 0;
+        screen.addEventListener(
+            "wheel",
+            (e) => {
+                const dx = e.deltaMode === 1 ? e.deltaX * 16 : e.deltaX;
+                if (Math.abs(dx) <= Math.abs(e.deltaY)) return;
+                e.preventDefault();
+                clearTimeout(wheelIdle);
+                wheelIdle = window.setTimeout(() => ((wheelX = 0), (wheelLock = 0)), 180);
+                if (wheelLock) return;
+                wheelX += dx;
+                if (Math.abs(wheelX) < 40) return;
+                go(wheelX > 0 ? index + 1 : index - 1, true);
+                schedule();
+                wheelX = 0;
+                wheelLock = 1;
+            },
+            { passive: false },
+        );
+
         // Arrastre / deslizamiento
         let startX = 0;
         let dragging = false;

@@ -367,6 +367,10 @@ html {
 html.carga [data-carga] {
   display: block;
 }
+/* El porcentaje y la leyenda esperan a la fuente Poppins: así no se ven primero con otra letra. */
+html.carga:not(.carga-lista) [data-carga-texts] {
+  visibility: hidden;
+}
 /* Titular que se escribe y contadores del hero: estado inicial antes de que corra el script. */
 html.hero-anim [data-tw] {
   opacity: 0;

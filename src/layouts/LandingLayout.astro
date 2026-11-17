@@ -96,7 +96,11 @@ const jsonLd = {
                         !location.hash
                     ) {
                         d.classList.add("hero-anim");
-                        if (!sessionStorage.getItem("midaz-intro")) d.classList.add("carga");
+                        if (!sessionStorage.getItem("midaz-intro")) {
+                            d.classList.add("carga");
+                            // Escala del lienzo de 1280×800 desde el primer pintado, para que la carga no salte al arrancar.
+                            d.style.setProperty("--carga-s", String(innerHeight / 800));
+                        }
                         // Red de seguridad: si el script no corre, el hero aparece igual.
                         setTimeout(function () {
                             if (!d.hasAttribute("data-intro-running")) d.classList.remove("carga", "hero-anim");
@@ -116,7 +120,8 @@ const jsonLd = {
             import "lenis/dist/lenis.css";
 
             if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-                new Lenis({ autoRaf: true, lerp: 0.09, anchors: { offset: -96 } });
+                // Se guarda en window para que las secciones con fila horizontal (FAQ) muevan la página con el deslizamiento lateral.
+                (window as any).__lenis = new Lenis({ autoRaf: true, lerp: 0.09, anchors: { offset: -96 } });
             }
         </script>
     </body>

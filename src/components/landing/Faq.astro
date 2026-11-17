@@ -336,6 +336,28 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
             }
             list.style.transform = `translate3d(${-p * dist}px,0,0)`;
         };
+        // Deslizamiento horizontal (dos dedos en el trackpad o rueda lateral): mueve la fila igual que la rueda vertical.
+        // Mientras la fila tiene recorrido, el gesto lateral baja o sube la página lo mismo que se movería la fila.
+        stage.addEventListener(
+            "wheel",
+            (e) => {
+                if (!desktop.matches || !dist) return;
+                const dx = e.deltaMode === 1 ? e.deltaX * 16 : e.deltaX;
+                if (Math.abs(dx) <= Math.abs(e.deltaY) || !dx) return;
+                const lenis = (window as any).__lenis;
+                const pinned = Math.min(0, window.innerHeight - 900);
+                // Posición de destino (con Lenis, la que aún va en camino), en px recorridos de la fila.
+                const ahead = lenis ? lenis.targetScroll - lenis.animatedScroll : 0;
+                const done = pinned - section.getBoundingClientRect().top + ahead;
+                const dy = Math.max(-done, Math.min(dist - done, dx));
+                if (Math.abs(dy) < 0.5) return;
+                e.preventDefault();
+                if (lenis) lenis.scrollTo(lenis.targetScroll + dy);
+                else window.scrollBy(0, dy);
+            },
+            { passive: false },
+        );
+
         let frame = 0;
         window.addEventListener(
             "scroll",
