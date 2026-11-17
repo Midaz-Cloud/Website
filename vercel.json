@@ -1,9 +1,40 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
     "redirects": [
-        { "source": "/terminos", "destination": "/legal/terminos", "permanent": true },
-        { "source": "/privacidad", "destination": "/legal/privacidad", "permanent": true },
-        { "source": "/politicas", "destination": "/legal/politicas", "permanent": true },
-        { "source": "/legal", "destination": "/legal/terminos", "permanent": false }
+        {
+            "source": "/terminos",
+            "destination": "/legal/terminos",
+            "permanent": true
+        },
+        {
+            "source": "/privacidad",
+            "destination": "/legal/privacidad",
+            "permanent": true
+        },
+        {
+            "source": "/politicas",
+            "destination": "/legal/politicas",
+            "permanent": true
+        },
+        {
+            "source": "/legal",
+            "destination": "/legal/terminos",
+            "permanent": false
+        }
+    ],
+    "headers": [
+        {
+            "source": "/legal/vigentes.json",
+            "headers": [
+                {
+                    "key": "Access-Control-Allow-Origin",
+                    "value": "*"
+                },
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=300, must-revalidate"
+                }
+            ]
+        }
     ]
 }
