@@ -1,18 +1,17 @@
 ---
 // "La misma operación, donde ocurra la venta" (Figma: Laptop / Carrusel de pantallas).
-// Una laptop cuya pantalla pasa sola por los módulos de Midaz: cada vista se queda 3,5 s y la tira
-// se desliza 0,8 s hacia la siguiente. Al final se desliza a una copia de la primera y vuelve al
-// inicio sin que se note. También se puede arrastrar o deslizar con el dedo.
+// Cinco fotos de la laptop, una por módulo de Midaz, apiladas: cada una se queda 3,5 s y se funde
+// en 0,8 s (ease-in-out) con la siguiente; de la última vuelve a la primera. Arrastrar o deslizar
+// cambia a la siguiente o la anterior en 0,6 s (ease-out).
 const screens = [
-    { src: "/landing/pantallas/resumen.webp", alt: "Resumen de negocio de Midaz", caption: "Resumen de negocio te muestra cómo va cada sucursal hoy" },
-    { src: "/landing/pantallas/agenda.webp", alt: "Agenda de citas de Midaz", caption: "Agenda organiza tus citas por sede y profesional" },
-    { src: "/landing/pantallas/cocina.webp", alt: "Cocina KDS de Midaz", caption: "Cocina KDS lleva cada comanda del pedido al pase" },
-    { src: "/landing/pantallas/tesoreria.webp", alt: "Tesorería de Midaz", caption: "Tesorería muestra cuánto hay en cada cuenta, en su moneda" },
-    { src: "/landing/pantallas/flujo-caja.webp", alt: "Flujo de caja de Midaz", caption: "Flujo de caja proyecta tus cuentas a 8 semanas" },
+    { src: "/landing/laptops/resumen.webp", alt: "Resumen de negocio de Midaz en una laptop", caption: "Resumen de negocio te muestra cómo va cada sucursal hoy" },
+    { src: "/landing/laptops/agenda.webp", alt: "Agenda de citas de Midaz en una laptop", caption: "Agenda organiza tus citas por sede y profesional" },
+    { src: "/landing/laptops/cocina.webp", alt: "Cocina KDS de Midaz en una laptop", caption: "Cocina KDS lleva cada comanda del pedido al pase" },
+    { src: "/landing/laptops/tesoreria.webp", alt: "Tesorería de Midaz en una laptop", caption: "Tesorería muestra cuánto hay en cada cuenta, en su moneda" },
+    { src: "/landing/laptops/flujo-caja.webp", alt: "Flujo de caja de Midaz en una laptop", caption: "Flujo de caja proyecta tus cuentas a 8 semanas" },
 ];
-// Medidas del Figma (laptop de 856×520): pantalla en (86.44, 22.96) de 683.43×434.91.
-const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
 ---
+
 
 <section id="soluciones" class="relative overflow-x-clip">
     <div class="flex flex-col items-center gap-[25px] pb-24 pt-12 xl:h-[985px] xl:pb-0">
@@ -24,46 +23,25 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
         </h2>
 
         <div class="w-full px-4" data-laptop>
-            <div class="relative mx-auto aspect-[856/520] w-full max-w-[856px] select-none xl:left-px">
-                <img src="/landing/macbook-carrusel.webp" alt="" aria-hidden="true" width="856" height="520" class="absolute inset-0 size-full" draggable="false" />
-                <div
-                    class="absolute touch-pan-y overflow-hidden bg-white"
-                    style={`left:${pct(86.44, 856)};top:${pct(22.96, 520)};width:${pct(683.43, 856)};height:${pct(434.91, 520)}`}
-                    role="region"
-                    aria-roledescription="carrusel"
-                    aria-label="Pantallas de Midaz"
-                    data-laptop-screen
-                >
-                    <div class="flex h-full will-change-transform" data-laptop-strip>
-                        {
-                            [...screens, screens[0]].map((s, i) => (
-                                <img
-                                    src={s.src}
-                                    alt={i < screens.length ? s.alt : ""}
-                                    aria-hidden={i < screens.length ? undefined : "true"}
-                                    width="684"
-                                    height="435"
-                                    class="h-full w-full shrink-0 object-cover"
-                                    loading={i === 0 ? "eager" : "lazy"}
-                                    draggable="false"
-                                />
-                            ))
-                        }
-                    </div>
-                    <!-- Reflejo del vidrio -->
-                    <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0)_45%)]"></div>
+            <!-- Figma: marco de 855,5×520; las fotos (767×520) empiezan 43,76 px a la derecha -->
+            <div class="relative mx-auto aspect-[855.5/520] w-full max-w-[855.5px] select-none xl:left-px">
+                <div class="absolute inset-y-0 left-[5.115%] w-[89.655%] touch-pan-y" role="region" aria-roledescription="carrusel" aria-label="Pantallas de Midaz" data-laptop-screen>
+                    {
+                        screens.map((s, i) => (
+                            <img
+                                src={s.src}
+                                alt={s.alt}
+                                width="1534"
+                                height="1040"
+                                class:list={["absolute inset-0 size-full", i === 0 ? "opacity-100" : "opacity-0"]}
+                                aria-hidden={i === 0 ? undefined : "true"}
+                                loading={i === 0 ? "eager" : "lazy"}
+                                draggable="false"
+                                data-laptop-shot
+                            />
+                        ))
+                    }
                 </div>
-                <!-- Muesca de la cámara -->
-                <div
-                    aria-hidden="true"
-                    class="absolute rounded-b-[8.1px] bg-[#0d0d0f]"
-                    style={`left:${pct(386.29, 856)};top:${pct(22.96, 520)};width:${pct(83.74, 856)};height:${pct(16.21, 520)}`}
-                ></div>
-                <div
-                    aria-hidden="true"
-                    class="absolute aspect-square rounded-full bg-[#383d4d]"
-                    style={`left:${pct(425.45, 856)};top:${pct(28.36, 520)};width:${pct(5.4, 856)}`}
-                ></div>
             </div>
         </div>
 
@@ -88,51 +66,34 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
 
 <script>
     const root = document.querySelector<HTMLElement>("[data-laptop]");
-    const strip = root?.querySelector<HTMLElement>("[data-laptop-strip]");
     const screen = root?.querySelector<HTMLElement>("[data-laptop-screen]");
+    const shots = Array.from(root?.querySelectorAll<HTMLElement>("[data-laptop-shot]") ?? []);
     const captions = Array.from(document.querySelectorAll<HTMLElement>("[data-laptop-caption]"));
-    if (root && strip && screen) {
-        const count = captions.length;
+    if (root && screen && shots.length) {
+        const count = shots.length;
         const HOLD = 3500;
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
         let index = 0;
         let timer = 0;
         let visible = false;
 
-        const caption = (i: number) => {
+        // Figma: cambio automático 0,8 s ease-in-out; al arrastrar, 0,6 s ease-out.
+        const go = (next: number, drag = false) => {
+            index = (next + count) % count;
+            const t = reduce.matches ? "none" : `opacity ${drag ? "600ms cubic-bezier(0,0,0.58,1)" : "800ms cubic-bezier(0.42,0,0.58,1)"}`;
+            shots.forEach((el, n) => {
+                el.style.transition = t;
+                el.style.opacity = n === index ? "1" : "0";
+                if (n === index) el.removeAttribute("aria-hidden");
+                else el.setAttribute("aria-hidden", "true");
+            });
             captions.forEach((el, n) => {
-                const on = n === i % count;
+                const on = n === index;
                 el.classList.toggle("opacity-100", on);
                 el.classList.toggle("opacity-0", !on);
                 el.setAttribute("aria-hidden", String(!on));
             });
         };
-
-        // Figma: cambio automático 0,8 s ease-in-out; al arrastrar, 0,6 s ease-out.
-        const go = (next: number, drag = false) => {
-            const animate = !reduce.matches;
-            strip.style.transition = animate ? `transform ${drag ? "600ms cubic-bezier(0,0,0.58,1)" : "800ms cubic-bezier(0.42,0,0.58,1)"}` : "none";
-            if (next < 0) {
-                // Hacia atrás desde la primera: saltar a la copia del final y deslizar.
-                strip.style.transition = "none";
-                strip.style.transform = `translate3d(-${count * 100}%,0,0)`;
-                strip.getBoundingClientRect();
-                strip.style.transition = animate ? "transform 600ms cubic-bezier(0,0,0.58,1)" : "none";
-                next = count - 1;
-            }
-            index = next;
-            strip.style.transform = `translate3d(-${index * 100}%,0,0)`;
-            caption(index);
-            if (index === count && !animate) reset();
-        };
-        const reset = () => {
-            strip.style.transition = "none";
-            index = 0;
-            strip.style.transform = "translate3d(0,0,0)";
-        };
-        strip.addEventListener("transitionend", () => {
-            if (index === count) reset();
-        });
 
         const schedule = () => {
             clearTimeout(timer);
@@ -156,7 +117,6 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
             dragging = false;
             const dx = e.clientX - startX;
             if (Math.abs(dx) < 30) return;
-            if (index === count) reset();
             go(dx < 0 ? index + 1 : index - 1, true);
             schedule();
         });

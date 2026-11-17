@@ -1,200 +1,284 @@
-// Intro del hero, según el prototipo de Figma "Intro · Hero Midaz" (8 cuadros con Smart Animate).
-// Cada elemento tiene un estado por cuadro; entre cuadros se interpola con la duración y la curva
-// exactas del prototipo. Los valores en px salen del lienzo de 1280 px del Figma.
+// Pantalla de carga y entrada del hero, según el Figma:
+// - "Loader · Vista en video" (línea de tiempo de 0 a 100 %, Hermez caminando sobre la barra),
+// - "Transición · Expansión a landing" (fases 1 a 4 con Smart Animate y disolución a la landing),
+// - "Hero / Titular escritura" y "Hero / Contador IVA · IGTF · cumplimiento".
+// Los px salen del lienzo de 1280×800 del Figma, que aquí se escala a la altura de la ventana.
 
-type State = Record<string, string | number>;
+const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector<T>(sel);
+const $$ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => Array.from(root.querySelectorAll<T>(sel));
 
-// Transiciones del prototipo: [inicio, fin] en ms y curva. El cuadro k+1 queda listo al final del tramo k.
-const SEGMENTS: [number, number, string][] = [
-    [200, 750, "linear"], // Carga 0 → Carga 50
-    [1550, 2050, "cubic-bezier(0.2,0,0.2,1)"], // Carga 50 → Carga 100
-    [2200, 2480, "cubic-bezier(0.55,0,0.9,0.4)"], // Carga 100 → Estallido
-    [3280, 3930, "cubic-bezier(0.1,0.6,0.25,1)"], // Estallido → Teléfono
-    [4730, 5110, "cubic-bezier(0.33,0.1,0.6,1)"], // Teléfono → Titular
-    [5910, 6410, "cubic-bezier(0.15,0.7,0.3,1)"], // Titular → Hero
-    [6510, 6960, "cubic-bezier(0.2,0,0.2,1)"], // Hero → Hero final
+// ── Línea de tiempo de la carga (ms) ───────────────────────────────────────────
+// Puntos del video del Figma: 0 % hasta 1000 ms, 24 % a 2100, 52 % a 3300, 75 % a 4150 (pausa hasta 4350),
+// 97 % a 4900 con ease-in y 100 % a 5020. Luego 400 ms quieto y empieza la transición.
+const LOAD = [0, 1000, 2100, 3300, 4150, 4350, 4900, 5020];
+const LOAD_END = 5020;
+const CROSS = "cubic-bezier(0.5,0,0.5,1)";
+// Transición: [espera, duración, curva] de cada fase (prototipo del Figma).
+const PHASES: [number, number, string][] = [
+    [400, 500, "cubic-bezier(0.42,0,1,1)"], // 100 % → Fase 1 · Despeje (ease-in)
+    [50, 700, "cubic-bezier(0.42,0,0.58,1)"], // Fase 1 → Fase 2 · Zoom (ease-in-out)
+    [100, 650, "cubic-bezier(0,0,0.58,1)"], // Fase 2 → Fase 3 · Acercamiento (ease-out)
+    [150, 750, "cubic-bezier(0.42,0,0.58,1)"], // Fase 3 → Fase 4 · Landing (ease-in-out)
+    [150, 400, "cubic-bezier(0,0,0.58,1)"], // Fase 4 → landing (disolver, ease-out)
 ];
-const TOTAL = SEGMENTS[SEGMENTS.length - 1][1];
+const PHASE_AT: [number, number, string][] = [];
+{
+    let t = LOAD_END;
+    for (const [wait, dur, ease] of PHASES) {
+        PHASE_AT.push([t + wait, dur, ease]);
+        t += wait + dur;
+    }
+}
+const TOTAL = PHASE_AT[4][0] + PHASE_AT[4][1];
 
-/** Ocho estados (uno por cuadro) → keyframes de Web Animations con los tiempos del prototipo. */
-function keyframes(states: State[]): Keyframe[] {
-    const frames: Keyframe[] = [{ ...states[0], offset: 0 }];
-    SEGMENTS.forEach(([start, end, easing], i) => {
-        if (JSON.stringify(states[i]) === JSON.stringify(states[i + 1])) return;
-        frames.push({ ...states[i], offset: start / TOTAL, easing });
-        frames.push({ ...states[i + 1], offset: end / TOTAL });
+/** Keyframes con tiempos absolutos (ms) sobre la duración total. */
+function track(points: [number, Keyframe, string?][]): Keyframe[] {
+    return points.map(([t, k, easing]) => ({ ...k, offset: t / TOTAL, ...(easing ? { easing } : {}) }));
+}
+
+/** Valores de la carga en sus 8 puntos → keyframes (la pausa de 4150 a 4350 y el tramo ease-in hasta 4900). */
+function loadTrack(values: Keyframe[], after: [number, Keyframe, string?][] = []): Keyframe[] {
+    const pts: [number, Keyframe, string?][] = LOAD.map((t, i) => [t, values[i], i === 5 ? "cubic-bezier(0.42,0,1,1)" : "linear"]);
+    return track([...pts, ...after, [TOTAL, values.length > 8 ? values[8] : (after.length ? after[after.length - 1][1] : values[7])]]);
+}
+
+// ── Titular y contadores ───────────────────────────────────────────────────────
+const IVA = ["0 · 0 · 0", "1 · 2 · 3", "1 · 3 · 6", "2 · 4 · 8", "3 · 6 · 11", "3 · 7 · 13", "4 · 8 · 15", "4 · 9 · 17", "5 · 10 · 19", "5 · 11 · 20", "6 · 11 · 22", "6 · 12 · 23", "6 · 13 · 24", "7 · 13 · 25", "7 · 14 · 26", "7 · 14 · 27", "7 · 14 · 28", "7 · 15 · 28", "7 · 15 · 29", "8 · 15 · 29", "8 · 15 · 30", "8 · 16 · 30", "8 · 16 · 30", "8 · 16 · 31"];
+const IGTF = ["0", "0", "1", "1", "1", "1", "1", "2", "2", "2", "2", "2", "2", "2", "3"];
+const CUMPLIMIENTO = ["0", "10", "19", "27", "35", "42", "49", "55", "61", "66", "70", "75", "78", "82", "85", "88", "90", "92", "94", "95", "96", "97", "98", "99", "99", "100"];
+const COUNTERS: Record<string, string[]> = { iva: IVA, igtf: IGTF, cumplimiento: CUMPLIMIENTO };
+
+function runHeroText() {
+    const root = document.documentElement;
+    if (!root.classList.contains("hero-anim")) return;
+    root.classList.remove("hero-anim");
+
+    // Contadores: paso 0 durante 250 ms y luego un paso cada 40 ms.
+    $$("[data-count]").forEach((el) => {
+        const steps = COUNTERS[el.dataset.count ?? ""];
+        if (!steps) return;
+        const final = el.textContent;
+        el.textContent = steps[0];
+        steps.slice(1).forEach((v, i) => setTimeout(() => (el.textContent = v), 250 + i * 40));
+        setTimeout(() => (el.textContent = final), 250 + steps.length * 40);
     });
-    frames.push({ ...states[7], offset: 1 });
-    return frames;
+
+    // Titular: una letra por paso. 150 ms antes de la primera, 55 ms entre letras y 280 ms de pausa
+    // tras "Midaz", "Sin errores" y "Sin multas" (antes de cada punto). Cada letra entra en 90 ms ease-out.
+    const chars = $$("[data-tw]");
+    chars.forEach((c) => {
+        c.style.opacity = "0";
+        c.style.transition = "opacity 90ms cubic-bezier(0,0,0.58,1)";
+    });
+    let t = 150;
+    chars.forEach((c, i) => {
+        setTimeout(() => (c.style.opacity = "1"), t);
+        t += [4, 15, 25].includes(i) ? 280 : 55;
+    });
 }
 
-/** Repite valores: rep([a, 3], [b, 5]) → [a, a, a, b, b, b, b, b]. */
-const rep = <T,>(...parts: [T, number][]): T[] => parts.flatMap(([v, n]) => Array(n).fill(v));
-
-// Curva cúbica de Bézier para el contador (el texto no se puede animar con CSS).
-function bezier(x1: number, y1: number, x2: number, y2: number) {
-    const a = (p1: number, p2: number, t: number) => 3 * p1 * t * (1 - t) ** 2 + 3 * p2 * t * t * (1 - t) + t ** 3;
-    return (x: number) => {
-        let lo = 0;
-        let hi = 1;
-        for (let i = 0; i < 20; i++) {
-            const mid = (lo + hi) / 2;
-            if (a(x1, x2, mid) < x) lo = mid;
-            else hi = mid;
-        }
-        return a(y1, y2, (lo + hi) / 2);
+// ── Video de Hermez con transparencia ──────────────────────────────────────────
+// Safari no respeta la transparencia de VP9: ahí se usa el MP4 con el color arriba y el alfa abajo,
+// compuesto en un canvas con WebGL (igual que en la sección de Hermez).
+function playHermez(video: HTMLVideoElement) {
+    const ua = navigator.userAgent;
+    const webkitOnly = /iP(hone|ad|od)/.test(ua) || (/Safari\//.test(ua) && !/Chrome|Chromium|Android|Edg\//.test(ua));
+    if (!webkitOnly) {
+        video.play().catch(() => {});
+        return;
+    }
+    const canvas = document.createElement("canvas");
+    canvas.width = 404;
+    canvas.height = 564;
+    canvas.className = video.className;
+    const gl = canvas.getContext("webgl", { premultipliedAlpha: false, alpha: true });
+    if (!gl) return;
+    const src = document.createElement("video");
+    Object.assign(src, { muted: true, loop: true, playsInline: true, src: "/landing/hermez-safari.mp4" });
+    src.setAttribute("playsinline", "");
+    const shader = (type: number, code: string) => {
+        const sh = gl.createShader(type)!;
+        gl.shaderSource(sh, code);
+        gl.compileShader(sh);
+        return sh;
     };
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, shader(gl.VERTEX_SHADER, "attribute vec2 p;varying vec2 uv;void main(){uv=vec2((p.x+1.)/2.,(1.-p.y)/2.);gl_Position=vec4(p,0.,1.);}"));
+    gl.attachShader(
+        prog,
+        shader(gl.FRAGMENT_SHADER, "precision mediump float;uniform sampler2D t;varying vec2 uv;void main(){vec3 c=texture2D(t,vec2(uv.x,uv.y*.5)).rgb;float a=texture2D(t,vec2(uv.x,.5+uv.y*.5)).r;gl_FragColor=vec4(c,a);}"),
+    );
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, "p");
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    let alive = true;
+    const draw = () => {
+        if (!alive || !canvas.isConnected) return;
+        if (src.readyState >= 2) {
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, src);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        }
+        requestAnimationFrame(draw);
+    };
+    video.querySelector("source")?.remove();
+    video.load();
+    src.addEventListener(
+        "playing",
+        () => {
+            video.replaceWith(canvas);
+            draw();
+        },
+        { once: true },
+    );
+    src.play().catch(() => (alive = false));
 }
-const easeLoad = bezier(0.2, 0, 0.2, 1);
 
-const GLYPHS = "0123456789%#&$@*+=?";
-// Texto de las métricas en el cuadro "Titular" del Figma (IVA, IGTF, cumplimiento, BCV).
-const FIGMA_SCRAMBLE = ["4 · 07 · 9&", "7", "4%7", "B#7"];
-
+// ── Carga ──────────────────────────────────────────────────────────────────────
 export async function runIntro() {
     const root = document.documentElement;
-    if (!root.classList.contains("intro")) return;
+    const overlay = $("[data-carga]");
+    const hasCarga = root.classList.contains("carga") && overlay;
+    if (!root.classList.contains("hero-anim") && !hasCarga) return;
     root.setAttribute("data-intro-running", "");
-    // Se espera a las fuentes (máx. 1,2 s): el menú se mide con ellas y el titular no debe cambiar de letra a mitad.
-    await Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1200))]);
+
     if (window.scrollY > 0) {
-        root.classList.remove("intro");
-        root.removeAttribute("data-intro-running");
+        root.classList.remove("carga", "hero-anim");
+        return;
+    }
+    if (!hasCarga) {
+        await Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1200))]);
+        runHeroText();
         return;
     }
     try {
         sessionStorage.setItem("midaz-intro", "1");
     } catch {}
 
-    const q = <T extends Element = HTMLElement>(sel: string) => Array.from(document.querySelectorAll<T & HTMLElement>(sel));
-    const anims: Animation[] = [];
-    const play = (el: Element | undefined, states: State[]) => {
-        if (!el) return;
-        anims.push(el.animate(keyframes(states), { duration: TOTAL, fill: "both" }));
-    };
-
-    // Menú: píldora que nace en el centro (solo logo), se abre con 3 enlaces y luego completa.
-    const nav = q("[data-intro-nav]")[0];
-    const links = q("[data-intro-links]")[0];
-    const right = q("[data-intro-right]")[0];
-    const logo = nav?.querySelector("a");
-    if (nav && links && right && logo) {
-        const n = nav.getBoundingClientRect();
-        const l = logo.getBoundingClientRect();
-        const u = links.getBoundingClientRect();
-        const r = right.getBoundingClientRect();
-        const full = n.width;
-        const ulGap = u.left - l.right;
-        const rightGap = r.left - u.right;
-        nav.style.justifyContent = "flex-start";
-        nav.style.overflow = "hidden";
-        links.style.flexShrink = right.style.flexShrink = "0";
-        play(nav, [...rep<State>([{ width: "52px", opacity: 0 }, 3]), { width: "190px", opacity: 1 }, { width: "640px", opacity: 1 }, ...rep<State>([{ width: `${full}px`, opacity: 1 }, 3])]);
-        // En "Teléfono" los enlaces empiezan 171 px después del borde de la píldora (logo termina en 153).
-        play(links, [...rep<State>([{ marginLeft: "18px" }, 5]), ...rep<State>([{ marginLeft: `${ulGap}px` }, 3])]);
-        play(right, [...rep<State>([{ marginLeft: `${rightGap}px`, opacity: 0 }, 5]), ...rep<State>([{ marginLeft: `${rightGap}px`, opacity: 1 }, 3])]);
-        q("[data-intro-link]").forEach((li, i) => play(li, i < 3 ? rep<State>([{ opacity: 0 }, 4], [{ opacity: 1 }, 4]) : rep<State>([{ opacity: 0 }, 5], [{ opacity: 1 }, 3])));
-    }
-
-    play(q("[data-intro-wm]")[0], [...rep<State>([{ opacity: 0 }, 3]), { opacity: 0.35 }, ...rep<State>([{ opacity: 1 }, 4])]);
-    play(q("[data-intro-halo]")[0], [...rep<State>([{ opacity: 0 }, 3]), { opacity: 0.4 }, ...rep<State>([{ opacity: 1 }, 4])]);
-
-    // Teléfono central: diminuto mientras carga, mediano en el estallido y a tamaño real después.
-    play(q("[data-intro-phone]")[0], [
-        ...rep<State>([{ transform: "translate(25.5px,-216.9px) scale(0.16)" }, 3]),
-        { transform: "translate(10.2px,-117px) scale(0.5999)" },
-        ...rep<State>([{ transform: "translate(0px,0px) scale(1)" }, 4]),
+    const video = $<HTMLVideoElement>("[data-carga-video]", overlay)!;
+    playHermez(video);
+    // Las fuentes (Poppins del porcentaje) y el primer cuadro del video, máx. 1,2 s.
+    await Promise.race([
+        Promise.all([document.fonts.ready, new Promise((r) => (video.readyState >= 2 ? r(0) : video.addEventListener("loadeddata", r, { once: true })))]),
+        new Promise((r) => setTimeout(r, 1200)),
     ]);
-    play(q("[data-intro-shadow]")[0], rep<State>([{ opacity: 0 }, 4], [{ opacity: 1 }, 4]));
 
-    // Teléfonos satélite (centro, escala y giro sacados de la matriz de cada capa en Figma; Figma gira al revés que CSS).
-    // Por cuadro: [dx, dy, escala] en carga, estallido y salida, relativos a la caja de 361×594 del teléfono.
-    const sats: { rot: number; at: [number, number, number][] }[] = [
-        { rot: 5, at: [[16.4, -231.4, 0.143], [-318.1, -234.1, 0.5242], [-652.7, -236.4, 0.9529]] },
-        { rot: -4, at: [[16.5, -231.5, 0.143], [-140.9, -178.8, 0.5242], [-298.3, -126, 0.9529]] },
-        { rot: 4, at: [[16.5, -231.5, 0.143], [152.8, -58.2, 0.5242], [289.2, 115.2, 0.9529]] },
-        { rot: -6, at: [[16.6, -231.4, 0.143], [330.4, -3.3, 0.5242], [644.1, 225, 0.9529]] },
+    // Lienzo de 1280×800 escalado a la altura de la ventana y centrado.
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const s = vh / 800;
+    const stage = $("[data-carga-stage]", overlay)!;
+    stage.style.transform = `translateX(-50%) scale(${s})`;
+    const toView = (x: number, y: number) => [vw / 2 + (x - 640) * s, y * s];
+
+    // Destinos reales en la página: la laptop del hero y el logo del menú.
+    const heroLaptop = $("[data-hero-laptop]")!;
+    const box = heroLaptop.parentElement!.getBoundingClientRect();
+    const macEnd = [box.left + heroLaptop.offsetLeft, box.top + heroLaptop.offsetTop];
+    const navLogo = $("header nav a img")!.getBoundingClientRect();
+
+    const anims: Animation[] = [];
+    const run = (el: Element | null, frames: Keyframe[]) => {
+        if (!el) return;
+        anims.push(el.animate(frames, { duration: TOTAL, fill: "both" }));
+    };
+    const [p1, p2, p3, p4, p5] = PHASE_AT;
+    const seg = ([at, dur, ease]: [number, number, string], from: Keyframe, to: Keyframe): [number, Keyframe, string?][] => [
+        [at, from, ease],
+        [at + dur, to],
     ];
-    q("[data-intro-sat]").forEach((el, i) => {
-        const { rot, at } = sats[i];
-        const tf = ([x, y, k]: [number, number, number]) => `translate(${x}px,${y}px) rotate(${rot}deg) scale(${k})`;
-        play(el, [...rep<State>([{ transform: tf(at[0]), opacity: 0 }, 3]), { transform: tf(at[1]), opacity: 0.9 }, ...rep<State>([{ transform: tf(at[2]), opacity: 0 }, 4])]);
-    });
 
-    // Titular: cada palabra crece desde su base; en "Titular" van escalonadas.
-    const partial = [1, 0.75, 0.49, 0.3, 0.125];
-    // En ese cuadro llevan además una extrusión de 5 sombras (#98abcc, 2 a 10 px); se compensa la escala para que mida igual.
-    const flat = "0 0 0 rgba(152,171,204,0)";
-    const noShadow = Array(5).fill(flat).join(",");
-    const extrude = (k: number) => [2, 4, 6, 8, 10].map((y) => `0 ${(y / k).toFixed(2)}px 0 #98abcc`).join(",");
-    q("[data-intro-word]").forEach((el, i) =>
-        play(el, [
-            ...rep<State>([{ transform: "scaleY(0.047)", opacity: 0, textShadow: noShadow }, 4]),
-            { transform: "scaleY(0.047)", opacity: 1, textShadow: noShadow },
-            { transform: `scaleY(${partial[i] ?? 1})`, opacity: 1, textShadow: extrude(partial[i] ?? 1) },
-            ...rep<State>([{ transform: "scaleY(1)", opacity: 1, textShadow: noShadow }, 2]),
-        ]),
+    // Hermez camina sobre la barra y en la fase 1 sale por la derecha (x 779 → 1340); en la 2 desaparece.
+    const hx = [-465, -465, -353.4, -223.2, -116.25, -116.25, -13.95, 0].map((x) => ({ transform: `translateX(${x}px)` }));
+    run($("[data-carga-hermez]", overlay), loadTrack(hx, seg(p1, hx[7], { transform: "translateX(561px)" })));
+    run($("[data-carga-hermez]", overlay), track([[0, { opacity: 1 }], ...seg(p2, { opacity: 1 }, { opacity: 0 }), [TOTAL, { opacity: 0 }]]));
+
+    // Barra: crece desde la izquierda; en la fase 1 se encoge a 40 px en el centro y se apaga.
+    const shrink: Keyframe = { transform: "translateX(260px) scaleX(0.0714286)", opacity: 0 };
+    const bar = [0.001, 0.001, 0.24, 0.52, 0.75, 0.75, 0.97, 1].map((k) => ({ transform: `translateX(0px) scaleX(${k})`, opacity: 1 }));
+    run($("[data-carga-bar]", overlay), loadTrack(bar, seg(p1, bar[7], shrink)));
+    run($("[data-carga-track]", overlay), track([[0, { transform: "translateX(0px) scaleX(1)", opacity: 1 }], ...seg(p1, { transform: "translateX(0px) scaleX(1)", opacity: 1 }, shrink), [TOTAL, shrink]]));
+
+    // Isotipo iluminado: se revela de abajo hacia arriba al ritmo de la barra.
+    const reveal = [100, 100, 76, 48, 25, 25, 3, 0].map((p) => ({ clipPath: `inset(${p}% 0 0 0)` }));
+    run($("[data-carga-reveal]", overlay), loadTrack(reveal));
+
+    // Porcentajes y leyenda: cada valor aparece y se va con la curva del Figma.
+    const fade = (el: Element | null, pts: [number, number, boolean?][]) =>
+        run(el, track([...pts.map(([t, o, eased]) => [t, { opacity: o }, eased ? CROSS : undefined] as [number, Keyframe, string?]), [TOTAL, { opacity: pts[pts.length - 1][1] }]]));
+    fade($('[data-carga-pct="0"]', overlay), [[0, 1], [1000, 1, true], [1600, 0]]);
+    fade($('[data-carga-pct="24"]', overlay), [[0, 0], [1550, 0, true], [2100, 1], [2110, 1, true], [2705, 0]]);
+    fade($('[data-carga-pct="52"]', overlay), [[0, 0], [2700, 0, true], [3300, 1], [3310, 1, true], [3730, 0]]);
+    fade($('[data-carga-pct="75"]', overlay), [[0, 0], [3725, 0, true], [4150, 1], [4350, 1, true], [4625, 0]]);
+    fade($('[data-carga-pct="97"]', overlay), [[0, 0], [4625, 0, true], [4900, 1], [4910, 1, true], [4965, 0]]);
+    fade($('[data-carga-pct="100"]', overlay), [[0, 0], [4900, 0, true], [5020, 1]]);
+    fade($('[data-carga-ley="0"]', overlay), [[0, 1], [4900, 1, true], [5100, 0]]);
+    fade($('[data-carga-ley="1"]', overlay), [[0, 0], [4950, 0, true], [5150, 1]]);
+    // Fase 1: los textos suben 24 px y se apagan.
+    run($("[data-carga-texts]", overlay), track([[0, { transform: "translateY(0px)", opacity: 1 }], ...seg(p1, { transform: "translateY(0px)", opacity: 1 }, { transform: "translateY(-24px)", opacity: 0 }), [TOTAL, { transform: "translateY(-24px)", opacity: 0 }]]));
+
+    // Isotipo: zoom ×2,4 (fase 2) y ×5,28 (fase 3) mientras se desvanece.
+    const iso0: Keyframe = { transform: "translateY(0px) scale(1)" };
+    const iso2: Keyframe = { transform: "translateY(-56px) scale(2.4)" };
+    const iso3: Keyframe = { transform: "translateY(-171.2px) scale(5.28)" };
+    run($("[data-carga-iso]", overlay), track([[0, iso0], ...seg(p2, iso0, iso2), ...seg(p3, iso2, iso3), [TOTAL, iso3]]));
+    run($("[data-carga-base]", overlay), track([[0, { opacity: 0.3 }], ...seg(p2, { opacity: 0.3 }, { opacity: 0.18 }), ...seg(p3, { opacity: 0.18 }, { opacity: 0 }), [TOTAL, { opacity: 0 }]]));
+    run(
+        $("[data-carga-reveal]", overlay),
+        track([[0, { opacity: 0.35 }], ...seg(p1, { opacity: 0.35 }, { opacity: 0.6 }), ...seg(p2, { opacity: 0.6 }, { opacity: 0.35 }), ...seg(p3, { opacity: 0.35 }, { opacity: 0 }), [TOTAL, { opacity: 0 }]]),
     );
 
-    // Métricas: aparecen en "Titular" con los dígitos revueltos; las tres de la derecha salen de la primera posición.
-    q("[data-intro-stat]").forEach((el) => {
-        const shift = Math.max(0, Number(el.dataset.introStat) - 1) * -155;
-        play(el, [...rep<State>([{ opacity: 0, transform: `translateX(${shift}px)` }, 5]), ...rep<State>([{ opacity: 1, transform: "translateX(0px)" }, 3])]);
-    });
-    q("[data-intro-label]").forEach((el) => play(el, rep<State>([{ opacity: 0 }, 6], [{ opacity: 1 }, 2])));
-
-    q("[data-intro-badge]").forEach((el) => play(el, rep<State>([{ opacity: 0, transform: "translateY(24px)" }, 6], [{ opacity: 1, transform: "translateY(0px)" }, 2])));
-    q("[data-intro-pill]").forEach((el) => play(el, [...rep<State>([{ opacity: 0 }, 6]), { opacity: 0.35 }, { opacity: 1 }]));
-
-    const pct = q("[data-intro-pct]")[0];
-    play(pct, [...rep<State>([{ opacity: 1, transform: "translateY(0px)" }, 3]), ...rep<State>([{ opacity: 0, transform: "translateY(-52px)" }, 5])]);
-
-    // Lo que no es CSS: el contador de carga y los dígitos revueltos.
-    const scramble = q("[data-intro-scramble]").map((el) => ({ el, text: el.textContent ?? "" }));
-    const t0 = performance.now();
-    let frame = 0;
-    let lastShuffle = 0;
-    const tick = (now: number) => {
-        const t = now - t0;
-        if (pct) {
-            const v = t < 200 ? 0 : t < 750 ? ((t - 200) / 550) * 50 : t < 1550 ? 50 : t < 2050 ? 50 + easeLoad((t - 1550) / 500) * 50 : 100;
-            pct.textContent = `${Math.round(v)}%`;
-        }
-        if (t >= 5110 && t < 5910) {
-            // Cuadro "Titular" en reposo: los mismos dígitos revueltos del Figma.
-            scramble.forEach(({ el }, i) => (el.textContent = FIGMA_SCRAMBLE[i] ?? el.textContent));
-        } else if (t >= 4730 && t < 6410 && now - lastShuffle > 55) {
-            lastShuffle = now;
-            // Se van fijando de izquierda a derecha durante la transición al hero.
-            const settled = t < 5910 ? 0 : (t - 5910) / 500;
-            scramble.forEach(({ el, text }) => {
-                el.textContent = Array.from(text)
-                    .map((c, i, all) => (c === " " || c === "·" || i < settled * all.length ? c : GLYPHS[(Math.random() * GLYPHS.length) | 0]))
-                    .join("");
-            });
-        }
-        if (t < TOTAL) frame = requestAnimationFrame(tick);
-        else finish();
+    // Laptop: aparece en el centro (fase 2), se acerca girando 8° (fase 3) y aterriza en el hero (fase 4).
+    const mac = (x: number, y: number, w: number, rot: number, o = 1): Keyframe => {
+        const [vx, vy] = toView(x, y);
+        return { transform: `translate(${vx}px,${vy}px) rotate(${rot}deg) scale(${(w * s) / 673.6})`, opacity: o };
     };
-    frame = requestAnimationFrame(tick);
+    const m0 = mac(539, 408.6, 202.1, 0, 0);
+    const m2 = mac(512, 392.2, 256, 0);
+    const m3 = mac(379.3, 367.8, 485, -8);
+    const m4: Keyframe = { transform: `translate(${macEnd[0]}px,${macEnd[1]}px) rotate(-16.25deg) scale(1)`, opacity: 1 };
+    run($("[data-carga-mac]", overlay), track([[0, m0], ...seg(p2, m0, m2), ...seg(p3, m2, m3), ...seg(p4, m3, m4), [TOTAL, m4]]));
 
-    let done = false;
+    // Logo: aparece arriba al centro (fase 3) y se va a su lugar en el menú (fase 4).
+    const logo = (x: number, y: number, w: number, o = 1): Keyframe => {
+        const [vx, vy] = toView(x, y);
+        return { transform: `translate(${vx}px,${vy}px) scale(${(w * s) / 128})`, opacity: o };
+    };
+    const l0 = logo(563.2, 130, 153.6, 0);
+    const l3 = logo(544, 90, 192);
+    const l4: Keyframe = { transform: `translate(${navLogo.left}px,${navLogo.top}px) scale(${navLogo.width / 128})`, opacity: 1 };
+    run($("[data-carga-logo]", overlay), track([[0, l0], ...seg(p3, l0, l3), ...seg(p4, l3, l4), [TOTAL, l4]]));
+
+    // Fondo: del degradado del loader al gris claro de la landing (fase 4); al final se disuelve todo.
+    run($("[data-carga-flat]", overlay), track([[0, { opacity: 0 }], ...seg(p4, { opacity: 0 }, { opacity: 1 }), [TOTAL, { opacity: 1 }]]));
+    run(overlay, track([[0, { opacity: 1 }], ...seg(p5, { opacity: 1 }, { opacity: 0 }), [TOTAL, { opacity: 0 }]]));
+
+    // El titular empieza a escribirse cuando la landing aparece.
+    const textTimer = setTimeout(runHeroText, p5[0]);
+
     const finish = () => {
-        if (done) return;
-        done = true;
-        cancelAnimationFrame(frame);
-        scramble.forEach(({ el, text }) => (el.textContent = text));
-        anims.forEach((a) => a.cancel());
-        if (nav && links && right) {
-            nav.style.justifyContent = nav.style.overflow = "";
-            links.style.flexShrink = right.style.flexShrink = "";
-        }
-        root.classList.remove("intro");
+        root.classList.remove("carga");
         root.removeAttribute("data-intro-running");
-        skipEvents.forEach((e) => removeEventListener(e, skip));
+        overlay.remove();
     };
-    // Cualquier intención de usar la página salta la intro.
-    const skip = () => finish();
-    const skipEvents = ["wheel", "touchstart", "keydown", "pointerdown"];
-    skipEvents.forEach((e) => addEventListener(e, skip, { passive: true }));
+    // Cualquier gesto del usuario salta la carga.
+    const skip = () => {
+        clearTimeout(textTimer);
+        anims.forEach((a) => a.finish());
+        runHeroText();
+    };
+    const opts = { once: true, passive: true } as const;
+    ["wheel", "touchstart", "keydown", "pointerdown"].forEach((ev) => window.addEventListener(ev, skip, opts));
+    await Promise.all(anims.map((a) => a.finished.catch(() => {})));
+    ["wheel", "touchstart", "keydown", "pointerdown"].forEach((ev) => window.removeEventListener(ev, skip));
+    finish();
 }

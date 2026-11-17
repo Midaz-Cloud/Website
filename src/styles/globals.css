@@ -359,19 +359,18 @@ html {
     100% { background-position: 200% center; }
   }
 }
-/* Intro del hero: estado del primer cuadro ("Carga 0") antes de que corra el script. */
-html.intro [data-intro-hide] {
-  opacity: 0;
+/* Pantalla de carga (Figma "Loader · Midaz" + "Transición · Expansión a landing"): visible desde el
+   primer pintado cuando el script de <head> la activa. Sin ella la pantalla no existe. */
+[data-carga] {
+  display: none;
 }
-html.intro [data-intro-phone] {
-  transform: translate(25.5px, -216.9px) scale(0.16);
-}
-html.intro [data-intro-word] {
-  transform: scaleY(0.047);
-}
-html.intro [data-intro-pct] {
+html.carga [data-carga] {
   display: block;
 }
-html.intro body {
-  overflow-x: hidden;
+/* Titular que se escribe y contadores del hero: estado inicial antes de que corra el script. */
+html.hero-anim [data-tw] {
+  opacity: 0;
+}
+html.hero-anim [data-count] {
+  visibility: hidden;
 }
