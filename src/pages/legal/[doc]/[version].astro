@@ -1,0 +1,12 @@
+---
+// URL fija de cada versión publicada, p. ej. /legal/terminos/v2-0. No se modifica ni se borra.
+import LegalPage from "../../../components/legal/LegalPage.astro";
+import { LEGAL_DOCS, LEGAL_ORDER } from "../../../data/legal.mjs";
+
+export function getStaticPaths() {
+    return LEGAL_ORDER.flatMap((doc) => LEGAL_DOCS[doc].versions.map((v) => ({ params: { doc, version: v.slug } })));
+}
+const { doc, version } = Astro.params as { doc: "terminos" | "politicas" | "privacidad"; version: string };
+---
+
+<LegalPage doc={doc} slug={version} />

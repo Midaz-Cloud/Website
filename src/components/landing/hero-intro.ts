@@ -45,8 +45,7 @@ function loadTrack(values: Keyframe[], after: [number, Keyframe, string?][] = []
 // ── Titular y contadores ───────────────────────────────────────────────────────
 const IVA = ["0 · 0 · 0", "1 · 2 · 3", "1 · 3 · 6", "2 · 4 · 8", "3 · 6 · 11", "3 · 7 · 13", "4 · 8 · 15", "4 · 9 · 17", "5 · 10 · 19", "5 · 11 · 20", "6 · 11 · 22", "6 · 12 · 23", "6 · 13 · 24", "7 · 13 · 25", "7 · 14 · 26", "7 · 14 · 27", "7 · 14 · 28", "7 · 15 · 28", "7 · 15 · 29", "8 · 15 · 29", "8 · 15 · 30", "8 · 16 · 30", "8 · 16 · 30", "8 · 16 · 31"];
 const IGTF = ["0", "0", "1", "1", "1", "1", "1", "2", "2", "2", "2", "2", "2", "2", "3"];
-const CUMPLIMIENTO = ["0", "10", "19", "27", "35", "42", "49", "55", "61", "66", "70", "75", "78", "82", "85", "88", "90", "92", "94", "95", "96", "97", "98", "99", "99", "100"];
-const COUNTERS: Record<string, string[]> = { iva: IVA, igtf: IGTF, cumplimiento: CUMPLIMIENTO };
+const COUNTERS: Record<string, string[]> = { iva: IVA, igtf: IGTF };
 
 function runHeroText() {
     const root = document.documentElement;
@@ -64,7 +63,7 @@ function runHeroText() {
     });
 
     // Titular: una letra por paso. 150 ms antes de la primera, 55 ms entre letras y 280 ms de pausa
-    // tras "Midaz", "Sin errores" y "Sin multas" (antes de cada punto). Cada letra entra en 90 ms ease-out.
+    // antes de cada punto o coma (como en el Figma, que pausaba antes de cada punto). Cada letra entra en 90 ms ease-out.
     const chars = $$("[data-tw]");
     chars.forEach((c) => {
         c.style.opacity = "0";
@@ -73,7 +72,8 @@ function runHeroText() {
     let t = 150;
     chars.forEach((c, i) => {
         setTimeout(() => (c.style.opacity = "1"), t);
-        t += [4, 15, 25].includes(i) ? 280 : 55;
+        const next = chars[i + 1];
+        t += next && next.parentElement === c.parentElement && (next.textContent === "." || next.textContent === ",") ? 280 : 55;
     });
 }
 

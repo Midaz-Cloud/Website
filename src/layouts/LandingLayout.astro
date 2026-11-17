@@ -2,15 +2,21 @@
 import "../styles/globals.css";
 
 const {
-    title = "Midaz: facturación, ventas e inventario sin errores ni multas",
+    title = "Midaz: facturación, ventas e inventario para tu negocio",
     description = "Sistema de facturación, punto de venta e inventario para comercios en Venezuela. IVA e IGTF automáticos, tasa BCV en vivo, modo offline y libros fiscales al día.",
     image = "/landing/og-image.jpg",
+    // Solo la portada lleva la pantalla de carga del hero y precarga la laptop.
+    intro = true,
+    // Páginas que no deben indexarse (p. ej. versiones anteriores de un documento legal).
+    noindex = false,
+    // Ruta canónica cuando la página repite el contenido de otra (p. ej. /legal/terminos/v2-0 → /legal/terminos).
+    canonicalPath = undefined,
 } = Astro.props;
 
 // Con `site` definido en astro.config.mjs se generan URLs absolutas (canonical, og:url, og:image).
-const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const canonical = Astro.site ? new URL(canonicalPath ?? Astro.url.pathname, Astro.site).href : undefined;
 // Los despliegues de vista previa de Vercel no se indexan.
-const robots = process.env.VERCEL_ENV === "preview" ? "noindex, nofollow" : "index, follow";
+const robots = process.env.VERCEL_ENV === "preview" ? "noindex, nofollow" : noindex ? "noindex, follow" : "index, follow";
 const ogImage = Astro.site ? new URL(image, Astro.site).href : image;
 
 const jsonLd = {
@@ -56,14 +62,14 @@ const jsonLd = {
         <meta property="og:image" content={ogImage} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Midaz. Sin errores. Sin multas." />
+        <meta property="og:image:alt" content="Midaz. Factura, cobra y lleva tu inventario en un solo lugar." />
         {canonical && <meta property="og:url" content={canonical} />}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={ogImage} />
 
-        <link rel="preload" as="image" href="/landing/macbook-full.webp" type="image/webp" fetchpriority="high" />
+        {intro && <link rel="preload" as="image" href="/landing/macbook-full.webp" type="image/webp" fetchpriority="high" />}
         <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
         <!-- Google Fonts: Funnel Display + Poppins + Inter -->
@@ -78,6 +84,8 @@ const jsonLd = {
 
         <!-- Pantalla de carga y animación del titular: se deciden antes de pintar para que no parpadee el hero final.
              Solo en escritorio ancho, sin "reducir movimiento" y sin ancla en la URL. La carga se ve una vez por sesión. -->
+        {
+            intro && (
         <script is:inline>
             (function () {
                 try {
@@ -97,6 +105,8 @@ const jsonLd = {
                 } catch (e) {}
             })();
         </script>
+            )
+        }
     </head>
     <body class="bg-landing-bg font-poppins text-landing-navy antialiased">
         <slot />

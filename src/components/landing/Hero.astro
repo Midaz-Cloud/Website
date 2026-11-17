@@ -3,14 +3,15 @@
 // por debajo, los mismos elementos fluyen en columna.
 const stats = [
     { value: "3", unit: "%", label: "IGTF automático por forma de pago", width: 122, unitGap: 16, count: "igtf" },
-    { value: "100", unit: "%", label: "Cumplimiento fiscal y libros al día", width: 126, unitGap: 23, count: "cumplimiento" },
+    { value: "Libros", label: "de venta al día", width: 126, col: 185 },
     { value: "BCV", label: "Tasa oficial actualizada cada día", width: 143 },
 ];
 // Titular (Figma "Hero / Titular escritura"): cada letra es un <span> para escribirlo letra por letra.
 const lines = [
     { text: "Midaz.", class: "" },
-    { text: "Sin errores.", class: "text-landing-amber" },
-    { text: "Sin multas.", class: "" },
+    // Las dos líneas largas van más pequeñas para que quepan sobre la laptop.
+    { text: "Factura, cobra y lleva", class: "text-landing-amber text-[0.46em] leading-[1.12] tracking-[-0.01em] mt-3 xl:mt-2 xl:text-[40px] xl:leading-[46px] xl:tracking-[-0.6px]" },
+    { text: "tu inventario en un solo lugar.", class: "text-[0.46em] leading-[1.12] tracking-[-0.01em] xl:text-[40px] xl:leading-[46px] xl:tracking-[-0.6px]" },
 ];
 const chars = (text: string) => [...text].map((c) => (c === " " ? null : c));
 // Isotipo de Midaz (Figma "Isotipo / Base", 822×800).
@@ -55,9 +56,9 @@ const ISO =
 
         <!-- Titular: se escribe letra por letra (las letras pendientes quedan transparentes, sin mover el texto) -->
         <h1
-            aria-label="Midaz. Sin errores. Sin multas."
+            aria-label="Midaz. Factura, cobra y lleva tu inventario en un solo lugar."
             data-tw-title
-            class="relative z-0 order-2 mt-10 text-center font-funnel text-[clamp(3rem,10vw,5.625rem)] font-bold leading-[0.84] tracking-[-0.021em] text-landing-navy xl:absolute xl:left-[422px] xl:top-[153px] xl:w-[495px] xl:mt-0 xl:text-[90px] xl:leading-[75px] xl:tracking-[-1.8885px]"
+            class="relative z-0 order-2 mt-10 text-center font-funnel text-[clamp(3rem,10vw,5.625rem)] font-bold leading-[0.84] tracking-[-0.021em] text-landing-navy xl:absolute xl:left-[290px] xl:top-[153px] xl:w-[700px] xl:mt-0 xl:text-[90px] xl:leading-[75px] xl:tracking-[-1.8885px]"
         >
             {
                 lines.map((line) => (
@@ -111,10 +112,10 @@ const ISO =
                 </p>
                 <p class="mt-1 text-xs leading-[13.5px] tracking-[0.225px] text-landing-navy xl:ml-1">Alícuotas de IVA calculadas automáticamente</p>
             </div>
-            <div class="contents xl:absolute xl:left-[775px] xl:top-[783px] xl:flex xl:w-[453px] xl:items-start xl:gap-[30px]">
+            <div class="contents xl:absolute xl:left-[713px] xl:top-[783px] xl:flex xl:w-[515px] xl:items-start xl:gap-[30px]">
                 {
                     stats.map((stat) => (
-                        <div class="xl:w-[125px] xl:shrink-0 xl:overflow-visible">
+                        <div class="xl:w-[var(--col)] xl:shrink-0 xl:overflow-visible" style={`--col:${stat.col ?? 125}px`}>
                             <p class="flex items-end font-light leading-[72px] text-landing-navy xl:mt-2">
                                 <span class="whitespace-nowrap text-[clamp(3rem,12vw,4rem)] tracking-[-3.6px]" data-count={stat.count}>{stat.value}</span>
                                 {stat.unit && <span class="mb-3 ml-3 text-sm font-semibold uppercase tracking-[0.7px] xl:mb-[10px] xl:ml-[var(--unit-gap)]" style={`--unit-gap:${stat.unitGap}px`}>{stat.unit}</span>}

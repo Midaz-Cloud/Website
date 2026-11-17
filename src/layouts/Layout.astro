@@ -6,7 +6,7 @@ import WhatsAppWidget from "@/components/widgets/WhatsAppWidget.astro";
 
 const {
     title = "Midaz - Conformidad Fiscal Simplificada y Eficiencia Operativa",
-    description = "Soluciones integrales de POS, ERP y facturación fiscal certificada. Agora, Ambrosia, Atlas y Eter - tecnología avanzada para tu negocio.",
+    description = "Sistema de punto de venta, inventario y facturación para tu negocio. Emite tus facturas a través de tu proveedor de emisión autorizado.",
 } = Astro.props;
 ---
 
@@ -28,7 +28,7 @@ const {
         />
         <meta
             property="og:description"
-            content="Sistema de punto de venta, ERP y facturación fiscal para tu negocio."
+            content="Sistema de punto de venta, inventario y facturación para tu negocio."
         />
         <meta property="og:image" content="/images/midaz-logo.png" />
         <meta property="og:type" content="website" />
@@ -44,19 +44,6 @@ const {
 
         <title>{title}</title>
 
-        <!-- Google Analytics (Example Implementation) -->
-        <script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-MEASUREMENT_ID"
-        ></script>
-        <script is:inline>
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag("js", new Date());
-            gtag("config", "G-MEASUREMENT_ID");
-        </script>
     </head>
     <body class="font-sans antialiased text-foreground bg-background">
         <Header currentPath={Astro.url.pathname} />
