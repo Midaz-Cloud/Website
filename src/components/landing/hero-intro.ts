@@ -171,6 +171,7 @@ export async function runIntro() {
         Promise.all([document.fonts.ready, new Promise((r) => (video.readyState >= 2 ? r(0) : video.addEventListener("loadeddata", r, { once: true })))]),
         new Promise((r) => setTimeout(r, 1200)),
     ]);
+    root.classList.add("carga-lista");
 
     // Lienzo de 1280×800 escalado a la altura de la ventana y centrado.
     const vw = window.innerWidth;
@@ -266,7 +267,7 @@ export async function runIntro() {
     const textTimer = setTimeout(runHeroText, p5[0]);
 
     const finish = () => {
-        root.classList.remove("carga");
+        root.classList.remove("carga", "carga-lista");
         root.removeAttribute("data-intro-running");
         overlay.remove();
     };
