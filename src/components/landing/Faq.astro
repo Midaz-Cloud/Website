@@ -1,107 +1,256 @@
 ---
-// Tarjetas de preguntas frecuentes. La tarjeta activa se muestra grande, con su respuesta,
-// como la 02 del diseño; al pasar el mouse, tocar o enfocar otra, esa pasa a ser la principal.
+// Preguntas frecuentes (Figma "Preguntas frecuentes · Interactivo", 79:286): una fila de 6 tarjetas.
+// Al pasar el mouse, la tarjeta crece a 395×500 y muestra ícono y respuesta (Figma: entrar 450 ms,
+// salir 350 ms, curva 0.16,1,0.3,1). En ≥1280px la sección se queda fija y la rueda del mouse
+// mueve la fila hacia la izquierda hasta ver la 06; luego la página sigue bajando.
 const faqs = [
     {
         question: "¿Qué pasa si se va el internet?",
-        answer: "Sigues vendiendo. Midaz guarda las ventas y facturas en el equipo y las sincroniza solas cuando vuelve la conexión.",
-        width: 308.75,
-        height: 360,
-        questionWidth: 169,
+        answer: "La caja sigue vendiendo con la última tasa válida y los documentos esperan en cola local. Al volver la señal suben en orden, sin duplicados.",
+        icon: "sin-conexion",
     },
     {
         question: "¿Puedo llevar varias sucursales?",
         answer: "Sí. Cada sucursal maneja sus existencias y su correlativo, con precios centralizados y reportes consolidados.",
-        image: { src: "/landing/sucursales.webp", width: 159, height: 160 },
-        width: 308.75,
-        height: 360,
+        icon: "sucursales",
     },
     {
         question: "¿Cuánto tarda en estar funcionando?",
-        answer: "Te acompañamos a configurar tu negocio y cargar tus productos para que empieces a facturar cuanto antes.",
-        width: 308.75,
-        height: 364,
+        answer: "Se configura en una tarde. Cargas tu catálogo, defines tus alícuotas y facturas el mismo día.",
+        icon: "reloj",
     },
     {
         question: "¿Dónde viven mis datos?",
-        answer: "En la nube, respaldados y disponibles desde cualquier equipo. La información de tu negocio es tuya.",
-        width: 272,
-        height: 305,
-        questionWidth: 149,
+        answer: "En la nube, con respaldo y accesibles solo por rol. Cada entrada queda registrada en la auditoría.",
+        icon: "nube",
+    },
+    {
+        question: "¿Sirve con la computadora que ya tengo?",
+        answer: "Midaz Web corre en el navegador, sin instalar nada. Si el mostrador no tiene computadora, Agora es el mismo sistema en un terminal Android.",
+        icon: "computadora",
+    },
+    {
+        question: "¿Tengo que capacitar a mi personal?",
+        answer: "No hace falta un curso. Cada pantalla trae su recorrido guiado, y quien se quede trabado le pregunta a Hermez ahí mismo.",
+        icon: "capacitacion",
     },
 ];
-const initial = 1;
-const number = "text-[72px] font-normal leading-[72px] tracking-[-3.6px] text-[rgba(203,213,225,0.8)]";
+const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-full bg-[rgba(0,75,224,0.1)]";
 ---
 
-<section id="dudas" class="relative overflow-hidden py-16 xl:h-[776px] xl:py-0">
-    <img
-        src="/landing/icons/faq-vector.svg"
-        alt=""
-        aria-hidden="true"
-        width="445"
-        height="658"
-        class="pointer-events-none absolute left-[max(0px,calc(50%-640px))] top-[59px] hidden md:block"
-    />
+<section id="dudas" class="faq relative bg-[#f6f7fa]" data-faq-section>
+    <div class="faq-stage relative overflow-hidden py-16 xl:sticky xl:h-[900px] xl:py-0" data-faq-stage>
+        <img
+            src="/landing/icons/faq-vector.svg"
+            alt=""
+            aria-hidden="true"
+            width="445"
+            height="658"
+            class="pointer-events-none absolute left-[max(0px,calc(50%-640px))] top-[59px] hidden md:block"
+        />
 
-    <div class="relative mx-auto flex max-w-[1280px] flex-col items-center gap-10 xl:h-full xl:justify-center">
-        <h2 class="px-4 text-center font-funnel xl:translate-x-[36px] text-[clamp(2.5rem,6vw,3.5rem)] font-bold leading-none tracking-[-1.4px] text-[#14181f]">
-            Preguntas <span class="text-landing-orange">frecuentes</span>
-        </h2>
+        <div class="relative mx-auto flex max-w-[1280px] flex-col items-center gap-10 xl:pt-[100px]">
+            <h2 class="px-4 text-center font-funnel text-[clamp(2.5rem,6vw,3.5rem)] font-bold leading-none tracking-[-1.4px] text-[#14181f] xl:h-14">
+                Preguntas <span class="text-landing-orange">frecuentes</span>
+            </h2>
 
-        <ul
-            class="flex w-full snap-x snap-mandatory items-end gap-[15px] overflow-x-auto px-4 pb-6 [scrollbar-width:none] xl:w-[1329px] xl:max-w-none xl:translate-x-[11.5px] xl:justify-center xl:overflow-visible xl:px-0 xl:pb-0"
-            data-faq
-        >
-            {
-                faqs.map((faq, i) => (
-                    <li
-                        tabindex="0"
-                        data-faq-card
-                        data-active={i === initial ? "true" : "false"}
-                        style={`--w:${faq.width}px;--h:${faq.height}px`}
-                        class="group flex h-[var(--h)] w-[min(var(--w),85vw)] shrink-0 cursor-pointer snap-center flex-col justify-between rounded-3xl border border-white/80 bg-white/70 p-[29px] shadow-[0_4px_20px_-2px_rgba(0,0,0,0.02),0_0_0_1px_rgba(0,0,0,0.02)] backdrop-blur-[2px] transition-[width,height,padding,background-color,box-shadow] duration-500 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-landing-blue motion-reduce:transition-none data-[active=true]:h-[500px] data-[active=true]:w-[min(394.66px,85vw)] data-[active=true]:cursor-default data-[active=true]:border-[rgba(241,245,249,0.9)] data-[active=true]:bg-white/60 data-[active=true]:p-[25px] data-[active=true]:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.07),0_0_0_1px_rgba(0,0,0,0.03)]"
-                    >
-                        <div class="flex flex-col gap-3">
-                            <span class={number} aria-hidden="true">{String(i + 1).padStart(2, "0")}.</span>
-                            {faq.image && (
-                                <img
-                                    src={faq.image.src}
-                                    alt=""
-                                    width={faq.image.width}
-                                    height={faq.image.height}
-                                    class="h-0 w-[159px] self-start object-contain opacity-0 transition-[height,opacity] duration-500 motion-reduce:transition-none group-data-[active=true]:h-[160px] group-data-[active=true]:opacity-100"
-                                    loading="lazy"
-                                />
-                            )}
-                        </div>
-                        <div class="flex flex-col">
-                            <h3
-                                class="font-poppins text-lg font-semibold leading-[24.75px] tracking-[-0.45px] text-[#0f172a] transition-[font-size,line-height] duration-500 motion-reduce:transition-none group-data-[active=true]:max-w-none group-data-[active=true]:text-2xl group-data-[active=true]:font-bold group-data-[active=true]:leading-[33px] group-data-[active=true]:tracking-[-0.6px]"
-                                style={faq.questionWidth ? `max-width:${faq.questionWidth}px` : undefined}
+            <div class="w-full overflow-x-auto [scrollbar-width:none] xl:overflow-visible" data-faq-viewport>
+                <ul class="flex w-max snap-x snap-mandatory items-end gap-[15px] px-4 pb-6 pt-[10px] will-change-transform xl:h-[544px] xl:snap-none xl:px-10 xl:pb-[34px]" data-faq>
+                    {
+                        faqs.map((faq, i) => (
+                            <li
+                                tabindex="0"
+                                data-faq-card
+                                data-active="false"
+                                class="faq-card group flex shrink-0 snap-center cursor-pointer flex-col justify-between rounded-3xl border focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-landing-blue"
                             >
-                                {faq.question}
-                            </h3>
-                            <div class="grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity,margin] duration-500 motion-reduce:transition-none group-data-[active=true]:mt-[25px] group-data-[active=true]:grid-rows-[1fr] group-data-[active=true]:opacity-100">
-                                <p class="overflow-hidden text-xs leading-[21.13px] text-[rgba(7,20,58,0.6)]">{faq.answer}</p>
-                            </div>
-                        </div>
-                    </li>
-                ))
-            }
-        </ul>
+                                <div class="flex flex-col">
+                                    <span class="font-poppins text-[72px] font-normal leading-[72px] tracking-[-3.6px] text-[rgba(203,213,225,0.8)]" aria-hidden="true">
+                                        {String(i + 1).padStart(2, "0")}.
+                                    </span>
+                                    <div class="faq-icon overflow-hidden">
+                                        <img src={`/landing/faq/${faq.icon}.webp`} alt="" width="159" height="160" class="h-[160px] w-[159px] max-w-none object-contain" loading="lazy" />
+                                    </div>
+                                </div>
+                                <div class="flex flex-col">
+                                    <h3 class="faq-q font-poppins text-[#0f172a]">{faq.question}</h3>
+                                    <div class="faq-a grid">
+                                        <p class="w-[min(343px,calc(85vw-50px))] overflow-hidden font-poppins text-sm leading-[22px] text-[rgba(7,20,58,0.68)]">{faq.answer}</p>
+                                    </div>
+                                </div>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </div>
+
+            <!-- Indicación -->
+            <div class="mx-4 flex h-[50px] items-center gap-4 rounded-full border border-[#dfe3ea] bg-white/80 py-2 pl-2 pr-5 shadow-[0_6px_18px_0_rgba(0,0,0,0.06)] backdrop-blur-[8px] max-sm:h-auto max-sm:flex-col max-sm:items-start max-sm:gap-2 max-sm:rounded-3xl max-sm:p-3">
+                <div class="flex items-center gap-[10px]">
+                    <span class={iconCircle} aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#004BE0" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9.33333 2.7334L8 4.00007" /><path d="M3.40001 5.33314L1.46667 4.7998" /><path d="M4 8L2.73334 9.33333" /><path d="M4.79999 1.4668L5.33332 3.40013" />
+                            <path d="M6.02466 6.45978C5.9988 6.39888 5.99174 6.33164 6.00436 6.2667C6.01698 6.20176 6.04872 6.14207 6.0955 6.09529C6.14228 6.04851 6.20197 6.01677 6.26692 6.00415C6.33186 5.99152 6.39909 5.99859 6.45999 6.02444L13.7933 9.02444C13.8586 9.05122 13.9137 9.09801 13.9507 9.15808C13.9876 9.21816 14.0046 9.28842 13.9991 9.35875C13.9936 9.42908 13.966 9.49586 13.9201 9.54947C13.8743 9.60309 13.8126 9.64077 13.744 9.65711L10.8447 10.3511C10.725 10.3797 10.6155 10.4409 10.5285 10.5278C10.4414 10.6148 10.3801 10.7241 10.3513 10.8438L9.65799 13.7438C9.64183 13.8126 9.60419 13.8746 9.5505 13.9206C9.49682 13.9667 9.42987 13.9945 9.35936 14C9.28884 14.0054 9.2184 13.9884 9.15823 13.9512C9.09806 13.914 9.05128 13.8586 9.02466 13.7931L6.02466 6.45978Z" />
+                        </svg>
+                    </span>
+                    <span class="font-poppins text-[13px] font-medium leading-5 text-[#3d4b66]">
+                        <span class="[@media(hover:none)]:hidden">Pasa el cursor para ver la respuesta</span><span class="hidden [@media(hover:none)]:inline">Toca una pregunta para ver la respuesta</span>
+                    </span>
+                </div>
+                <span class="h-[18px] w-px bg-[#dfe3ea] max-sm:hidden" aria-hidden="true"></span>
+                <div class="flex items-center gap-[10px]">
+                    <span class={iconCircle} aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#004BE0" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 5.3335L14.6667 8.00016L12 10.6668" /><path d="M1.33331 8H14.6666" /><path d="M3.99998 5.3335L1.33331 8.00016L3.99998 10.6668" />
+                        </svg>
+                    </span>
+                    <span class="font-poppins text-[13px] font-medium leading-5 text-[#3d4b66]">Desliza para ver las 6 preguntas</span>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
+<style>
+    /* Figma FAQ Card: Default 260×360 → Hover 395×500; el contenido empieza a 30 y 26 px del borde (trazo de 1 px + relleno). */
+    .faq-card {
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --dur: 350ms;
+        width: min(260px, 85vw);
+        height: 360px;
+        padding: 29px;
+        border-color: rgba(255, 255, 255, 0.8);
+        background: rgba(255, 255, 255, 0.7);
+        box-shadow:
+            0 4px 20px -2px rgba(0, 0, 0, 0.02),
+            0 0 0 1px rgba(0, 0, 0, 0.02);
+        transition-property: width, height, padding, background-color, border-color, box-shadow;
+        transition-duration: var(--dur);
+        transition-timing-function: var(--ease);
+    }
+    .faq-card[data-active="true"] {
+        --dur: 450ms;
+        width: min(395px, 85vw);
+        height: 500px;
+        padding: 25px;
+        border-color: rgba(241, 245, 249, 0.9);
+        background: rgba(255, 255, 255, 0.6);
+        box-shadow:
+            0 25px 50px -12px rgba(0, 0, 0, 0.07),
+            0 0 0 1px rgba(0, 0, 0, 0.03);
+    }
+    .faq-icon,
+    .faq-a,
+    .faq-q {
+        transition-duration: var(--dur);
+        transition-timing-function: var(--ease);
+    }
+    .faq-icon {
+        height: 0;
+        margin-top: 0;
+        opacity: 0;
+        transition-property: height, margin-top, opacity;
+    }
+    .faq-card[data-active="true"] .faq-icon {
+        height: 160px;
+        margin-top: 12px;
+        opacity: 1;
+    }
+    .faq-q {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 24.75px;
+        letter-spacing: -0.45px;
+        transition-property: font-size, line-height, letter-spacing;
+    }
+    .faq-card[data-active="true"] .faq-q {
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 33px;
+        letter-spacing: -0.6px;
+    }
+    .faq-a {
+        grid-template-rows: 0fr;
+        margin-top: 0;
+        opacity: 0;
+        transition-property: grid-template-rows, margin-top, opacity;
+    }
+    .faq-card[data-active="true"] .faq-a {
+        grid-template-rows: 1fr;
+        margin-top: 22px;
+        opacity: 1;
+    }
+    @media (min-width: 1280px) {
+        /* Recorrido horizontal: la sección mide 900 px más lo que la fila tiene que desplazarse. */
+        .faq {
+            height: calc(900px + var(--faq-dist, 435px));
+        }
+        .faq-stage {
+            top: min(0px, calc(100vh - 900px));
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .faq-card,
+        .faq-icon,
+        .faq-a,
+        .faq-q {
+            transition: none;
+        }
+    }
+</style>
+
 <script>
-    document.querySelectorAll<HTMLElement>("[data-faq]").forEach((list) => {
+    const section = document.querySelector<HTMLElement>("[data-faq-section]");
+    const stage = section?.querySelector<HTMLElement>("[data-faq-stage]");
+    const list = section?.querySelector<HTMLElement>("[data-faq]");
+    if (section && stage && list) {
         const cards = Array.from(list.querySelectorAll<HTMLElement>("[data-faq-card]"));
-        const activate = (card: HTMLElement) => cards.forEach((c) => (c.dataset.active = String(c === card)));
+        const desktop = window.matchMedia("(min-width: 1280px)");
         const hover = window.matchMedia("(hover: hover)");
+        const set = (card: HTMLElement | null) => cards.forEach((c) => (c.dataset.active = String(c === card)));
+
         cards.forEach((card) => {
-            card.addEventListener("mouseenter", () => hover.matches && activate(card));
-            card.addEventListener("click", () => activate(card));
-            card.addEventListener("focus", () => activate(card));
+            card.addEventListener("mouseenter", () => hover.matches && set(card));
+            card.addEventListener("mouseleave", () => hover.matches && card.dataset.active === "true" && set(null));
+            // Solo el foco con teclado abre la tarjeta; un toque ya pasa por "click".
+            card.addEventListener("focus", () => card.matches(":focus-visible") && set(card));
+            card.addEventListener("blur", () => hover.matches && card.dataset.active === "true" && set(null));
+            card.addEventListener("click", () => {
+                if (!hover.matches) set(card.dataset.active === "true" ? null : card);
+            });
         });
-    });
+
+        // Distancia que recorre la fila: ancho de la fila en reposo menos el ancho de la pantalla.
+        let dist = 0;
+        const measure = () => {
+            if (!desktop.matches) {
+                section.style.removeProperty("--faq-dist");
+                list.style.transform = "";
+                return;
+            }
+            // La fila arranca en el lienzo centrado de 1280 y termina con la 06 a 40 px del borde derecho.
+            const start = (list.parentElement ?? list).getBoundingClientRect().left - stage.getBoundingClientRect().left;
+            const restWidth = 80 + cards.length * 260 + (cards.length - 1) * 15;
+            dist = Math.max(0, Math.round(start + restWidth - stage.clientWidth));
+            section.style.setProperty("--faq-dist", `${dist}px`);
+            update();
+        };
+        const update = () => {
+            if (!desktop.matches) return;
+            const pinned = Math.min(0, window.innerHeight - 900);
+            const p = dist ? Math.min(1, Math.max(0, (pinned - section.getBoundingClientRect().top) / dist)) : 0;
+            list.style.transform = `translate3d(${-p * dist}px,0,0)`;
+        };
+        let frame = 0;
+        window.addEventListener(
+            "scroll",
+            () => {
+                if (!frame) frame = requestAnimationFrame(() => ((frame = 0), update()));
+            },
+            { passive: true },
+        );
+        window.addEventListener("resize", measure);
+        desktop.addEventListener("change", measure);
+        measure();
+    }
 </script>
