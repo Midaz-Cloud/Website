@@ -63,7 +63,7 @@ const jsonLd = {
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={ogImage} />
 
-        <link rel="preload" as="image" href="/landing/phone.webp" type="image/webp" fetchpriority="high" />
+        <link rel="preload" as="image" href="/landing/macbook-full.webp" type="image/webp" fetchpriority="high" />
         <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
         <!-- Google Fonts: Funnel Display + Poppins + Inter -->
@@ -76,8 +76,8 @@ const jsonLd = {
 
         <title>{title}</title>
 
-        <!-- Intro del hero (Figma "Intro · Hero Midaz"): se decide antes de pintar para que no parpadee el hero final.
-             Solo en escritorio ancho, una vez por sesión, arriba de la página y sin "reducir movimiento". -->
+        <!-- Pantalla de carga y animación del titular: se deciden antes de pintar para que no parpadee el hero final.
+             Solo en escritorio ancho, sin "reducir movimiento" y sin ancla en la URL. La carga se ve una vez por sesión. -->
         <script is:inline>
             (function () {
                 try {
@@ -85,13 +85,13 @@ const jsonLd = {
                     if (
                         matchMedia("(min-width: 1280px)").matches &&
                         !matchMedia("(prefers-reduced-motion: reduce)").matches &&
-                        !location.hash &&
-                        !sessionStorage.getItem("midaz-intro")
+                        !location.hash
                     ) {
-                        d.classList.add("intro");
-                        // Red de seguridad: si el script de la intro no corre, el hero aparece igual.
+                        d.classList.add("hero-anim");
+                        if (!sessionStorage.getItem("midaz-intro")) d.classList.add("carga");
+                        // Red de seguridad: si el script no corre, el hero aparece igual.
                         setTimeout(function () {
-                            if (!d.hasAttribute("data-intro-running")) d.classList.remove("intro");
+                            if (!d.hasAttribute("data-intro-running")) d.classList.remove("carga", "hero-anim");
                         }, 2500);
                     }
                 } catch (e) {}

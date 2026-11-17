@@ -2,39 +2,43 @@
 // Hero principal. En ≥1280px replica las posiciones absolutas del Figma (lienzo de 1280×885);
 // por debajo, los mismos elementos fluyen en columna.
 const stats = [
-    { value: "3", unit: "%", label: "IGTF automático por forma de pago", width: 122, unitGap: 16 },
-    { value: "100", unit: "%", label: "Cumplimiento fiscal y libros al día", width: 126, unitGap: 23 },
+    { value: "3", unit: "%", label: "IGTF automático por forma de pago", width: 122, unitGap: 16, count: "igtf" },
+    { value: "100", unit: "%", label: "Cumplimiento fiscal y libros al día", width: 126, unitGap: 23, count: "cumplimiento" },
     { value: "BCV", label: "Tasa oficial actualizada cada día", width: 143 },
 ];
+// Titular (Figma "Hero / Titular escritura"): cada letra es un <span> para escribirlo letra por letra.
+const lines = [
+    { text: "Midaz.", class: "" },
+    { text: "Sin errores.", class: "text-landing-amber" },
+    { text: "Sin multas.", class: "" },
+];
+const chars = (text: string) => [...text].map((c) => (c === " " ? null : c));
+// Isotipo de Midaz (Figma "Isotipo / Base", 822×800).
+const ISO =
+    "M612.419 356.825L471.761 497.7V676.087L433.232 714.676V473.768L559.154 347.652V148.408L410.974 0L262.794 148.408V347.601L388.717 473.717V714.573L350.239 676.036V497.649L209.581 356.774H0V566.677L140.658 707.552H318.72L364.259 753.161L411.026 800L433.232 777.708L457.741 753.161L503.28 707.552H681.342L822 566.677V356.774H612.419V356.825ZM433.232 85.3245L514.639 166.908V329.101L433.232 410.634V85.3245ZM159.027 662.968L44.5154 548.28V432.926L274.154 662.968H159.027ZM305.672 631.452L75.9832 401.409H191.16L305.672 516.149V631.452ZM307.31 329.153V166.959L388.717 85.3757V410.685L307.31 329.153ZM516.328 516.149L630.84 401.461H746.017L516.328 631.452V516.149ZM777.433 548.28L662.921 662.968H547.795L777.485 432.926V548.28H777.433Z";
 ---
 
 <section id="inicio" class="relative overflow-hidden xl:-mt-[62px]">
-    <div class="relative mx-auto flex max-w-[1280px] flex-col items-center px-4 pb-16 pt-10 sm:px-8 xl:block xl:h-[947px] xl:px-0 xl:pb-0 xl:pt-0">
+    <div class="relative mx-auto flex max-w-[1280px] flex-col items-center px-4 pb-16 pt-10 sm:px-8 xl:block xl:h-[935px] xl:px-0 xl:pb-0 xl:pt-0">
         <!-- Marca de agua -->
         <img
             src="/landing/icons/hero-vector.svg"
             alt=""
             aria-hidden="true"
             width="901"
-            height="875"
-            data-intro-hide
-            data-intro-wm
+            height="863"
             class="pointer-events-none absolute left-1/2 top-16 w-[min(901px,140vw)] max-w-none -translate-x-1/2 xl:left-[190px] xl:top-[47px] xl:translate-x-0"
         />
-        <!-- Halo detrás del teléfono -->
+        <!-- Halo detrás de la laptop -->
         <div
             aria-hidden="true"
-            data-intro-hide
-            data-intro-halo
-            class="pointer-events-none absolute left-1/2 top-[45%] h-[415px] w-[min(480px,90vw)] -translate-x-1/2 rounded-full bg-[rgba(219,234,254,0.35)] blur-[32px] xl:top-[345px]"
+            class="pointer-events-none absolute left-1/2 top-[45%] h-[409px] w-[min(480px,90vw)] -translate-x-1/2 rounded-full bg-[rgba(219,234,254,0.35)] blur-[32px] xl:top-[341px]"
         ></div>
 
         <!-- Píldoras de contacto (ocultas en teléfonos) -->
         <div class="relative z-10 order-1 hidden w-full flex-wrap justify-center gap-3 sm:flex xl:contents">
             <a
                 href="#contacto"
-                data-intro-hide
-                data-intro-pill
                 class="flex h-[41px] items-center justify-center gap-[10px] rounded-2xl border border-[rgba(152,171,204,0.3)] bg-white/80 px-[15px] xl:justify-start xl:gap-[9px] xl:pl-[20px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] backdrop-blur-[2px] transition-transform hover:-translate-y-0.5 xl:absolute xl:left-[80px] xl:top-[180px] xl:w-[214px]"
             >
                 <img src="/landing/icons/call.svg" alt="" width="21" height="21" class="size-[21px]" />
@@ -42,8 +46,6 @@ const stats = [
             </a>
             <a
                 href="/comenzar"
-                data-intro-hide
-                data-intro-pill
                 class="flex h-[41px] items-center justify-center gap-[10px] rounded-2xl border border-[rgba(152,171,204,0.3)] bg-white/80 px-[13px] xl:pl-[12px] xl:pr-[14px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] backdrop-blur-[2px] transition-transform hover:-translate-y-0.5 xl:absolute xl:right-[80px] xl:top-[180px] xl:w-[176px]"
             >
                 <img src="/landing/icons/fast-forward.svg" alt="" width="21" height="21" class="size-[21px]" />
@@ -51,83 +53,73 @@ const stats = [
             </a>
         </div>
 
-        <!-- Titular -->
+        <!-- Titular: se escribe letra por letra (las letras pendientes quedan transparentes, sin mover el texto) -->
         <h1
+            aria-label="Midaz. Sin errores. Sin multas."
+            data-tw-title
             class="relative z-0 order-2 mt-10 text-center font-funnel text-[clamp(3rem,10vw,5.625rem)] font-bold leading-[0.84] tracking-[-0.021em] text-landing-navy xl:absolute xl:left-[422px] xl:top-[153px] xl:w-[495px] xl:mt-0 xl:text-[90px] xl:leading-[75px] xl:tracking-[-1.8885px]"
         >
-            <span class="block"><span class="inline-block origin-bottom" data-intro-hide data-intro-word>Midaz.</span></span>
-            <span class="block text-landing-amber"><span class="inline-block origin-bottom" data-intro-hide data-intro-word>Sin</span> <span class="inline-block origin-bottom" data-intro-hide data-intro-word>errores.</span>&nbsp;</span>
-            <span class="block"><span class="inline-block origin-bottom" data-intro-hide data-intro-word>Sin</span> <span class="inline-block origin-bottom" data-intro-hide data-intro-word>multas.</span></span>
-        </h1>
-
-        <!-- Teléfono -->
-        <!-- Intro: teléfonos satélite que salen del teléfono central en el "estallido" -->
-        <div aria-hidden="true" class="pointer-events-none absolute left-[443px] top-[345px] hidden w-[361px] xl:block">
             {
-                [0, 1, 2, 3].map(() => (
-                    <img src="/landing/phone.webp" alt="" width="361" height="594" class="absolute left-0 top-0 w-full opacity-0" data-intro-sat />
+                lines.map((line) => (
+                    <span class:list={["block", line.class]} aria-hidden="true">
+                        {chars(line.text).map((c) => (c === null ? " " : <span data-tw>{c}</span>))}
+                    </span>
                 ))
             }
-        </div>
-        <!-- Intro: porcentaje de carga -->
-        <p aria-hidden="true" class="absolute left-[600px] top-[332px] hidden w-20 text-center font-funnel text-[15px] font-bold text-landing-navy" data-intro-pct>0%</p>
+        </h1>
 
-        <div data-intro-phone class="relative z-0 order-3 mt-4 w-[min(361px,80vw)] xl:absolute xl:left-[443px] xl:top-[345px] xl:mt-0 xl:w-[344px]">
+        <!-- Sombra en el piso (Figma "Frame 8": degradado radial desenfocado y aplastado a 331×38) -->
+        <div
+            aria-hidden="true"
+            class="pointer-events-none absolute left-[290.1px] top-[879px] hidden h-[236.4px] w-[286.58px] origin-top-left [transform:scale(1.155,0.16074)] bg-[radial-gradient(202.64px_167.16px_at_50%_50%,rgba(0,0,0,0.22)_0%,rgba(0,0,0,0.072)_45%,rgba(0,0,0,0)_75%)] blur-[11.5px] xl:block"
+        ></div>
+
+        <!-- Laptop (Figma "macbook 1", 673,6×409,4 girada 16,3°) -->
+        <div class="relative z-0 order-3 mt-6 w-[min(674px,92vw)] xl:absolute xl:left-[280px] xl:top-[523.5px] xl:mt-0 xl:w-[673.6px] xl:origin-top-left xl:-rotate-[16.25deg]" data-hero-laptop>
             <img
-                src="/landing/phone.webp"
-                alt="App de pedidos de Midaz en un iPhone"
-                width="361"
-                height="594"
-                class="relative w-full animate-float motion-reduce:animate-none"
+                src="/landing/macbook-full.webp"
+                alt="Midaz Web en una laptop mostrando el módulo de facturas"
+                width="1267"
+                height="770"
+                class="relative w-full"
                 fetchpriority="high"
             />
-            <!-- Sombra en el piso -->
-            <div
-                aria-hidden="true"
-                data-intro-hide
-                data-intro-shadow
-                class="absolute -bottom-2 left-1/2 h-[38px] w-[86%] -translate-x-1/2 animate-float-shadow rounded-[50%] motion-reduce:animate-none bg-[radial-gradient(closest-side,rgba(0,0,0,0.22),rgba(0,0,0,0.07)_45%,rgba(0,0,0,0)_75%)] blur-[11.5px]"
-            ></div>
         </div>
 
         <!-- Tarjetas naranjas -->
         <div class="relative z-10 order-4 mt-8 grid w-full max-w-[400px] gap-4 xl:contents">
             <div
-                data-intro-hide
-                data-intro-badge
-                class="rounded-[15px] border-2 border-[rgba(255,149,33,0.5)] bg-[rgba(255,149,33,0.1)] p-[26px] shadow-[0_4px_6px_-4px_rgba(0,0,0,0.1)] backdrop-blur-[10px] xl:absolute xl:left-[755px] xl:top-[437px] xl:w-[400px]"
+                class="rounded-[15px] border-2 border-[rgba(255,149,33,0.5)] bg-[rgba(255,149,33,0.1)] p-6 shadow-[0_4px_6px_-4px_rgba(0,0,0,0.1)] backdrop-blur-[10px] xl:absolute xl:left-[916px] xl:top-[543px] xl:w-[303px]"
             >
                 <p class="text-xs font-semibold uppercase leading-4 tracking-[1.2px] text-[rgba(255,149,33,0.8)]">Flujo unificado</p>
                 <p class="mt-[6px] text-xl font-bold leading-7 text-landing-orange">Facturación, ventas y control en un solo lugar</p>
             </div>
             <div
-                data-intro-hide
-                data-intro-badge
-                class="rounded-[15px] border-2 border-[rgba(255,149,33,0.5)] bg-[rgba(255,149,33,0.1)] p-[26px] shadow-[0_4px_6px_1px_rgba(0,0,0,0.1)] backdrop-blur-[10px] xl:absolute xl:left-[123px] xl:top-[618px] xl:w-[400px]"
+                class="rounded-[15px] border-2 border-[rgba(255,149,33,0.5)] bg-[rgba(255,149,33,0.1)] p-6 shadow-[0_4px_6px_1px_rgba(0,0,0,0.1)] backdrop-blur-[10px] xl:absolute xl:left-[65px] xl:top-[616px] xl:w-[315px]"
             >
                 <p class="text-xs font-semibold uppercase leading-4 tracking-[1.2px] text-[rgba(255,149,33,0.8)]">Control operativo</p>
                 <p class="mt-[6px] text-xl font-bold leading-7 text-landing-orange">Ventas en caja y reportes de inventario al instante</p>
             </div>
         </div>
 
-        <!-- Métricas -->
+        <!-- Métricas (los números cuentan desde 0 como en el Figma "Hero / Contador …") -->
         <div class="relative z-10 order-5 mt-10 grid w-full max-w-[560px] grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 xl:contents">
-            <div data-intro-hide data-intro-stat="0" class="col-span-2 sm:col-span-4 xl:absolute xl:left-[121px] xl:top-[507px] xl:w-[300px]">
+            <div class="col-span-2 sm:col-span-4 xl:absolute xl:left-[61px] xl:top-[507px] xl:w-[300px]">
                 <p class="flex items-end font-light xl:mt-1 xl:-mb-1 leading-[72px] text-landing-navy">
-                    <span class="whitespace-pre text-[clamp(3rem,12vw,4rem)] tracking-[-3.6px] [word-spacing:-2.5px]" data-intro-scramble>8 · 16 · 31</span>
-                    <span class="mb-3 ml-2 text-sm font-semibold uppercase tracking-[0.7px] xl:mb-[7px] xl:ml-[5px]">%</span>
+                    <span class="whitespace-pre text-[clamp(3rem,12vw,4rem)] tracking-[-3.6px] [word-spacing:-2.5px]" data-count="iva">8 · 16 · 31</span>
+                    <span class="mb-3 ml-2 text-sm font-semibold uppercase tracking-[0.7px] xl:mb-[7px] xl:ml-[15px]">%</span>
                 </p>
-                <p class="mt-1 text-xs leading-[13.5px] tracking-[0.225px] text-landing-navy xl:ml-1" data-intro-label>Alícuotas de IVA calculadas automáticamente</p>
+                <p class="mt-1 text-xs leading-[13.5px] tracking-[0.225px] text-landing-navy xl:ml-1">Alícuotas de IVA calculadas automáticamente</p>
             </div>
-            <div class="contents xl:absolute xl:left-[775px] xl:top-[678px] xl:flex xl:w-[453px] xl:items-start xl:gap-[30px]">
+            <div class="contents xl:absolute xl:left-[775px] xl:top-[783px] xl:flex xl:w-[453px] xl:items-start xl:gap-[30px]">
                 {
-                    stats.map((stat, i) => (
-                        <div class="xl:w-[125px] xl:shrink-0 xl:overflow-visible" data-intro-hide data-intro-stat={i + 1}>
+                    stats.map((stat) => (
+                        <div class="xl:w-[125px] xl:shrink-0 xl:overflow-visible">
                             <p class="flex items-end font-light leading-[72px] text-landing-navy xl:mt-2">
-                                <span class="whitespace-nowrap text-[clamp(3rem,12vw,4rem)] tracking-[-3.6px]" data-intro-scramble>{stat.value}</span>
+                                <span class="whitespace-nowrap text-[clamp(3rem,12vw,4rem)] tracking-[-3.6px]" data-count={stat.count}>{stat.value}</span>
                                 {stat.unit && <span class="mb-3 ml-3 text-sm font-semibold uppercase tracking-[0.7px] xl:mb-[10px] xl:ml-[var(--unit-gap)]" style={`--unit-gap:${stat.unitGap}px`}>{stat.unit}</span>}
                             </p>
-                            <p class="mt-1 text-xs leading-[13.5px] tracking-[0.225px] text-landing-navy xl:-mt-1" data-intro-label style={`width:${stat.width}px`}>{stat.label}</p>
+                            <p class="mt-1 text-xs leading-[13.5px] tracking-[0.225px] text-landing-navy xl:-mt-1" style={`width:${stat.width}px`}>{stat.label}</p>
                         </div>
                     ))
                 }
@@ -135,6 +127,64 @@ const stats = [
         </div>
     </div>
 </section>
+
+<!-- Pantalla de carga + transición a la landing (solo la primera vez por sesión, en escritorio ancho).
+     Lienzo del Figma de 1280×800, escalado a la altura de la ventana. -->
+<div data-carga aria-hidden="true" class="fixed inset-0 z-[100] overflow-hidden">
+    <div data-carga-bg class="absolute inset-0 bg-[radial-gradient(50%_31.25%_at_50%_50%,#ffffff_0%,#f6f7fa_60%,#e6ecf5_100%)]"></div>
+    <div data-carga-flat class="absolute inset-0 bg-[#f6f7fa] opacity-0"></div>
+    <div data-carga-stage class="absolute left-1/2 top-0 h-[800px] w-[1280px] origin-top">
+        <!-- Isotipo: base tenue + versión iluminada que se revela de abajo hacia arriba -->
+        <div data-carga-iso class="absolute left-[229px] top-0 h-[800px] w-[822px]">
+            <svg data-carga-base viewBox="0 0 822 800" class="absolute inset-0 size-full opacity-30"><path d={ISO} fill="#98ABCC" fill-opacity="0.35"></path></svg>
+            <div data-carga-reveal class="absolute inset-0 opacity-[0.35] [clip-path:inset(100%_0_0_0)]">
+                <svg viewBox="0 0 822 800" class="absolute inset-0 size-full opacity-20">
+                    <defs>
+                        <linearGradient id="carga-lit" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#2F6BFF"></stop>
+                            <stop offset="1" stop-color="#004BE0"></stop>
+                        </linearGradient>
+                    </defs>
+                    <path d={ISO} fill="url(#carga-lit)"></path>
+                </svg>
+            </div>
+        </div>
+        <!-- Barra -->
+        <div data-carga-track class="absolute left-[360px] top-[484.3px] h-2 w-[560px] rounded bg-[#dbe3f0]"></div>
+        <div data-carga-bar class="absolute left-[360px] top-[484.3px] h-2 w-[560px] origin-left scale-x-0 rounded bg-[linear-gradient(90deg,#07143a_0%,#004be0_100%)] shadow-[0_3px_10px_0_rgba(0,75,224,0.35)]"></div>
+        <!-- Porcentaje: un texto por valor, se cruzan como en el Figma -->
+        <div data-carga-texts class="absolute left-[460px] top-[518.3px] h-[82px] w-[360px]">
+            {
+                [0, 24, 52, 75, 97, 100].map((v, i) => (
+                    <p data-carga-pct={v} class:list={["absolute left-[70px] top-0 w-[220px] text-center font-poppins text-[44px] font-semibold leading-[52px] tracking-[-0.44px] text-[#004be0]", i ? "opacity-0" : ""]}>
+                        {v}<span class="text-2xl font-medium tracking-[-0.24px]">%</span>
+                    </p>
+                ))
+            }
+            <p data-carga-ley="0" class="absolute left-0 top-[60px] w-[360px] text-center font-poppins text-sm font-medium tracking-[2.52px] text-[#3d4b66]">CARGANDO MIDAZ</p>
+            <p data-carga-ley="1" class="absolute left-0 top-[60px] w-[360px] text-center font-poppins text-sm font-medium tracking-[2.52px] text-[#3d4b66] opacity-0">LISTO</p>
+        </div>
+        <!-- Hermez caminando (mismo video del Figma, recortado al personaje) -->
+        <div data-carga-hermez class="absolute left-[779px] top-[214px] h-[258px] w-[187px] -translate-x-[465px] overflow-hidden">
+            <video
+                class="absolute left-[2.38px] top-[-6.33px] h-[258.7px] w-[185.3px] max-w-none"
+                width="404"
+                height="564"
+                poster="/landing/hermez-poster.webp"
+                muted
+                loop
+                playsinline
+                preload="auto"
+                data-carga-video
+            >
+                <source src="/landing/hermez.webm" type="video/webm" />
+            </video>
+        </div>
+    </div>
+    <!-- Logo y laptop: viajan en coordenadas de la ventana hasta su lugar real en la página -->
+    <img data-carga-logo src="/landing/icons/logo.svg" alt="" width="128" height="30" class="absolute left-0 top-0 h-[29.5px] w-32 origin-top-left opacity-0" />
+    <img data-carga-mac src="/landing/macbook-full.webp" alt="" width="1267" height="770" class="absolute left-0 top-0 w-[673.6px] max-w-none origin-top-left opacity-0" />
+</div>
 
 <script>
     import { runIntro } from "./hero-intro";
