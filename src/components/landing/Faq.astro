@@ -181,10 +181,6 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
         margin-top: 22px;
         opacity: 1;
     }
-    [data-faq] {
-        translate: var(--faq-shift, 0px) 0;
-        transition: translate 450ms cubic-bezier(0.16, 1, 0.3, 1);
-    }
     @media (min-width: 1280px) {
         /* Recorrido horizontal: la sección mide 900 px más lo que la fila tiene que desplazarse. */
         .faq {
@@ -214,21 +210,9 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
         const hover = window.matchMedia("(hover: hover)");
         let rowMovedAt = 0;
         let lastP = -1;
-        // Desplazamiento extra para que una tarjeta abierta cerca del borde derecho (p. ej. la 06) no quede cortada.
-        let shift = 0;
-        const applyShift = (card: HTMLElement | null) => {
-            let next = 0;
-            if (card && desktop.matches) {
-                const i = cards.indexOf(card);
-                const rowLeft = list.getBoundingClientRect().left - shift;
-                const right = rowLeft + 40 + i * 275 + 395;
-                next = Math.min(0, Math.round(document.documentElement.clientWidth - 40 - right));
-            }
-            if (next !== shift) {
-                shift = next;
-                list.style.setProperty("--faq-shift", `${shift}px`);
-            }
-        };
+        // La fila no se corre al abrir una tarjeta (eso movía las tarjetas bajo el cursor y abría otra):
+        // el recorrido del scroll ya deja espacio para que la 06 abierta quepa al final.
+        const applyShift = (_card: HTMLElement | null) => {};
         const active = () => cards.find((c) => c.dataset.active === "true") ?? null;
         const set = (card: HTMLElement | null) => {
             cards.forEach((c) => (c.dataset.active = String(c === card)));
@@ -251,26 +235,50 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
                 const el = document.elementFromPoint(px, py);
                 return (el?.closest("[data-faq-card]") as HTMLElement | null) ?? null;
             };
+            // Lo que está esperando su turno (abrir esa tarjeta, o null para cerrar). Mientras el cursor siga
+            // sobre la misma, moverlo no reinicia la espera.
+            let pending: HTMLElement | null | undefined = undefined;
             const evaluate = () => {
-                clearTimeout(enterTimer);
-                if (scrolling) return;
+                if (scrolling) {
+                    clearTimeout(enterTimer);
+                    pending = undefined;
+                    return;
+                }
                 const target = cardAt();
                 const cur = active();
+                if (pending !== undefined && pending === target) return;
+                clearTimeout(enterTimer);
+                pending = undefined;
                 if (target === cur) return applyShift(cur);
                 if (!target) {
                     if (cur && cur.matches(":focus-visible")) return;
-                    set(null);
-                    // Al cerrarse, la fila se reacomoda: revisar qué quedó bajo el cursor.
-                    clearTimeout(relookTimer);
-                    relookTimer = window.setTimeout(evaluate, 200);
+                    const close = () => {
+                        set(null);
+                        // Al cerrarse, la fila se reacomoda: revisar qué quedó bajo el cursor.
+                        clearTimeout(relookTimer);
+                        relookTimer = window.setTimeout(evaluate, 200);
+                    };
+                    // En el espacio entre dos tarjetas no se cierra de golpe: si el cursor va hacia la vecina,
+                    // pasa de una a otra sin que la fila se cierre y se vuelva a abrir.
+                    const r = list.getBoundingClientRect();
+                    const inRow = cur && px >= r.left && px <= r.right && py >= r.top && py <= r.bottom;
+                    if (!inRow) return close();
+                    pending = null;
+                    enterTimer = window.setTimeout(() => {
+                        pending = undefined;
+                        if (!cardAt()) close();
+                        else evaluate();
+                    }, 150);
                     return;
                 }
-                // Sin tarjeta abierta se abre enseguida; para cambiar de una a otra se espera un poco
-                // (evita que se abran las que el cursor cruza de paso).
+                // Sin tarjeta abierta se abre enseguida; para cambiar de una a otra el cursor tiene que
+                // quedarse 120 ms (evita que se abran y cierren las que cruza de paso).
                 if (!cur) return set(target);
+                pending = target;
                 enterTimer = window.setTimeout(() => {
+                    pending = undefined;
                     if (!scrolling && cardAt() === target) set(target);
-                }, 40);
+                }, 120);
             };
             document.addEventListener(
                 "pointermove",
@@ -328,7 +336,8 @@ const iconCircle = "flex size-8 shrink-0 items-center justify-center rounded-ful
             }
             // La fila arranca en el lienzo centrado de 1280 y termina con la 06 a 40 px del borde derecho.
             const start = (list.parentElement ?? list).getBoundingClientRect().left - stage.getBoundingClientRect().left;
-            const restWidth = 80 + cards.length * 260 + (cards.length - 1) * 15;
+            // + 135: lo que crece una tarjeta abierta (260 → 395), para que la 06 abierta no quede cortada.
+            const restWidth = 80 + cards.length * 260 + (cards.length - 1) * 15 + 135;
             dist = Math.max(0, Math.round(start + restWidth - stage.clientWidth));
             section.style.setProperty("--faq-dist", `${dist}px`);
             update();

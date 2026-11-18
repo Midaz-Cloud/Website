@@ -30,6 +30,10 @@ const PHASE_AT: [number, number, string][] = [];
     }
 }
 const TOTAL = PHASE_AT[4][0] + PHASE_AT[4][1];
+// Keiv (2026-11-18): toda la carga dura 5 s. Los tiempos de arriba son los del Figma (8,87 s) y se comprimen
+// en proporción: cada animación dura TOTAL × SPEED, con los mismos puntos relativos.
+const DURATION = 5000;
+const SPEED = DURATION / TOTAL;
 
 /** Keyframes con tiempos absolutos (ms) sobre la duración total. */
 function track(points: [number, Keyframe, string?][]): Keyframe[] {
@@ -166,10 +170,10 @@ export async function runIntro() {
 
     const video = $<HTMLVideoElement>("[data-carga-video]", overlay)!;
     playHermez(video);
-    // Las fuentes (Poppins del porcentaje) y el primer cuadro del video, máx. 1,2 s.
+    // Las fuentes (Poppins del porcentaje) y el primer cuadro del video, máx. 0,5 s.
     await Promise.race([
         Promise.all([document.fonts.ready, new Promise((r) => (video.readyState >= 2 ? r(0) : video.addEventListener("loadeddata", r, { once: true })))]),
-        new Promise((r) => setTimeout(r, 1200)),
+        new Promise((r) => setTimeout(r, 500)),
     ]);
     root.classList.add("carga-lista");
 
@@ -190,7 +194,7 @@ export async function runIntro() {
     const anims: Animation[] = [];
     const run = (el: Element | null, frames: Keyframe[]) => {
         if (!el) return;
-        anims.push(el.animate(frames, { duration: TOTAL, fill: "both" }));
+        anims.push(el.animate(frames, { duration: DURATION, fill: "both" }));
     };
     const [p1, p2, p3, p4, p5] = PHASE_AT;
     const seg = ([at, dur, ease]: [number, number, string], from: Keyframe, to: Keyframe): [number, Keyframe, string?][] => [
@@ -264,7 +268,7 @@ export async function runIntro() {
     run(overlay, track([[0, { opacity: 1 }], ...seg(p5, { opacity: 1 }, { opacity: 0 }), [TOTAL, { opacity: 0 }]]));
 
     // El titular empieza a escribirse cuando la landing aparece.
-    const textTimer = setTimeout(runHeroText, p5[0]);
+    const textTimer = setTimeout(runHeroText, p5[0] * SPEED);
 
     const finish = () => {
         root.classList.remove("carga", "carga-lista");
