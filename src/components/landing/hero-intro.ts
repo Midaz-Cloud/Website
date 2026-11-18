@@ -180,10 +180,12 @@ export async function runIntro() {
     // Lienzo de 1280×800 escalado a la altura de la ventana y centrado.
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const s = vh / 800;
+    // En pantallas angostas manda el ancho; el lienzo se centra en vertical.
+    const s = Math.min(vh / 800, vw / 880);
+    const oy = (vh - 800 * s) / 2;
     const stage = $("[data-carga-stage]", overlay)!;
-    stage.style.transform = `translateX(-50%) scale(${s})`;
-    const toView = (x: number, y: number) => [vw / 2 + (x - 640) * s, y * s];
+    stage.style.transform = `translate(-50%,${oy}px) scale(${s})`;
+    const toView = (x: number, y: number) => [vw / 2 + (x - 640) * s, oy + y * s];
 
     // Destinos reales en la página: la laptop del hero y el logo del menú.
     const heroLaptop = $("[data-hero-laptop]")!;
@@ -250,7 +252,13 @@ export async function runIntro() {
     const m0 = mac(539, 408.6, 202.1, 0, 0);
     const m2 = mac(512, 392.2, 256, 0);
     const m3 = mac(379.3, 367.8, 485, -8);
-    const m4: Keyframe = { transform: `translate(${macEnd[0]}px,${macEnd[1]}px) rotate(-16.25deg) scale(1)`, opacity: 1 };
+    // En escritorio la laptop del hero está girada −16,25° y mide 673,6 px; en pantallas chicas va recta y
+    // más angosta, así que aterriza con su tamaño y sin giro.
+    const wide = window.matchMedia("(min-width: 1280px)").matches;
+    const macBox = heroLaptop.getBoundingClientRect();
+    const m4: Keyframe = wide
+        ? { transform: `translate(${macEnd[0]}px,${macEnd[1]}px) rotate(-16.25deg) scale(1)`, opacity: 1 }
+        : { transform: `translate(${macBox.left}px,${macBox.top}px) rotate(0deg) scale(${macBox.width / 673.6})`, opacity: 1 };
     run($("[data-carga-mac]", overlay), track([[0, m0], ...seg(p2, m0, m2), ...seg(p3, m2, m3), ...seg(p4, m3, m4), [TOTAL, m4]]));
 
     // Logo: aparece arriba al centro (fase 3) y se va a su lugar en el menú (fase 4).
