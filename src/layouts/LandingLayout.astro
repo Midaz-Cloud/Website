@@ -83,7 +83,7 @@ const jsonLd = {
         <title>{title}</title>
 
         <!-- Pantalla de carga y animación del titular: se deciden antes de pintar para que no parpadee el hero final.
-             Solo en escritorio ancho, sin "reducir movimiento" y sin ancla en la URL. La carga se ve una vez por sesión. -->
+             En cualquier pantalla, sin "reducir movimiento" y sin ancla en la URL. La carga se ve una vez por sesión. -->
         {
             intro && (
         <script is:inline>
@@ -91,7 +91,6 @@ const jsonLd = {
                 try {
                     var d = document.documentElement;
                     if (
-                        matchMedia("(min-width: 1280px)").matches &&
                         !matchMedia("(prefers-reduced-motion: reduce)").matches &&
                         !location.hash
                     ) {
@@ -99,7 +98,10 @@ const jsonLd = {
                         if (!sessionStorage.getItem("midaz-intro")) {
                             d.classList.add("carga");
                             // Escala del lienzo de 1280×800 desde el primer pintado, para que la carga no salte al arrancar.
-                            d.style.setProperty("--carga-s", String(innerHeight / 800));
+                            // En pantallas angostas (teléfono) manda el ancho: el contenido del loader mide ~880 px del lienzo.
+                            var cs = Math.min(innerHeight / 800, innerWidth / 880);
+                            d.style.setProperty("--carga-s", String(cs));
+                            d.style.setProperty("--carga-y", (innerHeight - 800 * cs) / 2 + "px");
                         }
                         // Red de seguridad: si el script no corre, el hero aparece igual.
                         setTimeout(function () {

@@ -2,7 +2,7 @@
 // Hero principal. En ≥1280px replica las posiciones absolutas del Figma (lienzo de 1280×885);
 // por debajo, los mismos elementos fluyen en columna.
 const stats = [
-    { value: "3", unit: "%", label: "IGTF automático por forma de pago", width: 122, unitGap: 16, count: "igtf" },
+    { value: "3", unit: "%", label: "IGTF automático por forma de pago", width: 122, unitGap: 12, count: "igtf", col: 150 },
     { value: "Libros", label: "de venta al día", width: 126, col: 185 },
     { value: "BCV", label: "Tasa oficial actualizada cada día", width: 143 },
 ];
@@ -112,7 +112,7 @@ const ISO =
                 </p>
                 <p class="mt-1 text-xs leading-[13.5px] tracking-[0.225px] text-landing-navy xl:ml-1">Alícuotas de IVA calculadas automáticamente</p>
             </div>
-            <div class="contents xl:absolute xl:left-[713px] xl:top-[783px] xl:flex xl:w-[515px] xl:items-start xl:gap-[30px]">
+            <div class="contents xl:absolute xl:left-[688px] xl:top-[783px] xl:flex xl:w-[560px] xl:items-start xl:gap-[40px]">
                 {
                     stats.map((stat) => (
                         <div class="xl:w-[var(--col)] xl:shrink-0 xl:overflow-visible" style={`--col:${stat.col ?? 125}px`}>
@@ -129,12 +129,12 @@ const ISO =
     </div>
 </section>
 
-<!-- Pantalla de carga + transición a la landing (solo la primera vez por sesión, en escritorio ancho).
+<!-- Pantalla de carga + transición a la landing (solo la primera vez por sesión).
      Lienzo del Figma de 1280×800, escalado a la altura de la ventana. -->
 <div data-carga aria-hidden="true" class="fixed inset-0 z-[100] overflow-hidden">
     <div data-carga-bg class="absolute inset-0 bg-[radial-gradient(50%_31.25%_at_50%_50%,#ffffff_0%,#f6f7fa_60%,#e6ecf5_100%)]"></div>
     <div data-carga-flat class="absolute inset-0 bg-[#f6f7fa] opacity-0"></div>
-    <div data-carga-stage class="absolute left-1/2 top-0 h-[800px] w-[1280px] origin-top [transform:translateX(-50%)_scale(var(--carga-s,1))]">
+    <div data-carga-stage class="absolute left-1/2 top-0 h-[800px] w-[1280px] origin-top [transform:translate(-50%,var(--carga-y,0px))_scale(var(--carga-s,1))]">
         <!-- Isotipo: base tenue + versión iluminada que se revela de abajo hacia arriba -->
         <div data-carga-iso class="absolute left-[229px] top-0 h-[800px] w-[822px]">
             <svg data-carga-base viewBox="0 0 822 800" class="absolute inset-0 size-full opacity-30"><path d={ISO} fill="#98ABCC" fill-opacity="0.35"></path></svg>
