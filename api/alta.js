@@ -1,8 +1,9 @@
 // Función de Vercel: recibe la solicitud de alta de /comenzar y la envía por correo a soporte desde una cuenta de Gmail.
 // Variables en Vercel: GMAIL_USER y GMAIL_APP_PASSWORD (contraseña de aplicación de Google, no la normal),
 // y ALTA_TO (destinatario, por defecto soporte@midazve.com).
-// Opcional: EVIDENCIA_URL (y EVIDENCIA_TOKEN) para enviar la evidencia de aceptación al registro inalterable de Midaz
-// cuando exista. Mientras no esté definida, la evidencia viaja solo en el correo (Guía de Implementación, secciones 3 y 4).
+// Registro de evidencias en el Hub (Guía de Implementación, Fase 2b): HUB_LEGAL_URL (URL completa de
+// POST /public/legal/prospects) y LEGAL_SITE_KEY (la misma llave que tiene el Hub). Contrato en el repo del Hub:
+// packages/backend/src/legal/API_CONTRACT.md. Sin esas variables, la evidencia viaja solo en el correo.
 import nodemailer from "nodemailer";
 import { acceptedDocuments } from "../src/data/legal.mjs";
 
@@ -66,24 +67,8 @@ export default async function handler(req, res) {
     const pass = process.env.GMAIL_APP_PASSWORD;
     if (!user || !pass) return res.status(503).json({ ok: false, error: "sin-configurar" });
 
-    // Registro inalterable de evidencias (cuando Midaz lo tenga): recibe los mismos datos que el correo.
-    let registro = "";
-    if (process.env.EVIDENCIA_URL) {
-        try {
-            const r = await fetch(process.env.EVIDENCIA_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...(process.env.EVIDENCIA_TOKEN && { Authorization: `Bearer ${process.env.EVIDENCIA_TOKEN}` }),
-                },
-                body: JSON.stringify({ cliente: data, ...evidencia }),
-            });
-            registro = r.ok ? "guardada en el registro de evidencias" : `el registro de evidencias respondió ${r.status}`;
-        } catch (e) {
-            console.error("Registro de evidencias falló", e && e.message);
-            registro = "no se pudo guardar en el registro de evidencias";
-        }
-    }
+    // Registro inalterable de evidencias en el Hub. Si falla, el alta sigue y el correo dice qué pasó.
+    const registro = await guardarEnHub(data, perfil, evidencia);
 
     const text = [
         "Nueva solicitud de alta en Midaz",
@@ -117,6 +102,44 @@ export default async function handler(req, res) {
         return res.status(502).json({ ok: false, error: "envio" });
     }
     return res.status(200).json({ ok: true });
+}
+
+// Envía el prospecto y su aceptación al Hub (POST /public/legal/prospects, llave en x-site-key).
+// Devuelve una línea para el correo. Nunca escribe la llave en el log.
+async function guardarEnHub(data, perfil, evidencia) {
+    const url = (process.env.HUB_LEGAL_URL || "").trim();
+    const key = (process.env.LEGAL_SITE_KEY || "").trim();
+    if (!url || !key) return "";
+    const body = {
+        nombre: data.name,
+        correo: data.email,
+        empresa: data.company,
+        rif: data.rif,
+        telefono: data.phone,
+        interes: data.plan,
+        mensaje: perfil.join("\n").slice(0, 2000),
+        documentos: evidencia.documentos.map(({ doc, version, sha256 }) => ({ documento: doc, version, sha256 })),
+        marketing: evidencia.comercial,
+        ip: evidencia.ip.slice(0, 64),
+        userAgent: evidencia.navegador.slice(0, 500),
+    };
+    try {
+        const r = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "x-site-key": key },
+            body: JSON.stringify(body),
+            signal: AbortSignal.timeout(8000),
+        });
+        const res = await r.json().catch(() => ({}));
+        if (r.ok) {
+            return `guardada en el Hub (${res.evidenceCount ?? "?"} registros${res.versionVerified === false ? ", versión sin verificar" : ""})`;
+        }
+        console.error("Hub rechazó la evidencia", r.status, res && res.code);
+        return `el Hub respondió ${r.status}${res && res.code ? ` ${res.code}` : ""}; no quedó guardada`;
+    } catch (e) {
+        console.error("Hub no respondió", e && e.name);
+        return "el Hub no respondió; no quedó guardada";
+    }
 }
 
 // IP del cliente según los encabezados de Vercel: el primer valor de x-forwarded-for es el cliente.
