@@ -7,6 +7,9 @@ import { CONTACT } from "../data/contacto.mjs";
 
 // Canal oficial (Términos y Condiciones, cláusula 1.3).
 const SUPPORT_EMAIL = CONTACT.email;
+// Misma URL que el sitemap (sin barra final) y fuera del índice en las vistas previas de Vercel.
+const canonical = Astro.site ? new URL("/comenzar", Astro.site).href : undefined;
+const robots = process.env.VERCEL_ENV === "preview" ? "noindex, nofollow" : "index, follow";
 // Documentos que el cliente acepta al enviar: versión vigente de cada uno, con su URL fija.
 const LEGAL = acceptedDocuments().map(({ doc, title, version, url }) => ({ doc, title, version, url }));
 
@@ -147,6 +150,8 @@ const QUESTIONS = [
         <meta name="description" content="Crea tu cuenta de Midaz en minutos: cuéntanos de tu negocio, te recomendamos un plan y te contactamos." />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
+        <meta name="robots" content={robots} />
+        {canonical && <link rel="canonical" href={canonical} />}
         <title>Empieza con Midaz | Midaz</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
