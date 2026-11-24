@@ -1,6 +1,7 @@
 ---
 import "../styles/globals.css";
 import WhatsAppButton from "../components/landing/WhatsAppButton.astro";
+import { SOCIAL } from "../data/contacto.mjs";
 
 const {
     title = "Midaz: facturación, ventas e inventario para tu negocio",
@@ -27,6 +28,7 @@ const jsonLd = {
             "@type": "Organization",
             name: "Midaz",
             logo: Astro.site ? new URL("/logo-blue.svg", Astro.site).href : "/logo-blue.svg",
+            sameAs: Object.values(SOCIAL),
             ...(Astro.site && { url: Astro.site.href }),
         },
         {

@@ -1,15 +1,16 @@
 ---
 import { LEGAL_DOCS, LEGAL_ORDER } from "../../data/legal.mjs";
-import { CONTACT } from "../../data/contacto.mjs";
+import { CONTACT, SOCIAL } from "../../data/contacto.mjs";
 
 // En la portada los enlaces son anclas de la misma página; en las demás páginas llevan a la portada.
 const { home = true } = Astro.props;
 const base = home ? "" : "/";
 const socials = [
-    { name: "Facebook", href: "#", src: "/landing/icons/facebook.svg", w: 11, h: 22, box: 22, ml: 0 },
-    { name: "LinkedIn", href: "#", src: "/landing/icons/linkedin.svg", w: 22, h: 22, box: 22, ml: 20 },
-    { name: "X", href: "#", src: "/landing/icons/x.svg", w: 23, h: 23, box: 23, ml: 27 },
-    { name: "Instagram", href: "#", src: "/landing/icons/instagram.svg", w: 22, h: 22, box: 22, ml: 27 },
+    { name: "Facebook", href: SOCIAL.facebook, src: "/landing/icons/facebook.svg", w: 11, h: 22, box: 22, ml: 0 },
+    { name: "LinkedIn", href: SOCIAL.linkedin, src: "/landing/icons/linkedin.svg", w: 22, h: 22, box: 22, ml: 20 },
+    { name: "X", href: SOCIAL.x, src: "/landing/icons/x.svg", w: 23, h: 23, box: 23, ml: 27 },
+    { name: "Instagram", href: SOCIAL.instagram, src: "/landing/icons/instagram.svg", w: 22, h: 22, box: 22, ml: 27 },
+    { name: "TikTok", href: SOCIAL.tiktok, src: "/landing/icons/tiktok.svg", w: 22, h: 22, box: 22, ml: 27 },
 ];
 const ecosystem = [
     ["Midaz Web", "Fila Cero", "Atlas", "Ágora"],
@@ -52,10 +53,10 @@ const link = "text-sm font-semibold leading-5 text-white hover:underline";
         <p class="pt-[14px] text-center text-sm font-medium leading-5 tracking-[-0.35px] text-white/90">
             Tu cerebro operativo y fiscal. Factura, cobra y te ayuda a cumplir con el SENIAT desde un solo sistema.
         </p>
-        <nav aria-label="Redes sociales" class="flex w-[170px] items-start pb-12 pt-10">
+        <nav aria-label="Redes sociales" class="flex items-start pb-12 pt-10">
             {
                 socials.map((s) => (
-                    <a href={s.href} aria-label={s.name} class="flex shrink-0 items-center justify-center opacity-100 transition-opacity hover:opacity-80" style={`width:${s.box}px;height:${s.box}px;margin-left:${s.ml}px`}>
+                    <a href={s.href} target="_blank" rel="noopener" aria-label={`Midaz en ${s.name}`} class="flex shrink-0 items-center justify-center opacity-100 transition-opacity hover:opacity-80" style={`width:${s.box}px;height:${s.box}px;margin-left:${s.ml}px`}>
                         <img src={s.src} alt="" width={s.w} height={s.h} />
                     </a>
                 ))
