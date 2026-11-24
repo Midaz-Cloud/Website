@@ -1,4 +1,5 @@
-// Función de Vercel: recibe la solicitud de alta de /comenzar y la envía por correo a soporte desde una cuenta de Gmail.
+// Función de Vercel: recibe la solicitud de /comenzar (demo o alta, con el plan y su cotización) y la envía por correo
+// a soporte desde una cuenta de Gmail.
 // Variables en Vercel: GMAIL_USER y GMAIL_APP_PASSWORD (contraseña de aplicación de Google, no la normal),
 // y ALTA_TO (destinatario, por defecto soporte@midazve.com).
 // Opcional: EVIDENCIA_URL (y EVIDENCIA_TOKEN) para enviar la evidencia de aceptación al registro inalterable de Midaz
@@ -8,8 +9,8 @@ import { acceptedDocuments } from "../src/data/legal.mjs";
 
 const FIELDS = {
     name: "Nombre",
-    company: "Empresa",
-    rif: "RIF",
+    company: "Comercio",
+    rif: "Cédula o RIF",
     email: "Correo",
     phone: "Teléfono",
     plan: "Plan",
@@ -59,8 +60,11 @@ export default async function handler(req, res) {
         comercial: aceptacion.comercial === true,
     };
 
-    // Respuestas de solo tocar sobre el negocio ("Pregunta: respuesta").
-    const perfil = (Array.isArray(body.perfil) ? body.perfil : []).slice(0, 12).map(clean).filter(Boolean);
+    // Respuestas de solo tocar sobre el negocio ("Pregunta: respuesta") y líneas de la cotización del plan.
+    const perfil = (Array.isArray(body.perfil) ? body.perfil : []).slice(0, 16).map(clean).filter(Boolean);
+    const cotizacion = (Array.isArray(body.cotizacion) ? body.cotizacion : []).slice(0, 10).map(clean).filter(Boolean);
+    // Qué pidió el cliente: ver una demo con un asesor (por defecto) o activar su plan.
+    const demo = body.modalidad !== "activar";
 
     const user = process.env.GMAIL_USER;
     const pass = process.env.GMAIL_APP_PASSWORD;
@@ -86,9 +90,12 @@ export default async function handler(req, res) {
     }
 
     const text = [
-        "Nueva solicitud de alta en Midaz",
+        demo ? "Solicitud de demo de Midaz" : "Nueva solicitud de alta en Midaz",
+        "",
+        `Quiere: ${demo ? "ver una demo con un asesor" : "activar su plan"}`,
         "",
         ...Object.entries(FIELDS).map(([k, label]) => `- ${label}: ${data[k]}`),
+        ...(cotizacion.length ? ["", "Cotización", ...cotizacion.map((l) => `- ${l}`)] : []),
         ...(perfil.length ? ["", "Negocio", ...perfil.map((l) => `- ${l}`)] : []),
         "",
         "Aceptación",
@@ -100,7 +107,7 @@ export default async function handler(req, res) {
         `- Consentimiento comercial: ${evidencia.comercial ? "sí" : "no"}`,
         ...(registro ? [`- Evidencia: ${registro}`] : []),
         "",
-        "Contactar al cliente para el pago y crear su usuario.",
+        demo ? "Contactar al cliente para coordinar la demo." : "Contactar al cliente para el pago y crear su usuario.",
     ].join("\n");
 
     try {
@@ -109,7 +116,7 @@ export default async function handler(req, res) {
             from: `Midaz <${user}>`,
             to: process.env.ALTA_TO || "soporte@midazve.com",
             replyTo: data.email,
-            subject: `Alta Midaz: ${data.company} · ${data.plan}`,
+            subject: `${demo ? "Demo" : "Alta"} Midaz: ${data.company} · ${data.plan}`,
             text,
         });
     } catch (e) {

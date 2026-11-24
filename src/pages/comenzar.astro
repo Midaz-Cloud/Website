@@ -1,6 +1,8 @@
 ---
-// Alta rápida: preguntas de solo tocar sobre el negocio, plan recomendado y datos de contacto.
-// La solicitud llega sola a soporte por correo (api/alta.js) y un asesor contacta al cliente.
+// Probar Midaz: preguntas de solo tocar sobre el negocio, plan recomendado con su cotización y datos de contacto.
+// La solicitud llega sola a soporte por correo (api/alta.js) y un asesor contacta al cliente para la demo o el alta.
+// Planes y precios salen del catálogo comercial (catalogo.midazlatam.com): si cambian allá, se actualizan aquí en PLANS.
+// Por ahora el formulario no ofrece complementos ni equipos (Fila Cero, Citas, Midaz Pay, Kiosko Atlas).
 import "../styles/onboarding.css";
 import { acceptedDocuments } from "../data/legal.mjs";
 import { CONTACT } from "../data/contacto.mjs";
@@ -10,42 +12,53 @@ const SUPPORT_EMAIL = CONTACT.email;
 // Documentos que el cliente acepta al enviar: versión vigente de cada uno, con su URL fija.
 const LEGAL = acceptedDocuments().map(({ doc, title, version, url }) => ({ doc, title, version, url }));
 
+// Planes del ERP web, del más chico al más grande: el orden es el nivel (tier) que usa la recomendación.
+// Precios en REF + IVA; monthly/annual en null = a medida.
 const PLANS = [
     {
-        id: "web-mensual",
-        product: "Midaz Web",
-        name: "Mensual",
-        price: 29,
-        period: "/mes",
-        description: "Pago flexible, sin compromiso",
-        features: ["Sistema web desde cualquier PC o tablet", "Conexión a impresoras fiscales", "Tasa BCV automática", "Soporte en horario de atención"],
+        id: "arranca",
+        name: "Arranca",
+        monthly: 0,
+        annual: 0,
+        description: "Empieza gratis y paga solo si subes de plan",
+        limits: "1 sucursal · 1 caja · 1 usuario · hasta 200 productos",
+        features: ["Ventas y factura fiscal digital", "Inventario básico", "Impuestos, tasas e indicadores", "Guías y videos paso a paso"],
     },
     {
-        id: "web-anual",
-        product: "Midaz Web",
-        name: "Anual",
-        price: 290,
-        period: "/año",
-        description: "Ahorras el equivalente a 2 meses",
-        features: ["Todo lo del Mensual", "Multiusuario y multisede", "Reportes avanzados exportables", "Soporte en horario de atención"],
+        id: "mi-negocio",
+        name: "Mi Negocio",
+        monthly: 15,
+        annual: 150,
+        description: "Para un local con una o dos cajas",
+        limits: "1 sucursal · 2 cajas · 3 usuarios · productos ilimitados",
+        features: ["Todo lo de Arranca", "Clientes y cuentas por cobrar (el fiado)", "Soporte por WhatsApp de lunes a viernes"],
     },
     {
-        id: "agora-emprendedor",
-        product: "Ágora",
-        name: "Emprendedor",
-        price: 49,
-        period: "/mes",
-        description: "Para un local y una caja",
-        features: ["Terminal fiscal incluido", "App Android y panel web", "Inventario hasta 500 productos", "Soporte en horario de atención"],
+        id: "crece",
+        name: "Crece",
+        monthly: 35,
+        annual: 350,
+        description: "Para crecer hasta 3 sucursales",
+        limits: "Hasta 3 sucursales · cajas ilimitadas · 10 usuarios",
+        features: ["Todo lo de Mi Negocio", "Compras y proveedores", "Tesorería: control de caja y bancos", "Puedes sumar Citas y Fila Cero"],
     },
     {
-        id: "agora-empresarial",
-        product: "Ágora",
-        name: "Empresarial",
-        price: 99,
-        period: "/mes",
-        description: "Varias cajas y sedes",
-        features: ["Todo lo del Emprendedor", "Hasta 5 cajeros", "Inventario ilimitado y multisede", "Conciliación bancaria automática"],
+        id: "empresa",
+        name: "Empresa",
+        monthly: 65,
+        annual: 650,
+        description: "Para varias sucursales",
+        limits: "Sucursales y cajas ilimitadas · 25 usuarios",
+        features: ["Todo lo de Crece", "Contabilidad y nómina", "Auditoría", "Acceso para tu contador"],
+    },
+    {
+        id: "cadena",
+        name: "Cadena",
+        monthly: null,
+        annual: null,
+        description: "Para cadenas y franquicias",
+        limits: "Sucursales, cajas y usuarios ilimitados",
+        features: ["Todo lo de Empresa", "Citas y Fila Cero incluidos", "Hermez, asistente con IA", "Soporte preferencial con SLA"],
     },
 ];
 
@@ -60,8 +73,8 @@ const QUESTIONS = [
             ["retail", "Tienda o comercio", "Ropa, víveres, ferretería, tecnología…"],
             ["food", "Restaurante o comida", "Restaurante, cafetería, comida rápida"],
             ["pharmacy", "Farmacia"],
+            ["services", "Servicios o clínica", "Consultorio, clínica, taller, peluquería…"],
             ["wholesale", "Mayorista o distribuidora", "Vendes a otros negocios"],
-            ["services", "Servicios", "Consultorio, taller, agencia, academia…"],
             ["other", "Otro"],
         ],
     },
@@ -93,33 +106,61 @@ const QUESTIONS = [
     },
     {
         key: "branches",
-        short: "Sedes",
-        title: "¿Cuántas sedes tienes?",
-        options: [["1", "Una"], ["2-5", "De 2 a 5"], ["6+", "Más de 5"]],
+        short: "Sucursales",
+        title: "¿Cuántas sucursales tienes?",
+        options: [
+            ["1", "Una"],
+            ["2-3", "2 o 3"],
+            ["4+", "4 o más"],
+            ["chain", "Cadena o franquicia", "Muchas sucursales con la misma marca"],
+        ],
     },
     {
         key: "registers",
         short: "Cajas",
         title: "¿Cuántas cajas cobran a la vez?",
-        hint: "Contando todas tus sedes.",
-        options: [["1", "Una"], ["2-3", "2 o 3"], ["4+", "4 o más"]],
+        hint: "Contando todas tus sucursales.",
+        options: [["1", "Una"], ["2", "Dos"], ["3+", "3 o más"]],
     },
     {
-        key: "invoicing",
-        short: "Facturación",
-        title: "¿Cómo facturas hoy?",
-        options: [
-            ["fiscal", "Con máquina fiscal"],
-            ["digital", "Factura digital o forma libre"],
-            ["none", "Todavía no facturo"],
-        ],
+        key: "users",
+        short: "Usuarios",
+        title: "¿Cuántas personas usarán Midaz?",
+        hint: "Cajeros, administración y dueños, en todas tus sucursales.",
+        options: [["1", "Solo yo"], ["2-3", "2 o 3"], ["4-10", "De 4 a 10"], ["11-25", "De 11 a 25"], ["25+", "Más de 25"]],
     },
     {
         key: "products",
         only: ["retail", "food", "pharmacy", "wholesale", "other"],
         short: "Productos",
         title: "¿Cuántos productos manejas?",
-        options: [["<500", "Menos de 500"], ["500-5000", "De 500 a 5.000"], ["5000+", "Más de 5.000"]],
+        options: [["<200", "Menos de 200"], ["200-5000", "De 200 a 5.000"], ["5000+", "Más de 5.000"]],
+    },
+    {
+        key: "invoicing",
+        short: "Facturación",
+        title: "¿Cómo facturas hoy?",
+        hint: "Desde el 19 de abril de 2027 ya no se podrá facturar en forma libre (Providencia SNAT/2026/00093). Midaz emite tu factura fiscal con imprenta digital autorizada (HKA y Unidigital).",
+        options: [
+            ["fiscal", "Con máquina fiscal"],
+            ["digital", "Con factura digital"],
+            ["free", "En forma libre", "Talonario de imprenta"],
+            ["none", "Todavía no facturo"],
+        ],
+    },
+    {
+        key: "system",
+        short: "Sistema actual",
+        title: "¿Qué sistema usas hoy?",
+        hint: "Te ayudamos a pasar tus datos a Midaz sin perderlos, también desde Excel.",
+        options: [
+            ["saint", "Saint"],
+            ["profit", "Profit"],
+            ["galac", "Gálac"],
+            ["valery", "Valery"],
+            ["other", "Otro sistema"],
+            ["none", "Ninguno", "Excel, cuaderno o estoy empezando"],
+        ],
     },
     {
         key: "goals",
@@ -130,13 +171,18 @@ const QUESTIONS = [
         options: [
             ["billing", "Facturar más rápido"],
             ["stock", "Controlar el inventario"],
-            ["credit", "Ventas a crédito y cobranza"],
-            ["branches", "Ver todas mis sedes"],
+            ["credit", "Fiado y cuentas por cobrar"],
+            ["purchases", "Compras y proveedores"],
+            ["treasury", "Caja y bancos"],
+            ["accounting", "Contabilidad y nómina"],
+            ["branches", "Ver todas mis sucursales"],
             ["reports", "Reportes y cierres de caja"],
-            ["payments", "Cobrar con punto o Pago Móvil"],
         ],
     },
 ];
+
+// Mismos tipos de documento que el cotizador del catálogo.
+const DOC_TYPES = ["J", "V", "E", "G", "P", "C"];
 ---
 
 <!doctype html>
@@ -144,10 +190,13 @@ const QUESTIONS = [
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-        <meta name="description" content="Crea tu cuenta de Midaz en minutos: cuéntanos de tu negocio, te recomendamos un plan y te contactamos." />
+        <meta
+            name="description"
+            content="Prueba Midaz: cuéntanos de tu negocio, te recomendamos un plan con su precio y un asesor te contacta para la demo o para activar tu cuenta."
+        />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
-        <title>Empieza con Midaz | Midaz</title>
+        <title>Prueba Midaz | Midaz</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -165,15 +214,38 @@ const QUESTIONS = [
             }
             .plan:hover { border-color: var(--blue); }
             .plan[aria-pressed="true"] { border-color: var(--blue); background: var(--blue-soft); }
-            .plan .prod { font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); }
-            .plan .name { font-family: "Funnel Display", serif; font-size: 18px; font-weight: 700; color: var(--heading); }
+            .plan .name { font-family: "Funnel Display", serif; font-size: 18px; font-weight: 700; color: var(--heading); padding-right: 96px; }
             .plan .price { font-size: 26px; font-weight: 700; color: var(--heading); font-variant-numeric: tabular-nums; }
             .plan .price small { font-size: 13px; font-weight: 600; color: var(--text-dim); }
+            .plan .save { font-size: 12px; font-weight: 700; color: var(--good); }
             .plan .desc { font-size: 13px; color: var(--text-dim); }
+            .plan .limits { font-size: 12.5px; color: var(--text-faint); }
             .plan ul { margin: 6px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
             .plan li { font-size: 13px; padding-left: 18px; position: relative; }
             .plan li::before { content: "✓"; position: absolute; left: 0; color: var(--good); font-weight: 700; }
             .plan .tag { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; background: var(--amber); color: var(--navy); }
+            .period { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--border); margin-bottom: 14px; }
+            .period button { font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--text-dim); background: transparent; border: 0; border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+            .period button[aria-pressed="true"] { background: var(--surface); color: var(--heading); box-shadow: var(--shadow); }
+            .period small { font-size: 12px; font-weight: 700; color: var(--good); margin-left: 4px; }
+            .quote { margin-top: 16px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
+            .quote h3 { font-size: 16px; margin-bottom: 6px; }
+            .quote .row { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; font-size: 13.5px; padding: 7px 0; border-top: 1px solid var(--border); }
+            .quote .row > :last-child { text-align: right; }
+            .quote .row b { color: var(--heading); font-variant-numeric: tabular-nums; white-space: nowrap; }
+            .quote .row.total { font-size: 15px; font-weight: 700; color: var(--heading); }
+            .quote .row.total b { font-size: 17px; white-space: normal; }
+            .quote .fine { font-size: 12.5px; color: var(--text-faint); margin: 12px 0 0; line-height: 1.5; }
+            .nav-total { display: flex; flex-direction: column; align-items: flex-end; text-align: right; font-size: 12px; color: var(--text-dim); line-height: 1.3; }
+            .nav-total b { font-size: 15px; color: var(--heading); font-variant-numeric: tabular-nums; }
+            .quote .row.total > span { white-space: nowrap; }
+            /* En pantallas angostas, el total y la nota de lo que falta van en su propia fila, sobre los botones. */
+            @media (max-width: 560px) {
+                .step-nav { flex-wrap: wrap; }
+                .step-nav .nav-total, .step-nav .missing-note, .step-nav .err { order: -1; flex-basis: 100%; }
+                .step-nav .nav-total { flex-direction: row; justify-content: space-between; align-items: baseline; gap: 12px; }
+                .step-nav .missing-note:empty { display: none; }
+            }
             .hint { font-size: 12.5px; color: var(--text-faint); }
             .hint a, .err a { color: var(--blue); font-weight: 600; }
             .err { font-size: 13px; color: var(--bad); }
@@ -195,6 +267,12 @@ const QUESTIONS = [
                 border: 1.5px solid var(--border); border-radius: 5px; background: var(--surface);
             }
             .opt.multi[aria-pressed="true"]::before { content: "✓"; color: #fff; background: var(--blue); border-color: var(--blue); font-size: 13px; font-weight: 700; line-height: 18px; text-align: center; }
+            .modes { margin-bottom: 20px; }
+            .doc { display: grid; grid-template-columns: 76px 1fr; gap: 8px; }
+            select {
+                width: 100%; border: 1px solid var(--border); border-radius: 9px; background: var(--surface);
+                color: var(--text); padding: 11px 10px; font-size: 14.5px; font-family: inherit;
+            }
             .consent { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
             .check-row { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text); cursor: pointer; }
             .check-row input { flex: none; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--blue); cursor: pointer; }
@@ -204,6 +282,7 @@ const QUESTIONS = [
             .done-box .check { width: 56px; height: 56px; border-radius: 99px; background: var(--good-bg); color: var(--good); font-size: 28px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; }
             .done-box p { color: var(--text-dim); font-size: 14.5px; line-height: 1.55; max-width: 46ch; margin: 10px auto 0; }
             .done-box .btn { margin-top: 18px; }
+            footer.foot a { color: var(--blue); font-weight: 600; }
         </style>
     </head>
     <body>
@@ -213,8 +292,8 @@ const QUESTIONS = [
                 <img class="logo-dark" src="/logo-white.svg" alt="" aria-hidden="true" />
             </a>
             <header class="topbar">
-                <span class="eyebrow">Midaz · Empieza hoy</span>
-                <h1>Crea tu cuenta</h1>
+                <span class="eyebrow">Midaz · Prueba Midaz</span>
+                <h1>Arma tu Midaz</h1>
             </header>
 
             <div class="step-progress">
@@ -224,15 +303,18 @@ const QUESTIONS = [
 
             <div id="stepContainer"></div>
 
-            <footer class="foot">¿Prefieres que te acompañemos? Escríbenos a {SUPPORT_EMAIL}.</footer>
+            <footer class="foot">
+                ¿Prefieres hablar con alguien? Escríbenos por <a href={CONTACT.whatsappUrl} target="_blank" rel="noopener">WhatsApp al {CONTACT.whatsappText}</a>
+                ({CONTACT.hours.toLowerCase()}) o a <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+            </footer>
         </div>
 
-        <script is:inline define:vars={{ SUPPORT_EMAIL, PLANS, QUESTIONS, LEGAL }}>
+        <script is:inline define:vars={{ SUPPORT_EMAIL, PLANS, QUESTIONS, DOC_TYPES, LEGAL }}>
             (function () {
                 "use strict";
 
-                var STORE_KEY = "midaz-alta-v3";
-                var state = load() || { step: 0, answers: {}, plan: null, data: {} };
+                var STORE_KEY = "midaz-alta-v4";
+                var state = load() || { step: 0, answers: {}, plan: null, period: "monthly", mode: "demo", data: {} };
                 var A = state.answers, D = state.data;
                 var container = document.getElementById("stepContainer");
 
@@ -244,10 +326,9 @@ const QUESTIONS = [
                         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
                     });
                 }
-                function usd(n) { return "$" + n.toLocaleString("en-US"); }
+                function ref(n) { return "REF " + n.toLocaleString("es-VE"); }
                 function validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v || ""); }
                 function digits(v) { return (v || "").replace(/\D/g, ""); }
-                function validRif(v) { return /^[VEJGPC]-?\d{6,9}(-?\d)?$/i.test((v || "").trim()); }
 
                 // Algunas preguntas solo aplican según el tipo de negocio.
                 function applies(q) {
@@ -263,14 +344,42 @@ const QUESTIONS = [
                 }
                 function answered(q) { return q.multi ? (A[q.key] || []).length > 0 : !!A[q.key]; }
                 function optionLabel(q, v) { var o = q.options.filter(function (x) { return x[0] === v; })[0]; return o ? o[1] : v; }
+                function has(key, v) { return (A[key] || []).indexOf(v) !== -1; }
 
-                function recommended() {
-                    var physical = ["retail", "food", "pharmacy", "wholesale"].indexOf(A.type) !== -1;
-                    var big = A.branches !== "1" || A.registers !== "1" || A.products === "500-5000" || A.products === "5000+";
-                    if (physical && A.invoicing !== "digital") return big ? "agora-empresarial" : "agora-emprendedor";
-                    return big ? "web-anual" : "web-mensual";
+                // Plan recomendado (índice en PLANS): el mayor de los mínimos que piden el rubro, el tamaño y lo que quiere resolver.
+                // Sigue la guía de cierre del catálogo (1 o 2 cajas: Mi Negocio; hasta 3 sucursales: Crece; varias: Empresa)
+                // y los límites de cada plan.
+                function recommendedTier() {
+                    var t = 0;
+                    function atLeast(n) { if (n > t) t = n; }
+                    if (A.type === "food" || A.type === "pharmacy") atLeast(2);
+                    if (A.branches === "chain") atLeast(4); else if (A.branches === "4+") atLeast(3); else if (A.branches === "2-3") atLeast(2);
+                    if (A.registers === "3+") atLeast(2); else if (A.registers === "2") atLeast(1);
+                    if (A.users === "25+") atLeast(4); else if (A.users === "11-25") atLeast(3); else if (A.users === "4-10") atLeast(2); else if (A.users === "2-3") atLeast(1);
+                    if (A.products && A.products !== "<200") atLeast(1);
+                    if (has("goals", "accounting")) atLeast(3);
+                    if (has("goals", "purchases") || has("goals", "treasury")) atLeast(2);
+                    if (has("goals", "credit")) atLeast(1);
+                    return t;
                 }
-                function plan() { return PLANS.filter(function (p) { return p.id === state.plan; })[0] || null; }
+                function recommended() { return PLANS[recommendedTier()].id; }
+                function tierOf(id) { for (var i = 0; i < PLANS.length; i++) if (PLANS[i].id === id) return i; return -1; }
+                function plan() { return PLANS[tierOf(state.plan)] || null; }
+
+                // Precio del plan según la forma de pago elegida.
+                function planPrice(p) {
+                    if (p.monthly == null) return { main: "A medida", per: "" };
+                    if (p.monthly === 0) return { main: ref(0), per: " sin mensualidad" };
+                    return state.period === "annual" ? { main: ref(p.annual), per: "/año", save: "Ahorras " + ref(p.monthly * 12 - p.annual) } : { main: ref(p.monthly), per: "/mes" };
+                }
+
+                // Total del plan elegido según la forma de pago.
+                function total() {
+                    var p = plan();
+                    if (p.monthly == null) return "A medida";
+                    if (p.monthly === 0) return ref(0) + ", sin mensualidad";
+                    return state.period === "annual" ? ref(p.annual) + "/año + IVA" : ref(p.monthly) + "/mes + IVA";
+                }
 
                 function legalLink(doc) {
                     var d = LEGAL.filter(function (x) { return x.doc === doc; })[0];
@@ -279,11 +388,17 @@ const QUESTIONS = [
                 // La aceptación no se guarda: la casilla empieza desmarcada cada vez que se muestra el paso.
                 var consent = { accepted: false, marketing: false };
 
+                // Cédula o RIF: letra + número. Con 9 dígitos es un RIF y lleva el dígito verificador aparte (J-50863327-0).
+                function docText() {
+                    var n = digits(D.docNumber);
+                    return (D.docType || "J") + "-" + (n.length === 9 ? n.slice(0, 8) + "-" + n.slice(8) : n);
+                }
                 function missingData() {
                     var m = [];
                     if (!D.name || !D.name.trim()) m.push("tu nombre");
-                    if (!D.company || !D.company.trim()) m.push("la empresa");
-                    if (!validRif(D.rif)) m.push("RIF válido");
+                    if (!D.company || !D.company.trim()) m.push("el nombre del comercio");
+                    var n = digits(D.docNumber).length;
+                    if (n < 6 || n > 9) m.push("cédula o RIF");
                     if (!validEmail(D.email)) m.push("correo válido");
                     if (digits(D.phone).length < 10) m.push("teléfono");
                     return m;
@@ -354,7 +469,6 @@ const QUESTIONS = [
                             A[q.key] = v;
                             // Si cambia el tipo de negocio, se borran las respuestas que ya no aplican.
                             QUESTIONS.forEach(function (x) { if (!applies(x)) delete A[x.key]; });
-                            if (!state.planTouched) state.plan = null;
                             container.querySelectorAll(".opt").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
                             persist();
                             setTimeout(function () { goTo(state.step + 1); }, 220);
@@ -366,30 +480,58 @@ const QUESTIONS = [
                     if (n) n.addEventListener("click", function () { goTo(state.step + 1); });
                 }
 
-                function renderPlans() {
+                function renderPlans(focusSel) {
                     var rec = recommended();
-                    if (!state.plan) state.plan = rec;
+                    // Mientras el cliente no elija otro, el plan sigue a la recomendación (cambia si cambian las respuestas).
+                    if (!state.plan || !state.planTouched) state.plan = rec;
+                    var p = plan();
                     container.innerHTML =
-                        '<div class="step-intro"><h2>Este es el plan para tu negocio</h2><p>Lo elegimos con tus respuestas. Si prefieres otro, tócalo. Precios en dólares, pagas en bolívares a la tasa BCV del día.</p></div>' +
-                        // El recomendado va primero para que se vea sin bajar.
-                        '<div class="plans">' + PLANS.slice().sort(function (a, b) { return (b.id === rec) - (a.id === rec); }).map(function (p) {
-                            return '<button type="button" class="plan" data-id="' + p.id + '" aria-pressed="' + (state.plan === p.id) + '">' +
-                                (p.id === rec ? '<span class="tag">Recomendado para ti</span>' : "") +
-                                '<span class="prod">' + esc(p.product) + '</span><span class="name">' + esc(p.name) + "</span>" +
-                                '<span class="price">' + usd(p.price) + "<small>" + p.period + "</small></span>" +
-                                '<span class="desc">' + esc(p.description) + "</span>" +
-                                "<ul>" + p.features.map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul></button>";
+                        '<div class="step-intro"><h2>Este es el plan para tu negocio</h2><p>Lo elegimos con tus respuestas. Si prefieres otro, tócalo. Sin permanencia: cambias de plan cuando tu negocio lo pida.</p></div>' +
+                        '<div class="period" role="group" aria-label="Forma de pago">' +
+                            '<button type="button" data-period="monthly" aria-pressed="' + (state.period !== "annual") + '">Mensual</button>' +
+                            '<button type="button" data-period="annual" aria-pressed="' + (state.period === "annual") + '">Anual<small>12 meses por el precio de 10</small></button>' +
+                        "</div>" +
+                        // El recomendado va primero para que se vea sin bajar; los demás, de menor a mayor.
+                        '<div class="plans">' + PLANS.slice().sort(function (a, b) { return (b.id === rec) - (a.id === rec); }).map(function (x) {
+                            var pr = planPrice(x);
+                            return '<button type="button" class="plan" data-id="' + x.id + '" aria-pressed="' + (state.plan === x.id) + '">' +
+                                (x.id === rec ? '<span class="tag">Recomendado para ti</span>' : "") +
+                                '<span class="name">' + esc(x.name) + "</span>" +
+                                '<span class="price">' + esc(pr.main) + "<small>" + esc(pr.per) + "</small></span>" +
+                                (pr.save ? '<span class="save">' + esc(pr.save) + "</span>" : "") +
+                                '<span class="desc">' + esc(x.description) + "</span>" +
+                                '<span class="limits">' + esc(x.limits) + "</span>" +
+                                "<ul>" + x.features.map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul></button>";
                         }).join("") + "</div>" +
-                        '<div class="step-nav">' + backButton() + '<button type="button" class="btn btn-blue" id="nextBtn">Continuar ▶</button></div>';
+                        '<div class="quote" aria-live="polite">' +
+                            "<h3>Tu cotización</h3>" +
+                            '<div class="row total"><span>Plan ' + esc(p.name) + (p.monthly ? (state.period === "annual" ? " · anual" : " · mensual") : "") + "</span><b>" + esc(total()) + "</b></div>" +
+                            (p.monthly == null ? '<p class="fine">Te cotizamos según tus sucursales y lo que necesite tu negocio.</p>' : "") +
+                            '<p class="fine">Precios en REF + IVA: pagas en bolívares a la tasa BCV del día.' +
+                                (state.period === "annual" && p.annual ? " En plan anual, los primeros 1.000 comercios mantienen su precio de fundador por 24 meses." : "") + "</p>" +
+                        "</div>" +
+                        // El total también va en la barra fija: con cinco planes, la cotización queda debajo del pliegue.
+                        '<div class="step-nav">' + backButton() +
+                            '<span class="nav-fill nav-total">' + esc(p.monthly == null ? "Plan " + p.name : "Total sugerido") + "<b>" + esc(total()) + "</b></span>" +
+                            '<button type="button" class="btn btn-blue" id="nextBtn">Continuar ▶</button></div>';
                     persist();
                     container.querySelectorAll(".plan").forEach(function (b) {
                         b.addEventListener("click", function () {
                             state.plan = b.dataset.id;
                             state.planTouched = state.plan !== rec;
-                            container.querySelectorAll(".plan").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
                             persist();
+                            renderPlans('.plan[data-id="' + state.plan + '"]');
                         });
                     });
+                    container.querySelectorAll("[data-period]").forEach(function (b) {
+                        b.addEventListener("click", function () {
+                            state.period = b.dataset.period;
+                            persist();
+                            renderPlans('[data-period="' + state.period + '"]');
+                        });
+                    });
+                    // Al volver a pintar, el foco queda en el botón que se tocó (teclado y lector de pantalla).
+                    if (focusSel) { var f = container.querySelector(focusSel); if (f) f.focus({ preventScroll: true }); }
                     bindBack();
                     $("nextBtn").addEventListener("click", function () { goTo(state.step + 1); });
                 }
@@ -405,21 +547,37 @@ const QUESTIONS = [
                         return q.short + ": " + text;
                     });
                 }
-                function planText() { var p = plan(); return p.product + " " + p.name + " (" + usd(p.price) + p.period + ")" + (p.id === recommended() ? "" : " · elegido por el cliente"); }
+                function planText() {
+                    var p = plan(), pr = planPrice(p);
+                    return p.name + (p.monthly ? (state.period === "annual" ? " anual" : " mensual") : "") + " (" + pr.main + pr.per + ")" +
+                        (p.id === recommended() ? "" : " · elegido por el cliente; recomendado: " + PLANS[recommendedTier()].name);
+                }
+                var MODES = [
+                    ["demo", "Quiero ver una demo", "Un asesor te muestra Midaz con tu negocio"],
+                    ["activar", "Quiero activar mi plan", "Te escribimos para el pago y crear tu usuario"],
+                ];
 
                 function renderData() {
                     container.innerHTML =
-                        '<div class="step-intro"><h2>¿A quién contactamos?</h2><p>Último paso. Con esto te escribimos para activar tu cuenta.</p></div>' +
+                        '<div class="step-intro"><h2>¿Cómo quieres empezar?</h2><p>Último paso. Con esto un asesor de Midaz te escribe.</p></div>' +
+                        '<div class="opts modes">' + MODES.map(function (m) {
+                            return '<button type="button" class="opt" data-mode="' + m[0] + '" aria-pressed="' + (state.mode === m[0]) + '"><b>' + esc(m[1]) + "</b><small>" + esc(m[2]) + "</small></button>";
+                        }).join("") + "</div>" +
                         '<div class="profile-fields">' +
                             '<div class="two">' +
                                 field("fName", "Tu nombre", "text", "Nombre y apellido", D.name, 'autocomplete="name"') +
-                                field("fCompany", "Empresa", "text", "Ej. Farmacia La Salud, C.A.", D.company, 'autocomplete="organization"') +
+                                field("fCompany", "Nombre del comercio", "text", "Ej. Farmacia La Salud, C.A.", D.company, 'autocomplete="organization"') +
                             "</div>" +
                             '<div class="two">' +
-                                field("fRif", "RIF de la empresa", "text", "J-12345678-9", D.rif, 'autocapitalize="characters"') +
+                                '<div class="field"><label for="fDoc">Cédula o RIF</label><div class="doc">' +
+                                    '<select id="fDocType" aria-label="Tipo de documento">' + DOC_TYPES.map(function (t) {
+                                        return "<option" + ((D.docType || "J") === t ? " selected" : "") + ">" + t + "</option>";
+                                    }).join("") + "</select>" +
+                                    '<input id="fDoc" type="text" inputmode="numeric" placeholder="12345678-9" value="' + esc(D.docNumber) + '">' +
+                                "</div></div>" +
                                 field("fPhone", "Teléfono o WhatsApp", "tel", "0414 123 4567", D.phone, 'inputmode="tel" autocomplete="tel"') +
                             "</div>" +
-                            field("fEmail", "Correo", "email", "tu@empresa.com", D.email, 'inputmode="email" autocomplete="email"') +
+                            field("fEmail", "Correo", "email", "tu@comercio.com", D.email, 'inputmode="email" autocomplete="email"') +
                         "</div>" +
                         '<div class="consent">' +
                             '<label class="check-row"><input type="checkbox" id="fAccept" required> <span>He leído y acepto los ' + legalLink("terminos") +
@@ -437,9 +595,25 @@ const QUESTIONS = [
                         $("missingNote").textContent = m.length ? "Falta: " + m.join(", ") : "";
                         $("missingNote").hidden = !m.length;
                     }
-                    var map = { fName: "name", fCompany: "company", fRif: "rif", fPhone: "phone", fEmail: "email" };
+                    container.querySelectorAll("[data-mode]").forEach(function (b) {
+                        b.addEventListener("click", function () {
+                            state.mode = b.dataset.mode;
+                            container.querySelectorAll("[data-mode]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+                            persist();
+                        });
+                    });
+                    var map = { fName: "name", fCompany: "company", fPhone: "phone", fEmail: "email" };
                     Object.keys(map).forEach(function (id) {
                         $(id).addEventListener("input", function () { D[map[id]] = this.value; persist(); update(); });
+                    });
+                    $("fDocType").addEventListener("change", function () { D.docType = this.value; persist(); });
+                    $("fDoc").addEventListener("input", function () {
+                        // Si pegan el documento completo (J-12345678-9), la letra pasa al selector.
+                        var m = /^\s*([VEJGPC])/i.exec(this.value);
+                        if (m) { D.docType = m[1].toUpperCase(); $("fDocType").value = D.docType; this.value = this.value.replace(/^\s*[A-Za-z]-?\s*/, ""); }
+                        D.docNumber = this.value;
+                        persist();
+                        update();
                     });
                     $("fAccept").addEventListener("change", function () { consent.accepted = this.checked; update(); });
                     $("fMarketing").addEventListener("change", function () { consent.marketing = this.checked; });
@@ -455,8 +629,8 @@ const QUESTIONS = [
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                name: D.name, company: D.company, rif: D.rif, email: D.email, phone: D.phone,
-                                plan: planText(), perfil: profile(), website: $("website").value,
+                                name: D.name, company: D.company, rif: docText(), email: D.email, phone: D.phone,
+                                plan: planText(), modalidad: state.mode, perfil: profile(), website: $("website").value,
                                 // La hora, la IP y el navegador los toma el servidor; aquí solo va qué se aceptó.
                                 aceptacion: {
                                     acepta: consent.accepted,
@@ -483,26 +657,27 @@ const QUESTIONS = [
                 }
 
                 function mailto() {
-                    var body = ["Nueva solicitud de alta en Midaz", "", "Cliente",
-                        "- Nombre: " + D.name, "- Empresa: " + D.company, "- RIF: " + D.rif, "- Correo: " + D.email, "- Teléfono: " + D.phone,
+                    var demo = state.mode !== "activar";
+                    var body = [demo ? "Solicitud de demo de Midaz" : "Nueva solicitud de alta en Midaz", "", "Quiere: " + (demo ? "ver una demo con un asesor" : "activar su plan"), "", "Cliente",
+                        "- Nombre: " + D.name, "- Comercio: " + D.company, "- Cédula o RIF: " + docText(), "- Correo: " + D.email, "- Teléfono: " + D.phone,
                         "", "Negocio"].concat(profile().map(function (l) { return "- " + l; }), ["", "Plan: " + planText(), "",
                         "Aceptación: " + LEGAL.map(function (d) { return d.title + " " + d.version; }).join(", "),
                         "Novedades y promociones: " + (consent.marketing ? "sí" : "no")]).join("\n");
-                    return "mailto:" + SUPPORT_EMAIL + "?subject=" + encodeURIComponent("Alta Midaz: " + D.company) + "&body=" + encodeURIComponent(body);
+                    return "mailto:" + SUPPORT_EMAIL + "?subject=" + encodeURIComponent((demo ? "Demo" : "Alta") + " Midaz: " + D.company) + "&body=" + encodeURIComponent(body);
                 }
 
                 function renderDone() {
-                    var p = plan();
+                    var p = plan(), demo = state.mode !== "activar";
                     container.innerHTML =
                         '<div class="done-box">' +
                             '<div class="check">✓</div>' +
-                            "<h2>¡Listo! Te contactaremos</h2>" +
-                            "<p>Recibimos tu solicitud del plan " + esc(p.product + " " + p.name) + ". Un asesor de Midaz te escribirá a <strong>" + esc(D.email) +
-                            "</strong> o al " + esc(D.phone) + " para coordinar el pago y activar tu cuenta.</p>" +
+                            "<h2>" + (demo ? "¡Listo! Te contactaremos para tu demo" : "¡Listo! Te contactaremos") + "</h2>" +
+                            "<p>Recibimos tu solicitud del plan " + esc(p.name) + ". Un asesor de Midaz te escribirá a <strong>" + esc(D.email) +
+                            "</strong> o al " + esc(D.phone) + (demo ? " para mostrarte Midaz con tu negocio." : " para coordinar el pago y activar tu cuenta.") + "</p>" +
                             '<p><button type="button" class="edit-profile-link" id="editBtn">✎ Empezar otra solicitud</button></p>' +
                         "</div>";
                     $("editBtn").addEventListener("click", function () {
-                        state = { step: 0, answers: {}, plan: null, data: {} };
+                        state = { step: 0, answers: {}, plan: null, period: "monthly", mode: "demo", data: {} };
                         A = state.answers; D = state.data;
                         persist();
                         render();
