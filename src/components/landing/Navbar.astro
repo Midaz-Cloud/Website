@@ -6,7 +6,7 @@ const links = [
     { label: "Home", href: "#inicio", active: home },
     { label: "Soluciones", href: "#soluciones" },
     { label: "Nuestros productos", href: "#productos" },
-    { label: "Plataforma", href: "#plataforma" },
+    { label: "Control fiscal", href: "#plataforma" },
     { label: "Dudas", href: "#dudas" },
     { label: "Hermez", href: "#hermez" },
 ].map((l) => ({ ...l, href: base + l.href }));
@@ -52,9 +52,12 @@ const links = [
         <div class="flex items-center gap-3 lg:gap-4">
             <a
                 href="/comenzar"
-                class="hidden justify-center rounded-full border border-landing-navy px-5 py-2 text-center lg:w-[129px] lg:px-0 font-[Inter] text-sm font-semibold leading-5 text-landing-navy shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-colors hover:bg-landing-navy hover:text-white sm:inline-flex"
+                class="hidden items-center justify-center gap-2 whitespace-nowrap rounded-full border border-landing-navy py-2 pl-[19px] pr-[15px] text-center font-[Inter] text-sm font-semibold leading-5 text-landing-navy shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-colors hover:bg-landing-navy hover:text-white sm:inline-flex"
             >
-                Probar Demo
+                Prueba gratis
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="shrink-0">
+                    <path d="M3.33337 8H12.6667M8.66671 12L12.6667 8L8.66671 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
             </a>
             <a
                 href="https://web.midazlatam.com"
@@ -94,7 +97,7 @@ const links = [
                     }
                     <li class="sm:hidden">
                         <a href="/comenzar" class="mt-1 block rounded-xl border border-landing-navy px-3 py-2 text-center font-[Inter] text-sm font-semibold">
-                            Probar Demo
+                            Prueba gratis
                         </a>
                     </li>
                 </ul>
