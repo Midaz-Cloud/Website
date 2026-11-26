@@ -55,14 +55,14 @@ const link = "text-sm font-semibold leading-5 text-white hover:underline";
         <p class="pt-[14px] text-center text-sm font-medium leading-5 tracking-[-0.35px] text-white/90">
             Tu cerebro operativo y fiscal. Factura, cobra y prepara tu información fiscal desde un solo sistema.
         </p>
-        <nav aria-label="Redes sociales" class="flex flex-wrap items-start justify-center gap-4 pb-12 pt-10">
+        <nav aria-label="Redes sociales" class="flex items-start justify-center gap-3 pb-12 pt-10 sm:gap-4">
             {
                 socials.map((s) => (
                     <a
                         href={s.href}
                         {...(s.href.startsWith("mailto:") ? {} : { target: "_blank", rel: "noopener" })}
                         aria-label={s.label}
-                        class="flex size-12 shrink-0 items-center justify-center rounded-full border-[1.5px] border-white transition-colors hover:bg-white/15"
+                        class="flex size-10 shrink-0 items-center justify-center rounded-full border-[1.5px] sm:size-12 border-white transition-colors hover:bg-white/15"
                     >
                         <img src={`/landing/icons/redes/${s.icon}.svg`} alt="" width="22" height="22" class="size-[22px]" />
                     </a>
