@@ -5,12 +5,14 @@ import { CONTACT, SOCIAL } from "../../data/contacto.mjs";
 // En la portada los enlaces son anclas de la misma página; en las demás páginas llevan a la portada.
 const { home = true } = Astro.props;
 const base = home ? "" : "/";
+// Figma "Nav - Social links": círculos de 48 px con borde blanco de 1,5 px, ícono de 22 px y 16 px entre ellos.
 const socials = [
-    { name: "Facebook", href: SOCIAL.facebook, src: "/landing/icons/facebook.svg", w: 11, h: 22, box: 22, ml: 0 },
-    { name: "LinkedIn", href: SOCIAL.linkedin, src: "/landing/icons/linkedin.svg", w: 22, h: 22, box: 22, ml: 20 },
-    { name: "X", href: SOCIAL.x, src: "/landing/icons/x.svg", w: 23, h: 23, box: 23, ml: 27 },
-    { name: "Instagram", href: SOCIAL.instagram, src: "/landing/icons/instagram.svg", w: 22, h: 22, box: 22, ml: 27 },
-    { name: "TikTok", href: SOCIAL.tiktok, src: "/landing/icons/tiktok.svg", w: 22, h: 22, box: 22, ml: 27 },
+    { name: "Instagram", label: "Midaz en Instagram", href: SOCIAL.instagram, icon: "instagram" },
+    { name: "Correo", label: `Escríbenos a ${CONTACT.email}`, href: `mailto:${CONTACT.email}`, icon: "gmail" },
+    { name: "TikTok", label: "Midaz en TikTok", href: SOCIAL.tiktok, icon: "tiktok" },
+    { name: "X", label: "Midaz en X", href: SOCIAL.x, icon: "x" },
+    { name: "LinkedIn", label: "Midaz en LinkedIn", href: SOCIAL.linkedin, icon: "linkedin" },
+    { name: "Facebook", label: "Midaz en Facebook", href: SOCIAL.facebook, icon: "facebook" },
 ];
 const ecosystem = [
     ["Midaz Web", "Fila Cero", "Atlas", "Ágora"],
@@ -51,13 +53,18 @@ const link = "text-sm font-semibold leading-5 text-white hover:underline";
             </button>
         </form>
         <p class="pt-[14px] text-center text-sm font-medium leading-5 tracking-[-0.35px] text-white/90">
-            Tu cerebro operativo y fiscal. Factura, cobra y te ayuda a cumplir con el SENIAT desde un solo sistema.
+            Tu cerebro operativo y fiscal. Factura, cobra y prepara tu información fiscal desde un solo sistema.
         </p>
-        <nav aria-label="Redes sociales" class="flex items-start pb-12 pt-10">
+        <nav aria-label="Redes sociales" class="flex items-start justify-center gap-3 pb-12 pt-10 sm:gap-4">
             {
                 socials.map((s) => (
-                    <a href={s.href} target="_blank" rel="noopener" aria-label={`Midaz en ${s.name}`} class="flex shrink-0 items-center justify-center opacity-100 transition-opacity hover:opacity-80" style={`width:${s.box}px;height:${s.box}px;margin-left:${s.ml}px`}>
-                        <img src={s.src} alt="" width={s.w} height={s.h} />
+                    <a
+                        href={s.href}
+                        {...(s.href.startsWith("mailto:") ? {} : { target: "_blank", rel: "noopener" })}
+                        aria-label={s.label}
+                        class="flex size-10 shrink-0 items-center justify-center rounded-full border-[1.5px] sm:size-12 border-white transition-colors hover:bg-white/15"
+                    >
+                        <img src={`/landing/icons/redes/${s.icon}.svg`} alt="" width="22" height="22" class="size-[22px]" />
                     </a>
                 ))
             }

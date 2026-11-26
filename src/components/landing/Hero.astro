@@ -9,11 +9,9 @@ const stats = [
 // Titular (Figma "Hero / Titular escritura"): cada letra es un <span> para escribirlo letra por letra.
 const lines = [
     { text: "Midaz.", class: "" },
-    // Las dos líneas largas van más pequeñas para que quepan sobre la laptop.
-    { text: "Factura, cobra y lleva", class: "text-landing-amber text-[0.46em] leading-[1.12] tracking-[-0.01em] mt-3 xl:mt-2 xl:text-[40px] xl:leading-[46px] xl:tracking-[-0.6px]" },
-    { text: "tu inventario en un solo lugar.", class: "text-[0.46em] leading-[1.12] tracking-[-0.01em] xl:text-[40px] xl:leading-[46px] xl:tracking-[-0.6px]" },
-];
-const chars = (text: string) => [...text].map((c) => (c === " " ? null : c));
+    { text: "Menos errores.", class: "text-landing-amber" },
+    { text: "Más control.", class: "" },
+];const chars = (text: string) => [...text].map((c) => (c === " " ? null : c));
 // Isotipo de Midaz (Figma "Isotipo / Base", 822×800).
 const ISO =
     "M612.419 356.825L471.761 497.7V676.087L433.232 714.676V473.768L559.154 347.652V148.408L410.974 0L262.794 148.408V347.601L388.717 473.717V714.573L350.239 676.036V497.649L209.581 356.774H0V566.677L140.658 707.552H318.72L364.259 753.161L411.026 800L433.232 777.708L457.741 753.161L503.28 707.552H681.342L822 566.677V356.774H612.419V356.825ZM433.232 85.3245L514.639 166.908V329.101L433.232 410.634V85.3245ZM159.027 662.968L44.5154 548.28V432.926L274.154 662.968H159.027ZM305.672 631.452L75.9832 401.409H191.16L305.672 516.149V631.452ZM307.31 329.153V166.959L388.717 85.3757V410.685L307.31 329.153ZM516.328 516.149L630.84 401.461H746.017L516.328 631.452V516.149ZM777.433 548.28L662.921 662.968H547.795L777.485 432.926V548.28H777.433Z";
@@ -56,9 +54,9 @@ const ISO =
 
         <!-- Titular: se escribe letra por letra (las letras pendientes quedan transparentes, sin mover el texto) -->
         <h1
-            aria-label="Midaz. Factura, cobra y lleva tu inventario en un solo lugar."
+            aria-label="Midaz. Menos errores. Más control."
             data-tw-title
-            class="relative z-0 order-2 mt-10 text-center font-funnel text-[clamp(3rem,10vw,5.625rem)] font-bold leading-[0.84] tracking-[-0.021em] text-landing-navy xl:absolute xl:left-[290px] xl:top-[153px] xl:w-[700px] xl:mt-0 xl:text-[90px] xl:leading-[75px] xl:tracking-[-1.8885px]"
+            class="relative z-0 order-2 mt-10 text-center font-funnel text-[clamp(2rem,10vw,5.625rem)] font-bold leading-[0.84] tracking-[-0.021em] text-landing-navy xl:absolute xl:left-[348.3px] xl:top-[153px] xl:w-[645px] xl:mt-0 xl:text-[90px] xl:leading-[75px] xl:tracking-[-1.8885px]"
         >
             {
                 lines.map((line) => (
